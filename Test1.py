@@ -61,7 +61,7 @@ def nieuwe_verzekering():
     newSheet.range("E10").options(transpose=True).value = cwLijst
     newSheet.range("F10").options(transpose=True).value = rkLijst
     
-    print("Hello world")
+    
     
 
     
