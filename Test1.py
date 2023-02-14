@@ -1,6 +1,7 @@
 ﻿import xlwings as xw
 import datetime as dt
 
+print("Hello World") 
 
 @xw.sub
 def nieuwe_verzekering():
@@ -62,6 +63,6 @@ def nieuwe_verzekering():
     newSheet.range("F10").options(transpose=True).value = rkLijst
     
     
-    
+
 
     
