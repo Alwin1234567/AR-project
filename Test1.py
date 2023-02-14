@@ -63,6 +63,6 @@ def nieuwe_verzekering():
     newSheet.range("F10").options(transpose=True).value = rkLijst
     
     
-
+print(2)
 
     
