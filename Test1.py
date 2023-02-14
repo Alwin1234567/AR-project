@@ -1,8 +1,7 @@
 ﻿import xlwings as xw
 import datetime as dt
 
-print("Hello World") 
-print(1)
+
 @xw.sub
 def nieuwe_verzekering():
     """
@@ -62,7 +61,11 @@ def nieuwe_verzekering():
     newSheet.range("E10").options(transpose=True).value = cwLijst
     newSheet.range("F10").options(transpose=True).value = rkLijst
     
-    
-print(2)
 
+@xw.sub
+def lock_and_hide():
+    book = xw.Book.caller()
+    newSheet = book.sheets.add("Locked")
+    newSheet.api.Protect(Password = "Password")
+    newSheet.api.Visible = False
     
