@@ -50,6 +50,7 @@ def vergelijken_afbeelding_generatie():
     #geeft de breedte aan van alle hoogtes
     randen = list(allejaren)
     randen.sort()
+    randen.append(randen[-1] + 10)
     
     #een lijst met alle verzekeringsnamen
     naamlijst = list()
@@ -93,7 +94,7 @@ def vergelijken_afbeelding_generatie():
     order = range(blokaantal-1, -1, -1)
     plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order]) 
     
-    uitvoer.pictures.add(afbeelding)
+    uitvoer.pictures.add(afbeelding, top = uitvoer.range((3,3)).top, left = uitvoer.range((3,3)).left, height = 300)
     
     
 
@@ -104,5 +105,5 @@ def getaltotijd(getal):
     if maand > 0: tijd = tijd + " {}m".format(maand)
     return tijd
 
-def getaltogeld(getal): return "€{:.2f}".format(float(getal))
+def getaltogeld(getal): return "€{:.2f}".format(float(getal)).replace(".",",")
     
