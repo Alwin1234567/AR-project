@@ -25,27 +25,33 @@ def vergelijken_afbeelding_generatie():
     uitvoer = book.sheets["Vergelijken"]
     
     #data lezen
+    titel = (3,1)
+    
     beginrij = 5
-    beginkolom = 2
+    OPbeginkolom = 2
     blokafstand = 6
     
-    naam = 0
-    beginjaar = 1
-    jaarbedrag = 2
-    hooglaaggrens = 3
-    verhouding = 4
+    PPbeginkolom = 5
+    PPblokafstand = 3
     
-    #aantal blokken tellen
-    blokaantal = 0
-    leescell = [beginrij, beginkolom]
-    while invoer.range(tuple(leescell)).value != None:
-        blokaantal +=1
-        leescell[0] +=blokafstand
+    PPnaam = 0
+    PPjaarbedrag = 1
+    
+    OPnaam = 0
+    OPbeginjaar = 1
+    OPjaarbedrag = 2
+    OPhooglaaggrens = 3
+    OPverhouding = 4
+    
+    #Aantal blokken tellen
+    blokaantal = blokkentellen(beginrij, OPbeginkolom, blokafstand, invoer)
+    PPblokaantal = blokkentellen(beginrij, PPbeginkolom, PPblokafstand, invoer)
 
+    #Lijst met alle voorkomende jaren van OP
     allejaren = set()
     for blok in range(blokaantal):
-        allejaren.add(invoer.range((beginrij + beginjaar + blok * blokafstand, beginkolom)).options(numbers = float).value)
-        allejaren.add(invoer.range((beginrij + hooglaaggrens + blok * blokafstand, beginkolom)).options(numbers = float).value)
+        allejaren.add(invoer.range((beginrij + OPbeginjaar + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
+        allejaren.add(invoer.range((beginrij + OPhooglaaggrens + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
     
     #geeft de breedte aan van alle hoogtes
     randen = list(allejaren)
@@ -54,7 +60,7 @@ def vergelijken_afbeelding_generatie():
     
     #een lijst met alle verzekeringsnamen
     naamlijst = list()
-    for blok in range(blokaantal): naamlijst.append(invoer.range((beginrij + naam + blok * blokafstand, beginkolom)).value)
+    for blok in range(blokaantal): naamlijst.append(invoer.range((beginrij + OPnaam + blok * blokafstand, OPbeginkolom)).value)
     
     #berekent de hoogte van elke staaf
     hoogtes = [[0 for i in range(len(randen)-1)]]
@@ -62,10 +68,10 @@ def vergelijken_afbeelding_generatie():
     ywaardes.add(0)
     
     for blok in range(blokaantal):
-        startjaar = float(invoer.range((beginrij + beginjaar + blok * blokafstand, beginkolom)).options(numbers = float).value)
-        toezegging = float(invoer.range((beginrij + jaarbedrag + blok * blokafstand, beginkolom)).options(numbers = float).value)
-        laaghoogverhouding = float(invoer.range((beginrij + verhouding + blok * blokafstand, beginkolom)).options(numbers = float).value)
-        alternatiefjaar = float(invoer.range((beginrij + hooglaaggrens + blok * blokafstand, beginkolom)).options(numbers = float).value)
+        startjaar = float(invoer.range((beginrij + OPbeginjaar + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
+        toezegging = float(invoer.range((beginrij + OPjaarbedrag + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
+        laaghoogverhouding = float(invoer.range((beginrij + OPverhouding + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
+        alternatiefjaar = float(invoer.range((beginrij + OPhooglaaggrens + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
         
         hoogtes.append(list())
 
@@ -81,6 +87,14 @@ def vergelijken_afbeelding_generatie():
             else: hoogtes[blok+1].append(hoogtes[blok][i])
     ywaardes = list(ywaardes)
     ywaardes.sort()
+
+    #bereken PP
+    PPtotaal = 0
+    for blok in range(PPblokaantal):
+        PPtotaal += float(invoer.range((beginrij + PPjaarbedrag + blok * PPblokaantal, PPbeginkolom)).options(numbers = float).value)
+        
+
+
     #maak de afbeeling
     afbeelding = plt.figure()
     for i in range(len(hoogtes) - 1):
@@ -94,6 +108,10 @@ def vergelijken_afbeelding_generatie():
     order = range(blokaantal-1, -1, -1)
     plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order]) 
     
+    plt.gca().set_title("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
+    plt.suptitle(invoer.range(titel).value, fontweight='bold')
+    
+    
     uitvoer.pictures.add(afbeelding, top = uitvoer.range((3,3)).top, left = uitvoer.range((3,3)).left, height = 300)
     
     
@@ -106,4 +124,12 @@ def getaltotijd(getal):
     return tijd
 
 def getaltogeld(getal): return "€{:.2f}".format(float(getal)).replace(".",",")
+
+def blokkentellen(beginrij, beginkolom, blokafstand, sheet):
+    blokaantal = 0
+    leescell = [beginrij, beginkolom]
+    while sheet.range(tuple(leescell)).value != None:
+        blokaantal += 1
+        leescell[0] +=blokafstand
+    return blokaantal
     
