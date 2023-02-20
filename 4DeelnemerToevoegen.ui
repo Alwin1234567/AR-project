@@ -437,7 +437,7 @@
      <string>Deelnemer toevoegen</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="CheckAegon65">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -473,7 +473,7 @@
      <string>Pensioensleeftijd</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QCheckBox" name="CheckAegon67">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -491,7 +491,7 @@
      <string>Aegon</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_3">
+   <widget class="QCheckBox" name="CheckNN65">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -509,7 +509,7 @@
      <string>NN</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_4">
+   <widget class="QCheckBox" name="CheckNN67">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -527,7 +527,7 @@
      <string>NN</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_5">
+   <widget class="QCheckBox" name="CheckPFVLC68">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -545,7 +545,7 @@
      <string>PF VLC</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_6">
+   <widget class="QCheckBox" name="CheckZL">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -1226,13 +1226,13 @@
    <zorder>label_18</zorder>
    <zorder>BtnTerug</zorder>
    <zorder>BtnToevoegen</zorder>
-   <zorder>checkBox</zorder>
+   <zorder>CheckAegon65</zorder>
    <zorder>label_14</zorder>
-   <zorder>checkBox_2</zorder>
-   <zorder>checkBox_3</zorder>
-   <zorder>checkBox_4</zorder>
-   <zorder>checkBox_5</zorder>
-   <zorder>checkBox_6</zorder>
+   <zorder>CheckAegon67</zorder>
+   <zorder>CheckNN65</zorder>
+   <zorder>CheckNN67</zorder>
+   <zorder>CheckPFVLC68</zorder>
+   <zorder>CheckZL</zorder>
    <zorder>label_19</zorder>
    <zorder>label_20</zorder>
    <zorder>label_21</zorder>
