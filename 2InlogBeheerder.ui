@@ -40,7 +40,7 @@
      <string>Terug</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="BtnInloggen">
+   <widget class="QPushButton" name="btnInloggen">
     <property name="geometry">
      <rect>
       <x>220</x>
@@ -146,7 +146,7 @@
      <x>0</x>
      <y>0</y>
      <width>381</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
@@ -154,7 +154,7 @@
  </widget>
  <tabstops>
   <tabstop>txtBeheerderscode</tabstop>
-  <tabstop>BtnInloggen</tabstop>
+  <tabstop>btnInloggen</tabstop>
   <tabstop>btnTerug</tabstop>
  </tabstops>
  <resources/>
