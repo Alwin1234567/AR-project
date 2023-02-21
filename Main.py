@@ -12,6 +12,113 @@ Body
 Hier komen alle functies
 """
 
+#Wachtwoord = "wachtwoord"
+
+#import sys
+#from PyQt5 import QtWidgets, uic
+#Ui_MainWindow, QtBaseClass = uic.loadUiType("1AdviseurBeheerder.ui")
+#class functiekeus(QtWidgets.QMainWindow):
+#    def __init__(self):
+#        super(functiekeus, self).__init__()
+#        self.ui = Ui_MainWindow()
+#        self.ui.setupUi(self)
+#        self.ui.BtnAdviseur.clicked.connect(self.BtnAdviseurClicked)
+#        self.ui.BtnBeheerder.clicked.connect(self.BtnBeheerderClicked)
+        
+        
+#    def BtnAdviseurClicked(self):
+#        self.close()
+#        self._windowdeelnemer = deelnemerselectie()
+#        self._windowdeelnemer.show()
+#    def BtnBeheerderClicked(self): 
+#        self.close()
+#        self._windowinlog = inloggen()
+#        self._windowinlog.show()
+        
+
+#Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("2InlogBeheerder.ui")
+#class inloggen(QtWidgets.QMainWindow):
+#    def __init__(self):
+#        super(inloggen, self).__init__()
+#        self.ui = Ui_MainWindow2()
+#        self.ui.setupUi(self)
+#        self.ui.BtnTerug.clicked.connect(self.BtnTerugClicked)
+#        self.ui.BtnInloggen.clicked.connect(self.BtnInloggenClicked)
+        
+#    def BtnInloggenClicked(self):
+#        if self.ui.txtBeheerderscode.text() == Wachtwoord:
+#            self.close()
+#            self._windowdeelnemer = deelnemerselectie()
+#            self._windowdeelnemer.show()
+#        else:
+#            self.ui.label.setText("Wachtwoord incorrrect")
+#    def BtnTerugClicked(self):
+#        self.close()
+#        self._windowkeus = functiekeus()
+#        self._windowkeus.show()
+        
+        
+#Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("deelnemerselectie.ui")
+#class deelnemerselectie(QtWidgets.QMainWindow):
+#    def __init__(self):
+#        super(deelnemerselectie, self).__init__()
+#        self.ui = Ui_MainWindow3()
+#        self.ui.setupUi(self)    
+#        self.ui.pushButton.clicked.connect(self.pushButtonClicked)
+        
+#    def pushButtonClicked(self):
+#        self.close()
+        
+#Ui_MainWindow4, QtBaseClass3 = uic.loadUiType("4DeelnemerToevoegen.ui")
+#class deelnemertoevoegen(QtWidgets.QMainWindow):
+#    def __init__(self):
+#        super(deelnemertoevoegen, self).__init__()
+#        self.ui = Ui_MainWindow4()
+#        self.ui.setupUi(self)
+#        self.ui.BtnTerug.clicked.connect(self.BtnTerugClicked)
+#        self.ui.BtnToevoegen.clicked.connect(self.BtnToevoegenClicked)
+        
+#    def BtnTerugClicked(self):
+#        self.close()
+#        self._windowdeelnemer = deelnemerselectie()
+#        self._windowdeelnemer.show()
+        
+#    def BtnToevoegen(self):
+#        self.close()
+#        self._windowdeelnemer = deelnemerselectie()
+#        self._windowdeelnemer.show()
+
+
+#Ui_MainWindow5, QtBaseClass3 = uic.loadUiType("flexmenu.ui")
+#class flexmenu(QtWidgets.QMainWindow):
+#    def __init__(self):
+#        super(flexmenu, self).__init__()
+#        self.ui = Ui_MainWindow5()
+#        self.ui.setupUi(self)
+#        self.ui.pushButton.clicked.connect(self.pushButtonClicked)
+#        self.ui.pushButton_2.clicked.connect(self.pushButton_2Clicked)
+#        self.ui.pushButton_3.clicked.connect(self.pushButton_3Clicked)
+        
+#    def pushButtonClicked(self):
+#        self.close()
+#        self._windowdeelnemer = deelnemerselectie()
+#        self._windowdeelnemer.show()
+        
+#    def pushButton_2Clicked(self):
+#        self.close()
+        
+#    def pushButton_3Clicked(self):
+#        self.close()
+        
+
+   
+#if __name__ == "__main__":
+#    app = 0
+#    app = QtWidgets.QApplication(sys.argv)
+#    window = functiekeus()
+#    window.show()
+#    sys.exit(app.exec_())
+
 
 @xw.sub
 def vergelijken_afbeelding_generatie():
