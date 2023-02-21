@@ -1392,7 +1392,6 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="logo.qrc"/>
  </resources>
  <connections/>
 </ui>
