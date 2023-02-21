@@ -17,7 +17,7 @@
    <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="BtnBeheerder">
+   <widget class="QPushButton" name="btnBeheerder">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -38,7 +38,7 @@
      <string>Beheerder</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="BtnAdviseur">
+   <widget class="QPushButton" name="btnAdviseur">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -59,25 +59,6 @@
      <string>Adviseur</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>-10</y>
-      <width>181</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap>../VLC&amp;partners-logo.png</pixmap>
-    </property>
-    <property name="scaledContents">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
@@ -94,6 +75,25 @@
     </property>
     <property name="text">
      <string>Gebruik de tool als:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lbl_logo">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>0</y>
+      <width>200</width>
+      <height>44</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>logo.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

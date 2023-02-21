@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>624</width>
-    <height>726</height>
+    <height>717</height>
    </rect>
   </property>
   <property name="font">
@@ -22,25 +22,6 @@
    <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>430</x>
-      <y>-10</y>
-      <width>181</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap>../VLC&amp;partners-logo.png</pixmap>
-    </property>
-    <property name="scaledContents">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
@@ -52,7 +33,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>12</pointsize>
+      <pointsize>13</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
@@ -167,39 +148,6 @@
      <font>
       <pointsize>10</pointsize>
      </font>
-    </property>
-   </widget>
-   <widget class="QDateEdit" name="txtGeboortedatum">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>170</y>
-      <width>110</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_7">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>150</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Geboortedatum</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
@@ -391,11 +339,11 @@
      <string>%</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="BtnTerug">
+   <widget class="QPushButton" name="btnTerug">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>630</y>
+      <y>620</y>
       <width>131</width>
       <height>41</height>
      </rect>
@@ -414,11 +362,11 @@
      <string>Terug</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="BtnToevoegen">
+   <widget class="QPushButton" name="btnToevoegen">
     <property name="geometry">
      <rect>
       <x>390</x>
-      <y>630</y>
+      <y>620</y>
       <width>201</width>
       <height>41</height>
      </rect>
@@ -651,21 +599,6 @@
     </property>
     <property name="text">
      <string>68</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="txtZLPensioenleeftijd">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>550</y>
-      <width>111</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
     </property>
    </widget>
    <widget class="QLabel" name="label_24">
@@ -1153,6 +1086,11 @@
     </property>
     <item>
      <property name="text">
+      <string>-</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>M</string>
      </property>
     </item>
@@ -1201,8 +1139,146 @@
     <property name="title">
      <string>Persoonlijke gegevens</string>
     </property>
+    <widget class="QSpinBox" name="sbDag">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>42</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>31</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>22</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Dag</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>80</y>
+       <width>38</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Maand</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>80</y>
+       <width>24</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Jaar</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="sbMaand">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>100</y>
+       <width>51</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>12</number>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="sbJaar">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>100</y>
+       <width>71</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1900</number>
+     </property>
+     <property name="maximum">
+      <number>3000</number>
+     </property>
+    </widget>
    </widget>
-   <zorder>label</zorder>
+   <widget class="QLabel" name="lbl_logo">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>0</y>
+      <width>200</width>
+      <height>44</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>logo.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_37">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>550</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string> -</string>
+    </property>
+   </widget>
    <zorder>groupBox_2</zorder>
    <zorder>groupBox</zorder>
    <zorder>label_17</zorder>
@@ -1213,8 +1289,6 @@
    <zorder>txtVoorletters</zorder>
    <zorder>txtTussenvoegsel</zorder>
    <zorder>txtAchternaam</zorder>
-   <zorder>label_7</zorder>
-   <zorder>txtGeboortedatum</zorder>
    <zorder>label_8</zorder>
    <zorder>label_9</zorder>
    <zorder>label_10</zorder>
@@ -1224,8 +1298,8 @@
    <zorder>txtFulltimeLoon</zorder>
    <zorder>txtParttimePercentage</zorder>
    <zorder>label_18</zorder>
-   <zorder>BtnTerug</zorder>
-   <zorder>BtnToevoegen</zorder>
+   <zorder>btnTerug</zorder>
+   <zorder>btnToevoegen</zorder>
    <zorder>CheckAegon65</zorder>
    <zorder>label_14</zorder>
    <zorder>CheckAegon67</zorder>
@@ -1238,7 +1312,6 @@
    <zorder>label_21</zorder>
    <zorder>label_22</zorder>
    <zorder>label_23</zorder>
-   <zorder>txtZLPensioenleeftijd</zorder>
    <zorder>label_24</zorder>
    <zorder>label_25</zorder>
    <zorder>label_26</zorder>
@@ -1265,6 +1338,8 @@
    <zorder>txtPPNN65</zorder>
    <zorder>label_12</zorder>
    <zorder>cbGeslacht</zorder>
+   <zorder>lbl_logo</zorder>
+   <zorder>label_37</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -1278,6 +1353,36 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>txtVoorletters</tabstop>
+  <tabstop>txtTussenvoegsel</tabstop>
+  <tabstop>txtAchternaam</tabstop>
+  <tabstop>sbDag</tabstop>
+  <tabstop>sbMaand</tabstop>
+  <tabstop>sbJaar</tabstop>
+  <tabstop>cbBurgerlijkeStaat</tabstop>
+  <tabstop>cbGeslacht</tabstop>
+  <tabstop>txtFulltimeLoon</tabstop>
+  <tabstop>txtParttimePercentage</tabstop>
+  <tabstop>cbHuidigeRegeling</tabstop>
+  <tabstop>CheckAegon65</tabstop>
+  <tabstop>txtOPAegon65</tabstop>
+  <tabstop>CheckAegon67</tabstop>
+  <tabstop>txtOPAegon67</tabstop>
+  <tabstop>CheckNN65</tabstop>
+  <tabstop>txtOPNN65</tabstop>
+  <tabstop>txtPPNN65</tabstop>
+  <tabstop>CheckNN67</tabstop>
+  <tabstop>txtOPNN67</tabstop>
+  <tabstop>txtPPNN67</tabstop>
+  <tabstop>CheckPFVLC68</tabstop>
+  <tabstop>txtOPVLC68</tabstop>
+  <tabstop>txtPPVLC68</tabstop>
+  <tabstop>CheckZL</tabstop>
+  <tabstop>txtOPZL</tabstop>
+  <tabstop>btnToevoegen</tabstop>
+  <tabstop>btnTerug</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

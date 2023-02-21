@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1072</width>
-    <height>803</height>
+    <width>1033</width>
+    <height>838</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,10 +20,10 @@
    <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QComboBox" name="comboBox_regeling">
+   <widget class="QComboBox" name="cbRegeling">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>70</x>
       <y>40</y>
       <width>291</width>
       <height>22</height>
@@ -38,7 +38,7 @@
    <widget class="QLabel" name="lbl_keuze">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>70</x>
       <y>20</y>
       <width>293</width>
       <height>16</height>
@@ -58,7 +58,7 @@
    <widget class="QLabel" name="lbl_logo">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>820</x>
       <y>0</y>
       <width>200</width>
       <height>44</height>
@@ -77,10 +77,10 @@
    <widget class="QLabel" name="lbl_diagram">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>80</y>
-      <width>487</width>
-      <height>322</height>
+      <x>480</x>
+      <y>90</y>
+      <width>521</width>
+      <height>341</height>
      </rect>
     </property>
     <property name="text">
@@ -96,10 +96,10 @@
    <widget class="QGroupBox" name="groupBox_pLeeftijd">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>20</x>
       <y>90</y>
       <width>391</width>
-      <height>141</height>
+      <height>151</height>
      </rect>
     </property>
     <property name="font">
@@ -133,7 +133,7 @@
       <string>Maand</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox_pensioenLeeftijd">
+    <widget class="QCheckBox" name="CheckLeeftijdWijzigen">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -153,7 +153,7 @@
       <string>Wijzigen</string>
      </property>
     </widget>
-    <widget class="QSpinBox" name="spinBox_leeftijdMaand">
+    <widget class="QSpinBox" name="sbMaand">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -177,7 +177,7 @@
       <number>12</number>
      </property>
     </widget>
-    <widget class="QSpinBox" name="spinBox_leeftijdJaar">
+    <widget class="QSpinBox" name="sbJaar">
      <property name="geometry">
       <rect>
        <x>90</x>
@@ -216,14 +216,38 @@
       <string>Jaar</string>
      </property>
     </widget>
+    <widget class="QLabel" name="lblFoutmeldingLeeftijd">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>120</y>
+       <width>361</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 0, 4);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_OP_PP">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>250</y>
+      <x>20</x>
+      <y>260</y>
       <width>391</width>
-      <height>241</height>
+      <height>251</height>
      </rect>
     </property>
     <property name="font">
@@ -236,7 +260,7 @@
     <property name="title">
      <string>Ouderdomspensioen en partnerpensioen</string>
     </property>
-    <widget class="QCheckBox" name="checkBox_OP_PP">
+    <widget class="QCheckBox" name="CheckUitruilen">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -274,7 +298,7 @@
       <string>Percentage</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_ppVerhouding_H">
+    <widget class="QLineEdit" name="txtUVerhoudingOP">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -328,7 +352,7 @@
       <string>Uitruilen van...</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox_ppMethode">
+    <widget class="QComboBox" name="cbUMethode">
      <property name="geometry">
       <rect>
        <x>200</x>
@@ -337,6 +361,21 @@
        <height>22</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <item>
+      <property name="text">
+       <string>Percentage</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Verhouding</string>
+      </property>
+     </item>
     </widget>
     <widget class="QLabel" name="lbl_ppVerhouding_PP">
      <property name="geometry">
@@ -356,7 +395,7 @@
       <string>PP</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_ppVerhouding_L">
+    <widget class="QLineEdit" name="txtUVerhoudingPP">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -389,7 +428,7 @@
       <string>Verhouding</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_ppVerschil">
+    <widget class="QLineEdit" name="txtUPercentage">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -422,7 +461,7 @@
       <string>Methode</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox_ppUitruilen">
+    <widget class="QComboBox" name="cbUitruilenVan">
      <property name="geometry">
       <rect>
        <x>40</x>
@@ -431,13 +470,52 @@
        <height>22</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <item>
+      <property name="text">
+       <string>OP naar PP</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>PP naar OP</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="lblFoutmeldingUitruilen">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>220</y>
+       <width>361</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 0, 4);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_ZL">
+   <widget class="QFrame" name="frame_ZL">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>430</y>
+      <x>480</x>
+      <y>460</y>
       <width>161</width>
       <height>121</height>
      </rect>
@@ -449,8 +527,8 @@
       <bold>true</bold>
      </font>
     </property>
-    <property name="title">
-     <string>ZwitserLeven</string>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 211, 212);</string>
     </property>
     <widget class="QLabel" name="lbl_ZL_AanspraakOP">
      <property name="geometry">
@@ -544,11 +622,11 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_Aegon65">
+   <widget class="QFrame" name="frame_Aegon65">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>430</y>
+      <x>660</x>
+      <y>460</y>
       <width>161</width>
       <height>121</height>
      </rect>
@@ -560,8 +638,10 @@
       <bold>true</bold>
      </font>
     </property>
-    <property name="title">
-     <string>Aegon 65</string>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(229, 220, 255);
+
+</string>
     </property>
     <widget class="QLabel" name="lbl_A65_AanspraakOP">
      <property name="geometry">
@@ -655,11 +735,11 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_VLC">
+   <widget class="QFrame" name="frame_VLC">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>570</y>
+      <x>480</x>
+      <y>600</y>
       <width>161</width>
       <height>121</height>
      </rect>
@@ -671,8 +751,8 @@
       <bold>true</bold>
      </font>
     </property>
-    <property name="title">
-     <string>PF VLC 68</string>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(222, 255, 250);</string>
     </property>
     <widget class="QLabel" name="lbl_VLC_AanspraakOP">
      <property name="geometry">
@@ -766,11 +846,11 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_Aegon67">
+   <widget class="QFrame" name="frame_Aegon67">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>570</y>
+      <x>660</x>
+      <y>600</y>
       <width>161</width>
       <height>121</height>
      </rect>
@@ -782,8 +862,8 @@
       <bold>true</bold>
      </font>
     </property>
-    <property name="title">
-     <string>Aegon 67</string>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(206, 232, 255);</string>
     </property>
     <widget class="QLabel" name="lbl_A67_AanspraakOP">
      <property name="geometry">
@@ -877,11 +957,11 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_NN67">
+   <widget class="QFrame" name="frame_NN67">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>570</y>
+      <x>840</x>
+      <y>600</y>
       <width>161</width>
       <height>121</height>
      </rect>
@@ -893,8 +973,8 @@
       <bold>true</bold>
      </font>
     </property>
-    <property name="title">
-     <string>NN 67</string>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 197);</string>
     </property>
     <widget class="QLabel" name="lbl_NN67_AanspraakOP">
      <property name="geometry">
@@ -988,11 +1068,11 @@
      </property>
     </widget>
    </widget>
-   <widget class="QGroupBox" name="groupBox_NN65">
+   <widget class="QFrame" name="frame_NN65">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>430</y>
+      <x>840</x>
+      <y>460</y>
       <width>161</width>
       <height>121</height>
      </rect>
@@ -1004,8 +1084,8 @@
       <bold>true</bold>
      </font>
     </property>
-    <property name="title">
-     <string>NN 65</string>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 227, 194);</string>
     </property>
     <widget class="QLabel" name="lbl_NN65_AanspraakOP">
      <property name="geometry">
@@ -1099,13 +1179,13 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="btnAndereDeelnemer">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>720</y>
+      <x>480</x>
+      <y>740</y>
       <width>161</width>
-      <height>31</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -1120,13 +1200,13 @@
      <string>Andere deelnemer</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="btnVergelijken">
     <property name="geometry">
      <rect>
-      <x>690</x>
-      <y>720</y>
-      <width>151</width>
-      <height>31</height>
+      <x>660</x>
+      <y>740</y>
+      <width>161</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -1141,13 +1221,13 @@
      <string>Vergelijken</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="btnOpslaan">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>720</y>
-      <width>151</width>
-      <height>31</height>
+      <x>840</x>
+      <y>740</y>
+      <width>161</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -1165,10 +1245,10 @@
    <widget class="QGroupBox" name="groupBox_hlConstructie">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>510</y>
+      <x>20</x>
+      <y>530</y>
       <width>391</width>
-      <height>241</height>
+      <height>251</height>
      </rect>
     </property>
     <property name="font">
@@ -1235,7 +1315,7 @@
       <string>Verschil</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_lhVerhouding_H">
+    <widget class="QLineEdit" name="txtHLVerhoudingHoog">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -1253,7 +1333,7 @@
       <string>100</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_lhVerschil">
+    <widget class="QLineEdit" name="txtHLVerschil">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1322,7 +1402,7 @@
       <string>Methode</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox_hoogLaag">
+    <widget class="QCheckBox" name="CheckHoogLaag">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1342,7 +1422,7 @@
       <string>Instellen</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox_lhVolgorde">
+    <widget class="QComboBox" name="cbHLVolgorde">
      <property name="geometry">
       <rect>
        <x>40</x>
@@ -1351,8 +1431,23 @@
        <height>22</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <item>
+      <property name="text">
+       <string>Hoog-laag</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Laag-hoog</string>
+      </property>
+     </item>
     </widget>
-    <widget class="QComboBox" name="comboBox_lhMethode">
+    <widget class="QComboBox" name="cbHLMethode">
      <property name="geometry">
       <rect>
        <x>200</x>
@@ -1361,8 +1456,28 @@
        <height>22</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <item>
+      <property name="text">
+       <string>Opvullen AOW</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Verhouding</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Verschil</string>
+      </property>
+     </item>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_lhVerhouding_L">
+    <widget class="QLineEdit" name="txtHLVerhoudingLaag">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -1377,22 +1492,226 @@
       </font>
      </property>
     </widget>
+    <widget class="QLabel" name="lblFoutmeldingHoogLaag">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>220</y>
+       <width>361</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 0, 4);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>460</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 211, 212);</string>
+    </property>
+    <property name="text">
+     <string>ZL</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>460</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(229, 220, 255);</string>
+    </property>
+    <property name="text">
+     <string>Aegon 65</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>460</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 227, 194);</string>
+    </property>
+    <property name="text">
+     <string>NN 65</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>600</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 197);
+</string>
+    </property>
+    <property name="text">
+     <string>NN 67</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>600</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(206, 232, 255);</string>
+    </property>
+    <property name="text">
+     <string>Aegon 67</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>600</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(215, 251, 255);</string>
+    </property>
+    <property name="text">
+     <string>PF VLC 68</string>
+    </property>
+   </widget>
+   <zorder>frame_Aegon65</zorder>
+   <zorder>frame_NN67</zorder>
+   <zorder>frame_NN65</zorder>
+   <zorder>frame_Aegon67</zorder>
+   <zorder>frame_VLC</zorder>
+   <zorder>cbRegeling</zorder>
+   <zorder>lbl_keuze</zorder>
+   <zorder>lbl_logo</zorder>
+   <zorder>lbl_diagram</zorder>
+   <zorder>groupBox_pLeeftijd</zorder>
+   <zorder>groupBox_OP_PP</zorder>
+   <zorder>frame_ZL</zorder>
+   <zorder>btnAndereDeelnemer</zorder>
+   <zorder>btnVergelijken</zorder>
+   <zorder>btnOpslaan</zorder>
+   <zorder>groupBox_hlConstructie</zorder>
+   <zorder>label</zorder>
+   <zorder>label_2</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label_4</zorder>
+   <zorder>label_5</zorder>
+   <zorder>label_6</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1072</width>
+     <width>1033</width>
      <height>21</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources>
-  <include location="logo.qrc"/>
- </resources>
+ <tabstops>
+  <tabstop>cbRegeling</tabstop>
+  <tabstop>CheckLeeftijdWijzigen</tabstop>
+  <tabstop>sbJaar</tabstop>
+  <tabstop>sbMaand</tabstop>
+  <tabstop>CheckUitruilen</tabstop>
+  <tabstop>cbUitruilenVan</tabstop>
+  <tabstop>cbUMethode</tabstop>
+  <tabstop>txtUVerhoudingOP</tabstop>
+  <tabstop>txtUVerhoudingPP</tabstop>
+  <tabstop>txtUPercentage</tabstop>
+  <tabstop>CheckHoogLaag</tabstop>
+  <tabstop>cbHLVolgorde</tabstop>
+  <tabstop>cbHLMethode</tabstop>
+  <tabstop>txtHLVerhoudingHoog</tabstop>
+  <tabstop>txtHLVerhoudingLaag</tabstop>
+  <tabstop>txtHLVerschil</tabstop>
+  <tabstop>btnOpslaan</tabstop>
+  <tabstop>btnVergelijken</tabstop>
+  <tabstop>btnAndereDeelnemer</tabstop>
+ </tabstops>
+ <resources/>
  <connections/>
 </ui>
