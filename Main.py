@@ -189,15 +189,7 @@ def vergelijken_afbeelding_generatie():
     #bepaald de kleuren
     kleuren = list()
     for blok in range(blokaantal): kleuren.append(kleurinvoer(invoer.range((beginrij + OPkleur + blok * blokafstand, OPbeginkolom)).value))
-    print(kleuren)
-    # kleur = [(225,211,212), (229,220,255), (206,232,255), (255,227,194)]
-    # for i in range(len(kleur)):
-    #     new = []
-    #     for j in range(3):
-    #         new.append(kleur[i][j] / 255)
-    #     kleur[i] = tuple(new)
-    # print(kleur)
-    
+
     #berekent de hoogte van elke staaf
     hoogtes = [[0 for i in range(len(randen)-1)]]
     ywaardes = set()
