@@ -152,7 +152,7 @@ def vergelijken_afbeelding_generatie():
     
     beginrij = 5
     OPbeginkolom = 2
-    blokafstand = 6
+    blokafstand = 7
     
     PPbeginkolom = 5
     PPblokafstand = 3
@@ -161,10 +161,11 @@ def vergelijken_afbeelding_generatie():
     PPjaarbedrag = 1
     
     OPnaam = 0
-    OPbeginjaar = 1
-    OPjaarbedrag = 2
-    OPhooglaaggrens = 3
-    OPverhouding = 4
+    OPkleur = 1
+    OPbeginjaar = 2
+    OPjaarbedrag = 3
+    OPhooglaaggrens = 4
+    OPverhouding = 5
     
     #Aantal blokken tellen
     blokaantal = blokkentellen(beginrij, OPbeginkolom, blokafstand, invoer)
@@ -184,6 +185,18 @@ def vergelijken_afbeelding_generatie():
     #een lijst met alle verzekeringsnamen
     naamlijst = list()
     for blok in range(blokaantal): naamlijst.append(invoer.range((beginrij + OPnaam + blok * blokafstand, OPbeginkolom)).value)
+    
+    #bepaald de kleuren
+    kleuren = list()
+    for blok in range(blokaantal): kleuren.append(kleurinvoer(invoer.range((beginrij + OPkleur + blok * blokafstand, OPbeginkolom)).value))
+    print(kleuren)
+    # kleur = [(225,211,212), (229,220,255), (206,232,255), (255,227,194)]
+    # for i in range(len(kleur)):
+    #     new = []
+    #     for j in range(3):
+    #         new.append(kleur[i][j] / 255)
+    #     kleur[i] = tuple(new)
+    # print(kleur)
     
     #berekent de hoogte van elke staaf
     hoogtes = [[0 for i in range(len(randen)-1)]]
@@ -221,7 +234,7 @@ def vergelijken_afbeelding_generatie():
     #maak de afbeeling
     afbeelding = plt.figure()
     for i in range(len(hoogtes) - 1):
-        plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i])
+        plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
     
     plt.xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
     plt.setp(plt.gca().get_xticklabels(), rotation=30, horizontalalignment='right')
@@ -255,4 +268,11 @@ def blokkentellen(beginrij, beginkolom, blokafstand, sheet):
         blokaantal += 1
         leescell[0] +=blokafstand
     return blokaantal
+
+def kleurinvoer(kleur):
+    rgb = kleur.split(",")
+    kleuren = list()
+    for i in range(3):
+        kleuren.append(int(rgb[i])/255)    
+    return tuple(kleuren)
     
