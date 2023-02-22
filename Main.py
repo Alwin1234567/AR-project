@@ -239,4 +239,33 @@ def blokkentellen(beginrij, beginkolom, blokafstand, sheet):
         blokaantal += 1
         leescell[0] +=blokafstand
     return blokaantal
+
+
+@xw.sub
+def invoer_test_klikken():
+    
+    #sheets en book opslaan in variabelen
+    book = xw.Book.caller()
+    input = book.sheets["Tijdelijk invoerscherm"]
+    
+    #pensioenvormen=invoer.range("B10:B18")
+    kolom_t=input.range("I2")
+    if input.range("B10").value != "":
+        rente= input.range("D10").value
+        pensioenleeftijd= input.range("E10").value
+        
+    i=pensioenleeftijd
+    x=1
+    while i<=119:
+        kolom_t(x).value=i
+        x=x+1
+        i=i+1
+        
+        
+    
+    
+    
+
+
+
     
