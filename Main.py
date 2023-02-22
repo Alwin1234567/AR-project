@@ -69,6 +69,9 @@ def Schermen():
             self.ui.btnDeelnemerToevoegen.clicked.connect(self.btnDeelnemerToevoegenClicked)
             self.ui.btnStartFlexibiliseren.clicked.connect(self.btnStartFlexibiliserenClicked)
             self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
+            self.ui.sbMaand.valueChanged.connect(self.maandchange)
+            self.ui.sbJaar.valueChanged.connect(self.jaarchange)
+            self._30maand = [4,6,9,11]
             
         def btnDeelnemerToevoegenClicked(self):
             self.close()
@@ -84,6 +87,24 @@ def Schermen():
             self.close()
             self.windowstart = functiekeus()
             self.windowstart.show()
+        
+        def maandchange(self):
+            if self.ui.sbMaand.value() in self._30maand:
+                self.ui.sbDag.setMaximum(30)
+            elif self.ui.sbMaand.value() == 2:
+                if self.ui.sbJaar.value()%4 == 0:
+                    self.ui.sbDag.setMaximum(29)
+                else: 
+                    self.ui.sbDag.setMaximum(28)
+            else:
+                self.ui.sbDag.setMaximum(31)
+            
+        def jaarchange(self):
+            if self.ui.sbMaand.value() == 2:
+                if self.ui.sbJaar.value()%4 == 0:
+                    self.ui.sbDag.setMaximum(29)
+                else: 
+                    self.ui.sbDag.setMaximum(28)
             
             
     Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\4DeelnemerToevoegen.ui".format(sys.path[0]))
@@ -94,6 +115,9 @@ def Schermen():
             self.ui.setupUi(self)
             self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
             self.ui.btnToevoegen.clicked.connect(self.btnToevoegenClicked)
+            self.ui.sbMaand.valueChanged.connect(self.maandchange)
+            self.ui.sbJaar.valueChanged.connect(self.jaarchange)
+            self._30maand = [4,6,9,11]
             
         def btnTerugClicked(self):
             self.close()
@@ -101,9 +125,36 @@ def Schermen():
             self._windowdeelnemer.show()
             
         def btnToevoegenClicked(self):
-            self.close()
-            self._windowdeelnemer = deelnemerselectie()
-            self._windowdeelnemer.show()
+            #In de UI staat nog geen vak voor foutmeldingen, dus heb ik het nu even
+            #korte komandos gegeven (Zodat hij ook geen foutmelding geeft)
+            if self.ui.txtVoorletters.text() == "" or self.ui.txtAchternaam.text() == "":
+                fout = "Aanwezig"
+                #print("Naam gegevens incompleet")
+            elif self.ui.txtFulltimeLoon.text() == "" or self.ui.txtParttimePercentage.text() == "":
+                fout = "Aanwezig"
+                #print("Loon informatie incompleet")
+            else:
+                self.close()
+                self._windowdeelnemer = deelnemerselectie()
+                self._windowdeelnemer.show()
+            
+        def maandchange(self):
+            if self.ui.sbMaand.value() in self._30maand:
+                self.ui.sbDag.setMaximum(30)
+            elif self.ui.sbMaand.value() == 2:
+                if self.ui.sbJaar.value()%4 == 0:
+                    self.ui.sbDag.setMaximum(29)
+                else: 
+                    self.ui.sbDag.setMaximum(28)
+            else:
+                self.ui.sbDag.setMaximum(31)
+            
+        def jaarchange(self):
+            if self.ui.sbMaand.value() == 2:
+                if self.ui.sbJaar.value()%4 == 0:
+                    self.ui.sbDag.setMaximum(29)
+                else: 
+                    self.ui.sbDag.setMaximum(28)
     
     
     Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\flexmenu.ui".format(sys.path[0]))
