@@ -144,7 +144,7 @@ def vergelijken_afbeelding_generatie():
     
     #sheets en book opslaan in variabelen
     book = xw.Book.caller()
-    invoer = book.sheets["Tijdelijk"]
+    invoer = book.sheets["Tijdelijk afbeelding"]
     uitvoer = book.sheets["Vergelijken"]
     
     #data lezen
