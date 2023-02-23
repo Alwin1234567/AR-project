@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Feb 23 17:50:29 2023
 
-@author: mitch
-"""
 
 import sys
 from PyQt5 import QtWidgets, uic
