@@ -7,6 +7,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 import sys
 from PyQt5 import QtWidgets, uic
+import functions
 
 
 """
@@ -221,8 +222,8 @@ def vergelijken_afbeelding_generatie():
     OPverhouding = 5
     
     #Aantal blokken tellen
-    blokaantal = blokkentellen(beginrij, OPbeginkolom, blokafstand, invoer)
-    PPblokaantal = blokkentellen(beginrij, PPbeginkolom, PPblokafstand, invoer)
+    blokaantal = functions.blokkentellen(beginrij, OPbeginkolom, blokafstand, invoer)
+    PPblokaantal = functions.blokkentellen(beginrij, PPbeginkolom, PPblokafstand, invoer)
 
     #Lijst met alle voorkomende jaren van OP
     allejaren = set()
@@ -241,7 +242,7 @@ def vergelijken_afbeelding_generatie():
     
     #bepaald de kleuren
     kleuren = list()
-    for blok in range(blokaantal): kleuren.append(kleurinvoer(invoer.range((beginrij + OPkleur + blok * blokafstand, OPbeginkolom)).value))
+    for blok in range(blokaantal): kleuren.append(functions.kleurinvoer(invoer.range((beginrij + OPkleur + blok * blokafstand, OPbeginkolom)).value))
 
     #berekent de hoogte van elke staaf
     hoogtes = [[0 for i in range(len(randen)-1)]]
@@ -281,9 +282,9 @@ def vergelijken_afbeelding_generatie():
     for i in range(len(hoogtes) - 1):
         plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
     
-    plt.xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
+    plt.xticks(randen[:-1], [functions.getaltotijd(rand) for rand in randen[:-1]])
     plt.setp(plt.gca().get_xticklabels(), rotation=30, horizontalalignment='right')
-    plt.yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
+    plt.yticks(ywaardes, [functions.getaltogeld(ywaarde) for ywaarde in ywaardes])
 
     handles, labels = plt.gca().get_legend_handles_labels()
     order = range(blokaantal-1, -1, -1)
@@ -297,77 +298,6 @@ def vergelijken_afbeelding_generatie():
     
     
 
-def getaltotijd(getal):
-    """
-    Functie die een float met daarin een jaartal en een maand omzet in een string die het mooier weergeeft
-
-    Parameters
-    ----------
-    getal : Float
-        variabele met daarin een jaar en maand.
-
-    Returns
-    -------
-    tijd : String
-        variabele waarin de jaar en maand gescheiden zijn in format XXj XXm.
-
-    """
-    jaar = int(getal)
-    maand = round((getal - jaar) * 12)
-    tijd = "{}j".format(jaar)
-    if maand > 0: tijd = tijd + " {}m".format(maand)
-    return tijd
-
-def getaltogeld(getal): return "€{:.2f}".format(float(getal)).replace(".",",")
-
-def blokkentellen(beginrij, beginkolom, blokafstand, sheet):
-    """
-    Een functie die het aantal blokken met OP of PP informatie telt
-
-    Parameters
-    ----------
-    beginrij : Int
-        De rij vanaf waar het moet gaan rekenen.
-    beginkolom : Int
-        De kolom vanaf waar het moet gaan rekenen.
-    blokafstand : Int
-        De afstand tussen twee blokken.
-    sheet : Book.Sheet Type
-        De Sheet waarop de blokken staan.
-
-    Returns
-    -------
-    blokaantal : Int
-        De hoeveelheid blokken die het algoritme geteld heeft.
-
-    """
-    blokaantal = 0
-    leescell = [beginrij, beginkolom]
-    while sheet.range(tuple(leescell)).value != None:
-        blokaantal += 1
-        leescell[0] +=blokafstand
-    return blokaantal
-
-def kleurinvoer(kleur):
-    """
-    Een functie die een string met rgb waardes veranderd naar een tuple met rgb waardes.
-
-    Parameters
-    ----------
-    kleur : String
-        Bevat drie rgb waardes in een string gescheiden met een ",".
-
-    Returns
-    -------
-    tuple(kleuren) : Tuple(List)
-        De drie rgb waardes als integer in een tuple.
-
-    """
-    rgb = kleur.split(",")
-    kleuren = list()
-    for i in range(len(rgb)):
-        kleuren.append(int(rgb[i])/255)    
-    return tuple(kleuren)
 
 
 
@@ -410,7 +340,9 @@ def invoer_test_klikken():
             pensioenleeftijd.append(pensioenleeftijd_range(i).value)
             
             if sterftetafel_range(i).value== "AEGON 2011":
+
                 koopsom_range(2).value= [['=SUMPRODUCT(J2:J5,K2:K5)']]
+
                 
             
         else:
