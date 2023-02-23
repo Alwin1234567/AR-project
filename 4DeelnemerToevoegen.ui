@@ -10,6 +10,12 @@
     <height>717</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="font">
    <font>
     <pointsize>10</pointsize>
@@ -1272,7 +1278,7 @@
      <rect>
       <x>160</x>
       <y>550</y>
-      <width>21</width>
+      <width>101</width>
       <height>21</height>
      </rect>
     </property>
@@ -1282,7 +1288,7 @@
      </font>
     </property>
     <property name="text">
-     <string> -</string>
+     <string>67j + 3m</string>
     </property>
    </widget>
    <zorder>groupBox_2</zorder>
