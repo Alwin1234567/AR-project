@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>634</width>
-    <height>557</height>
+    <height>568</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,7 +63,7 @@
     <property name="geometry">
      <rect>
       <x>350</x>
-      <y>460</y>
+      <y>470</y>
       <width>251</width>
       <height>41</height>
      </rect>
@@ -374,10 +374,10 @@
       </font>
      </property>
      <property name="minimum">
-      <number>1900</number>
+      <number>1950</number>
      </property>
      <property name="maximum">
-      <number>3000</number>
+      <number>2100</number>
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
@@ -426,7 +426,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>460</y>
+      <y>470</y>
       <width>131</width>
       <height>41</height>
      </rect>
@@ -445,6 +445,38 @@
      <string>Terug</string>
     </property>
    </widget>
+   <widget class="QLabel" name="lblFoutmeldingKiezen">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>430</y>
+      <width>571</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 0, 4);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <zorder>lblFoutmeldingKiezen</zorder>
+   <zorder>lbl_logo</zorder>
+   <zorder>btnDeelnemerToevoegen</zorder>
+   <zorder>btnStartFlexibiliseren</zorder>
+   <zorder>listWidget</zorder>
+   <zorder>groupBox</zorder>
+   <zorder>label_9</zorder>
+   <zorder>btnTerug</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
