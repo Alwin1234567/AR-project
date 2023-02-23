@@ -7,6 +7,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 import sys
 from PyQt5 import QtWidgets, uic
+from string import ascii_uppercase
 import functions
 
 
@@ -321,44 +322,88 @@ def invoer_test_klikken():
     koopsom_range= invoer.range((10,6),(18,6))
     
     
-    kolom_t= invoer.range((2,8),(61,8))
-    kolom_leeftijd= invoer.range((2,9),(61,9))
-    kolom_tpx= invoer.range((2,10),(61,10))
-    kolom_tqx= invoer.range((2,11),(61,11))
-    kolom_rente= invoer.range((2,12),(61,12))
+    #testing
+    Aegon2011= sterftetafel.range((5,2),(123,2))
     
+    # levend_pensioenleeftijd= Aegon2011(65).value
     
 
+    #list met alle eigenschappen en vanuit daar rekenen
+    
     
     pensioenleeftijd=[]
     rente=[]
+
     
-    for i in [1,2]:
+    letters=[]
+    for p in range(3):
+        if len(letters)>=26:
+            for i in ascii_uppercase:
+                letters.append( letters[p] + i)
+        else:
+            for i in ascii_uppercase:
+                letters.append(i)
+    
+    
+    
+    
+    counter=1
+    for i in range(1,10):
         print(i)
         if pensioenbedragen(i).value != None:
+            kolom_t= (counter-1)*8+8
+            kolom_leeftijd=(counter-1)*8+9           
+            
             rente.append(rentes(i).value)
             pensioenleeftijd.append(pensioenleeftijd_range(i).value)
             
-            if sterftetafel_range(i).value== "AEGON 2011":
-
-                koopsom_range(2).value= [['=SUMPRODUCT(J2:J5,K2:K5)']]
-
-                
+            invoer.range((2, kolom_t)).value= 0
+            invoer.range((3, kolom_t), (61, kolom_t)).formula= [['=1+' + str(letters[kolom_t-1]) + '2']]
             
+            invoer.range((2, kolom_leeftijd)).value= pensioenleeftijd_range(i).value
+            invoer.range((3, kolom_leeftijd), (61, kolom_leeftijd)).formula= [['=1+' + str(letters[kolom_leeftijd-1]) + '2']]
+            
+            counter+= 1
+            
+
+                #koopsom_range(2).formula= [['=SUMPRODUCT(J2:J61,K2:K61)']]
         else:
             rente.append(0)
             pensioenleeftijd.append(0)
             
+            
+    #test voor 1 pensioenvorm
+    # if pensioenbedragen(2).value != None:
+    #     kolom_tpx.formula= 
+    
+    # test=invoer.range(2,12)
+    # print(str(2))
+    
+    
     
     print(pensioenleeftijd)   
-    print(rente)
-            
+    # print(rente)
+    #kolom_tqx.formula= [['=1-kolom_tpx(1).value']]
+
         
+    #tqx_formula= [['=1-'+ str(letters[9])+str(2)]]
+    
+    # kolom_tpx.formula= [['=Sterftetafels!B' + str(int(pensioenleeftijd[1]+4)) + '/Sterftetafels!$B$' + str(int(pensioenleeftijd[1]+4))]]
+    # kolom_tqx.formula= [['=1-' + letters[9] + '2']]
+    
     p= pensioenleeftijd[1]
     x=1
-    while p<=119:
-        kolom_t(x).value=x-1
-        kolom_leeftijd(x).value=p
-        x=x+1
-        p=p+1
+    # while p<=119:
+    #     # kolom_t(x).value=x-1
+    #     # kolom_leeftijd(x).value=p
+    #     kolom_tpx(x).value=(Aegon2011(p).value/Aegon2011(pensioenleeftijd[1]).value)
+    #     kolom_tqx(x).value= 1-kolom_tpx(x).value
+    #     x=x+1
+    #     p=p+1
+        
+    
+
+        
+        
+    
     
