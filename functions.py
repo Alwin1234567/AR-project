@@ -82,3 +82,30 @@ def kleurinvoer(kleur):
     for i in range(len(rgb)):
         kleuren.append(int(rgb[i])/255)    
     return tuple(kleuren)
+
+def maanddag(interface):
+    """
+    Een functie die kijkt naar de maand en het jaar van de op dit moment ingevulde datum.
+    En past dan toe dat er geen hogere dag mag worden gekozen dan de maand heeft.
+    Zorft bijvoorbeeld dat 31 juni niet kan
+
+    Parameters
+    ----------
+    interface : object/UI
+        Is een object van een user interface uit qtdisigner
+
+    Returns
+    -------
+    De max van de spinbox waar de dagen voor de datum in getoond worden
+
+    """
+    maand30 = [4,6,9,11]
+    if interface.ui.sbMaand.value() in maand30:
+        interface.ui.sbDag.setMaximum(30)
+    elif interface.ui.sbMaand.value() == 2:
+        if interface.ui.sbJaar.value()%4 == 0:
+            interface.ui.sbDag.setMaximum(29)
+        else: 
+            interface.ui.sbDag.setMaximum(28)
+    else:
+        interface.ui.sbDag.setMaximum(31)
