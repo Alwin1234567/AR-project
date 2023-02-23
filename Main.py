@@ -21,7 +21,7 @@ def Schermen():
              
     app = 0
     app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.functiekeus()
+    window = Klassen_Schermen.Functiekeus()
     window.show()
     sys.exit(app.exec_())
 
