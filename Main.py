@@ -9,6 +9,7 @@ import sys
 from PyQt5 import QtWidgets, uic
 from string import ascii_uppercase
 import functions
+import Klassen_Schermen
 
 
 """
@@ -17,175 +18,11 @@ Hier komen alle functies
 """
 @xw.sub
 def Schermen():  
-    Wachtwoord = "wachtwoord"
-    
-    
-    Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))
-    class functiekeus(QtWidgets.QMainWindow):
-        def __init__(self):
-            super(functiekeus, self).__init__()
-            self.ui = Ui_MainWindow()
-            self.ui.setupUi(self)
-            self.ui.btnAdviseur.clicked.connect(self.btnAdviseurClicked)
-            self.ui.btnBeheerder.clicked.connect(self.btnBeheerderClicked)
-            
-            
-        def btnAdviseurClicked(self):
-            self.close()
-            self._windowdeelnemer = deelnemerselectie()
-            self._windowdeelnemer.show()
-        def btnBeheerderClicked(self): 
-            self.close()
-            self._windowinlog = inloggen()
-            self._windowinlog.show()
-            
-    
-    Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\2InlogBeheerder.ui".format(sys.path[0]))
-    class inloggen(QtWidgets.QMainWindow):
-        def __init__(self):
-            super(inloggen, self).__init__()
-            self.ui = Ui_MainWindow2()
-            self.ui.setupUi(self)
-            self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
-            self.ui.btnInloggen.clicked.connect(self.btnInloggenClicked)
-            
-        def btnInloggenClicked(self):
-            if self.ui.txtBeheerderscode.text() == Wachtwoord:
-                self.close()
-                self._windowdeelnemer = deelnemerselectie()
-                self._windowdeelnemer.show()
-            else:
-                self.ui.lblFoutmeldingInlog.setText("Wachtwoord incorrrect")
-        def btnTerugClicked(self):
-            self.close()
-            self._windowkeus = functiekeus()
-            self._windowkeus.show()
-            
-            
-    Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
-    class deelnemerselectie(QtWidgets.QMainWindow):
-        def __init__(self):
-            super(deelnemerselectie, self).__init__()
-            self.ui = Ui_MainWindow3()
-            self.ui.setupUi(self)    
-            self.ui.btnDeelnemerToevoegen.clicked.connect(self.btnDeelnemerToevoegenClicked)
-            self.ui.btnStartFlexibiliseren.clicked.connect(self.btnStartFlexibiliserenClicked)
-            self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
-            self.ui.sbMaand.valueChanged.connect(self.maandchange)
-            self.ui.sbJaar.valueChanged.connect(self.jaarchange)
-            self._30maand = [4,6,9,11]
-            
-        def btnDeelnemerToevoegenClicked(self):
-            self.close()
-            self._windowtoevoeg = deelnemertoevoegen()
-            self._windowtoevoeg.show()
-            
-        def btnStartFlexibiliserenClicked(self):
-            self.close()
-            self._windowflex = flexmenu()
-            self._windowflex.show()
-            
-        def btnTerugClicked(self):
-            self.close()
-            self.windowstart = functiekeus()
-            self.windowstart.show()
-        
-        def maandchange(self):
-            if self.ui.sbMaand.value() in self._30maand:
-                self.ui.sbDag.setMaximum(30)
-            elif self.ui.sbMaand.value() == 2:
-                if self.ui.sbJaar.value()%4 == 0:
-                    self.ui.sbDag.setMaximum(29)
-                else: 
-                    self.ui.sbDag.setMaximum(28)
-            else:
-                self.ui.sbDag.setMaximum(31)
-            
-        def jaarchange(self):
-            if self.ui.sbMaand.value() == 2:
-                if self.ui.sbJaar.value()%4 == 0:
-                    self.ui.sbDag.setMaximum(29)
-                else: 
-                    self.ui.sbDag.setMaximum(28)
-            
-            
-    Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
-    class deelnemertoevoegen(QtWidgets.QMainWindow):
-        def __init__(self):
-            super(deelnemertoevoegen, self).__init__()
-            self.ui = Ui_MainWindow4()
-            self.ui.setupUi(self)
-            self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
-            self.ui.btnToevoegen.clicked.connect(self.btnToevoegenClicked)
-            self.ui.sbMaand.valueChanged.connect(self.maandchange)
-            self.ui.sbJaar.valueChanged.connect(self.jaarchange)
-            self._30maand = [4,6,9,11]
-            
-        def btnTerugClicked(self):
-            self.close()
-            self._windowdeelnemer = deelnemerselectie()
-            self._windowdeelnemer.show()
-            
-        def btnToevoegenClicked(self):
-            #In de UI staat nog geen vak voor foutmeldingen, dus heb ik het nu even
-            #korte komandos gegeven (Zodat hij ook geen foutmelding geeft)
-            if self.ui.txtVoorletters.text() == "" or self.ui.txtAchternaam.text() == "":
-                fout = "Aanwezig"
-                #print("Naam gegevens incompleet")
-            elif self.ui.txtFulltimeLoon.text() == "" or self.ui.txtParttimePercentage.text() == "":
-                fout = "Aanwezig"
-                #print("Loon informatie incompleet")
-            else:
-                self.close()
-                self._windowdeelnemer = deelnemerselectie()
-                self._windowdeelnemer.show()
-            
-        def maandchange(self):
-            if self.ui.sbMaand.value() in self._30maand:
-                self.ui.sbDag.setMaximum(30)
-            elif self.ui.sbMaand.value() == 2:
-                if self.ui.sbJaar.value()%4 == 0:
-                    self.ui.sbDag.setMaximum(29)
-                else: 
-                    self.ui.sbDag.setMaximum(28)
-            else:
-                self.ui.sbDag.setMaximum(31)
-            
-        def jaarchange(self):
-            if self.ui.sbMaand.value() == 2:
-                if self.ui.sbJaar.value()%4 == 0:
-                    self.ui.sbDag.setMaximum(29)
-                else: 
-                    self.ui.sbDag.setMaximum(28)
-    
-    
-    Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
-    class flexmenu(QtWidgets.QMainWindow):
-        def __init__(self):
-            super(flexmenu, self).__init__()
-            self.ui = Ui_MainWindow5()
-            self.ui.setupUi(self)
-            self.ui.btnAndereDeelnemer.clicked.connect(self.btnAndereDeelnemerClicked)
-            self.ui.btnVergelijken.clicked.connect(self.btnVergelijkenClicked)
-            self.ui.btnOpslaan.clicked.connect(self.btnOpslaanClicked)
-            
-        def btnAndereDeelnemerClicked(self):
-            self.close()
-            self._windowdeelnemer = deelnemerselectie()
-            self._windowdeelnemer.show()
-            
-        def btnVergelijkenClicked(self):
-            self.close()
-            
-        def btnOpslaanClicked(self):
-            self.close()
-            
-
-
+             
     if __name__ == "__main__":
         app = 0
         app = QtWidgets.QApplication(sys.argv)
-        window = functiekeus()
+        window = Klassen_Schermen.functiekeus()
         window.show()
         sys.exit(app.exec_())
 
