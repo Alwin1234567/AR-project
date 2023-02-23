@@ -19,12 +19,11 @@ Hier komen alle functies
 @xw.sub
 def Schermen():  
              
-    if __name__ == "__main__":
-        app = 0
-        app = QtWidgets.QApplication(sys.argv)
-        window = Klassen_Schermen.functiekeus()
-        window.show()
-        sys.exit(app.exec_())
+    app = 0
+    app = QtWidgets.QApplication(sys.argv)
+    window = Klassen_Schermen.functiekeus()
+    window.show()
+    sys.exit(app.exec_())
 
 
 

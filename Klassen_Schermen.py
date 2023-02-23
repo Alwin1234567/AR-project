@@ -1,10 +1,15 @@
-# -*- coding: utf-8 -*-
-
-
+"""
+Header
+Hier komen alle libraries die in het programma gebruikt worden
+"""
 import sys
 from PyQt5 import QtWidgets, uic
 from functions import maanddag
 
+"""
+Body
+Hier komen alle functies
+"""
 class Functiekeus(QtWidgets.QMainWindow):
     def __init__(self):
         Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))
