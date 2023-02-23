@@ -18,7 +18,7 @@ def Schermen():
     Wachtwoord = "wachtwoord"
     
     
-    Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\1AdviseurBeheerder.ui".format(sys.path[0]))
+    Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))
     class functiekeus(QtWidgets.QMainWindow):
         def __init__(self):
             super(functiekeus, self).__init__()
@@ -38,7 +38,7 @@ def Schermen():
             self._windowinlog.show()
             
     
-    Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\2InlogBeheerder.ui".format(sys.path[0]))
+    Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\2InlogBeheerder.ui".format(sys.path[0]))
     class inloggen(QtWidgets.QMainWindow):
         def __init__(self):
             super(inloggen, self).__init__()
@@ -60,7 +60,7 @@ def Schermen():
             self._windowkeus.show()
             
             
-    Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\deelnemerselectie.ui".format(sys.path[0]))
+    Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
     class deelnemerselectie(QtWidgets.QMainWindow):
         def __init__(self):
             super(deelnemerselectie, self).__init__()
@@ -107,7 +107,7 @@ def Schermen():
                     self.ui.sbDag.setMaximum(28)
             
             
-    Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\4DeelnemerToevoegen.ui".format(sys.path[0]))
+    Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
     class deelnemertoevoegen(QtWidgets.QMainWindow):
         def __init__(self):
             super(deelnemertoevoegen, self).__init__()
@@ -157,7 +157,7 @@ def Schermen():
                     self.ui.sbDag.setMaximum(28)
     
     
-    Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\flexmenu.ui".format(sys.path[0]))
+    Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
     class flexmenu(QtWidgets.QMainWindow):
         def __init__(self):
             super(flexmenu, self).__init__()
@@ -410,7 +410,7 @@ def invoer_test_klikken():
             pensioenleeftijd.append(pensioenleeftijd_range(i).value)
             
             if sterftetafel_range(i).value== "AEGON 2011":
-                koopsom_range(2).formula= ["=Somproduct(J2:J5;K2:K5)"]
+                koopsom_range(2).value= [['=SUMPRODUCT(J2:J5,K2:K5)']]
                 
             
         else:
