@@ -319,22 +319,61 @@ def kleurinvoer(kleur):
 
 
 @xw.sub
+#Idee voor berekeningen uitvoeren: Functies schrijven
 def invoer_test_klikken():
     
     #sheets en book opslaan in variabelen
     book = xw.Book.caller()
-    input = book.sheets["Tijdelijk invoerscherm"]
+    invoer = book.sheets["Tijdelijk invoerscherm"]
+    sterftetafel= book.sheets["Sterftetafels"] 
+    AG2020= book.sheets["AG2020, unisex"]
+    pensioencontracten= book.sheets["Gegevens pensioencontracten"]
     
-    #pensioenvormen=invoer.range("B10:B18")
-    kolom_t=input.range("I2")
-    if input.range("B10").value != "":
-        rente= input.range("D10").value
-        pensioenleeftijd= input.range("E10").value
+    
+    
+    pensioenbedragen=invoer.range((10,2),(18,2))
+    sterftetafel_range= invoer.range((10,3),(18,3))
+    rentes= invoer.range((10,4),(18,4))
+    pensioenleeftijd_range= invoer.range((10,5),(18,5))
+    koopsom_range= invoer.range((10,6),(18,6))
+    
+    
+    kolom_t= invoer.range((2,8),(61,8))
+    kolom_leeftijd= invoer.range((2,9),(61,9))
+    kolom_tpx= invoer.range((2,10),(61,10))
+    kolom_tqx= invoer.range((2,11),(61,11))
+    kolom_rente= invoer.range((2,12),(61,12))
+    
+    
+
+    
+    pensioenleeftijd=[]
+    rente=[]
+    
+    for i in [1,2]:
+        print(i)
+        if pensioenbedragen(i).value != None:
+            rente.append(rentes(i).value)
+            pensioenleeftijd.append(pensioenleeftijd_range(i).value)
+            
+            if sterftetafel_range(i).value== "AEGON 2011":
+                koopsom_range(2).formula= ["=Somproduct(J2:J5;K2:K5)"]
+                
+            
+        else:
+            rente.append(0)
+            pensioenleeftijd.append(0)
+            
+    
+    print(pensioenleeftijd)   
+    print(rente)
+            
         
-    i=pensioenleeftijd
+    p= pensioenleeftijd[1]
     x=1
-    while i<=119:
-        kolom_t(x).value=i
+    while p<=119:
+        kolom_t(x).value=x-1
+        kolom_leeftijd(x).value=p
         x=x+1
-        i=i+1
+        p=p+1
     
