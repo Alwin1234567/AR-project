@@ -2,7 +2,7 @@
 Header
 Hier komen alle libraries die in het programma gebruikt worden
 """
-
+import xlwings as xw
 
 
 """
@@ -109,3 +109,42 @@ def maanddag(interface):
             interface.ui.sbDag.setMaximum(28)
     else:
         interface.ui.sbDag.setMaximum(31)
+
+def regelingenophalen(rij):
+    """
+    Een functie die de regelingen van een deelnemer opzoekt.
+
+    Parameters
+    ----------
+    rij : integer
+        Het rij nummer waar de deelnemer staat in het deelnemersbestand in Excel.
+    
+    Returns
+    -------
+    List met de namen van pensioenregelingen van de betreffende deelnemer
+    """
+    
+    # Sheet ophalen
+    book = xw.Book.caller()
+    deelnemersBestand = book.sheets["deelnemersbestand"]
+    
+    regelingen = []
+    
+    if deelnemersBestand.cells(rij,"J").value != "":
+        regelingen.append("ZwitserLeven")
+    elif deelnemersBestand.cells(rij,"K").value != "":
+        regelingen.append("Aegon OP65")
+    elif deelnemersBestand.cells(rij,"L").value != "":
+        regelingen.append("Aegon OP67")
+    elif deelnemersBestand.cells(rij,"M").value != "":
+        regelingen.append("Nationale Nederlanden OP65")
+    elif deelnemersBestand.cells(rij,"O").value != "":
+        regelingen.append("Nationale Nederlanden OP67")
+    elif deelnemersBestand.cells(rij,"Q").value != "":
+        regelingen.append("Pensioenfonds VLC OP68")
+    
+    return regelingen
+        
+    
+    
+    

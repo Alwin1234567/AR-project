@@ -5,6 +5,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 import sys
 from PyQt5 import QtWidgets, uic
 from functions import maanddag
+from functions import regelingenophalen
 
 """
 Body
@@ -130,8 +131,27 @@ class Flexmenu(QtWidgets.QMainWindow):
     def __init__(self):
         Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
         super(Flexmenu, self).__init__()
+        
+        # Setup van UI
         self.ui = Ui_MainWindow5()
         self.ui.setupUi(self)
+        
+        # Deelnemer
+        self.deelnemer = 4
+        
+        # Regeling selectie
+        self.ui.cbRegeling.addItems(regelingenophalen(self.deelnemer))
+        
+        # Invoer pensioendatum
+        
+        
+        # Invoer OP/PP uitruiling
+        
+        
+        # Invoer hoog-laag constructie
+        
+        
+        # Knoppen
         self.ui.btnAndereDeelnemer.clicked.connect(self.btnAndereDeelnemerClicked)
         self.ui.btnVergelijken.clicked.connect(self.btnVergelijkenClicked)
         self.ui.btnOpslaan.clicked.connect(self.btnOpslaanClicked)
