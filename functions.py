@@ -121,7 +121,8 @@ def regelingenophalen(rij):
     
     Returns
     -------
-    List met de namen van pensioenregelingen van de betreffende deelnemer
+    List met de volledige namen van pensioenregelingen van de betreffende deelnemer
+    List met de codenamen van pensioenregelingen van de betreffende deelnemer
     """
     
     # Sheet ophalen
@@ -129,22 +130,86 @@ def regelingenophalen(rij):
     deelnemersBestand = book.sheets["deelnemersbestand"]
     
     regelingen = []
+    regelingCode = []
     
-    if deelnemersBestand.cells(rij,"J").value != "":
+    if deelnemersBestand.cells(rij,"J").value is not None:
         regelingen.append("ZwitserLeven")
-    elif deelnemersBestand.cells(rij,"K").value != "":
+        regelingCode.append("ZL")
+    if deelnemersBestand.cells(rij,"K").value is not None:
         regelingen.append("Aegon OP65")
-    elif deelnemersBestand.cells(rij,"L").value != "":
+        regelingCode.append("A65")
+    if deelnemersBestand.cells(rij,"L").value is not None:
         regelingen.append("Aegon OP67")
-    elif deelnemersBestand.cells(rij,"M").value != "":
+        regelingCode.append("A67")
+    if deelnemersBestand.cells(rij,"M").value is not None:
         regelingen.append("Nationale Nederlanden OP65")
-    elif deelnemersBestand.cells(rij,"O").value != "":
+        regelingCode.append("NN65")
+    if deelnemersBestand.cells(rij,"O").value is not None:
         regelingen.append("Nationale Nederlanden OP67")
-    elif deelnemersBestand.cells(rij,"Q").value != "":
+        regelingCode.append("NN67")
+    if deelnemersBestand.cells(rij,"Q").value is not None:
         regelingen.append("Pensioenfonds VLC OP68")
+        regelingCode.append("VLC68")
     
-    return regelingen
-        
+    return regelingen, regelingCode
+
+def regelingNaamCode(naam):
+    """
+    Een functie die de volledige regeling naam omzet naar de codenaam.
+
+    Parameters
+    ----------
+    naam : string
+        Volledige naam van de regeling.
+    
+    Returns
+    -------
+    String met de codenaam van de regeling.
+    """
+    
+    if naam == "ZwitserLeven":
+        code = "ZL"
+    elif naam == "Aegon OP65":
+        code = "A65"
+    elif naam == "Aegon OP67":
+        code = "A67"
+    elif naam == "Nationale Nederlanden OP65":
+        code = "NN65"
+    elif naam == "Nationale Nederlanden OP67":
+        code = "NN67"
+    elif naam == "Pensioenfonds VLC OP68":
+        code = "VLC68"
+    
+    return code
+    
+def regelingCodeNaam(code):
+    """
+    Een functie die de codenaam van de regeling omzet naar de volledige naam.
+
+    Parameters
+    ----------
+    code : string
+        Codenaam van de regeling.
+    
+    Returns
+    -------
+    String met de volledige naam van de regeling.
+    """
+    
+    if code == "ZL":
+        naam = "ZwitserLeven"
+    elif code == "A65":
+        naam = "Aegon OP65"
+    elif naam == "A67":
+        naam = "Aegon OP67"
+    elif code == "NN65":
+        naam = "Nationale Nederlanden OP65"
+    elif code == "NN67":
+        naam = "Nationale Nederlanden OP67"
+    elif code == "VLC68":
+        naam = "Pensioenfonds VLC OP68"
+    
+    return naam
     
     
     
