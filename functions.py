@@ -271,3 +271,61 @@ def filterkolom(deelnemerlijst, zoekterm, attribuutnaam):
             attribuut = getattr(deelnemer, attribuutnaam)
             if attribuut == zoekterm: kleinDeelnemerlijst.append(deelnemer)
     return kleinDeelnemerlijst
+
+
+def pensioensdatum():
+    """
+    Functie die het geboortejaar en maand van mensen op pensioensleeftijd uitrekent en teruggeeft
+    input : -
+    output : geboortejaar en maand van mensen op pensioensleeftijd
+    """
+    
+    huidigeDatum = datetime.today()
+    #huidige pensioensleeftijd 67 jaar en 3 maanden
+    pensioenJaar = 67
+    pensioenMaand = 3
+    #huidige datum opsplitsen in jaar en maand
+    nieuweJaar = huidigeDatum.year
+    nieuweMaand = huidigeDatum.month
+    if nieuweMaand <= pensioenMaand:
+        nieuweJaar = nieuweJaar - pensioenJaar - 1
+        nieuweMaand = 12 - (pensioenMaand - nieuweMaand)
+    else: 
+        nieuweJaar = huidigeDatum.year - pensioenJaar
+        
+    pensioensdatum = datetime(nieuweJaar, nieuweMaand, 1)
+    pensioensdatum = pensioensdatum.strftime("%m-%Y")
+    
+    return pensioensdatum
+
+def isfloat(string):
+    """
+    Functie die controleert of een gegeven string een float is.
+    input : string
+    output: boolean (True of False)
+    """
+    
+    stringNum = string.replace(",", "").replace(".", "") #verwijder komma's en punten
+    resultaat = stringNum.isdigit() #check of de string (zonder punten en komma's) een getal is.
+    
+    return resultaat
+
+
+def ToevoegenDeelnemer(gegevens):
+    """
+    Functie die een deelnemer toevoegt onderaan het deelnemersbestand
+    input : lijst met gegevens van de deelnemer
+    output : deelnemer toegevoegd aan excel-bestand
+    """
+    
+    book = xw.Book.caller() #xw.Book("Main.xlsm")
+    deelnemersbestand = book.sheets["deelnemersbestand"]
+    
+    #check wat eerstvolgende lege regel is
+    #bereken het aantal deelnemers door het aantal volle rijen na 1e regel te tellen
+    aantalDeelnemers = len(deelnemersbestand.cells(1,1).expand().value)
+    legeRegel = aantalDeelnemers + 1
+     
+    #gegevens deelnemer invullen in de lege regel
+    deelnemersbestand.cells(legeRegel, 1).value = gegevens
+

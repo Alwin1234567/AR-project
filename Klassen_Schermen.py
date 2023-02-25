@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 import matplotlib.pyplot as plt
 import functions
 from datetime import datetime
-
+from functions import pensioensdatum, isfloat, ToevoegenDeelnemer #deze zouden ook moeten inladen met de import functions hierboven, maar dat werkt niet
 
 """
 Body
@@ -139,6 +139,14 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         self.ui.sbMaand.valueChanged.connect(self.onChange)
         self.ui.sbJaar.valueChanged.connect(self.onChange)
         self._30maand = [4,6,9,11]
+        #voeg schaduwtekst toe aan de invoervelden
+        self.ui.txtVoorletters.setPlaceholderText("A.B.")
+        self.ui.txtTussenvoegsel.setPlaceholderText("van")
+        self.ui.txtAchternaam.setPlaceholderText("Albert")
+        self.ui.txtParttimePercentage.setPlaceholderText("70")
+        for i in [self.ui.txtFulltimeLoon, self.ui.txtOPAegon65, self.ui.txtOPAegon67, self.ui.txtOPNN65, self.ui.txtOPNN67, 
+                  self.ui.txtOPVLC68, self.ui.txtOPZL, self.ui.txtPPNN65, self.ui.txtPPNN67, self.ui.txtPPVLC68]:
+            i.setPlaceholderText("500,00")
         
     def btnTerugClicked(self):
         self.close()
@@ -146,14 +154,96 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         self._windowdeelnemer.show()
         
     def btnToevoegenClicked(self):
+        #lege foutmeldingen aanmaken
+        foutmeldingGegevens = ""
+        foutmeldingPensioen = ""
+        AantalPensioenen = 0 #teller voor aantal afgeronde pensioenopbouwen
+        FouteRegelingen = [] #lijst met pensioenregelingen met foute invoer
+        #controleer persoonsgegevens
+        
         if self.ui.txtVoorletters.text() == "" or self.ui.txtAchternaam.text() == "":
-            print("Naam gegevens incompleet")
-        elif self.ui.txtFulltimeLoon.text() == "" or self.ui.txtParttimePercentage.text() == "":
-            print("Loon informatie incompleet")
-        else:
+            foutmeldingGegevens = foutmeldingGegevens + "Uw naam is niet ingevuld. "
+        if isfloat(self.ui.txtFulltimeLoon.text()) == False or isfloat(self.ui.txtParttimePercentage.text()) == False or float(self.ui.txtParttimePercentage.text().replace(",", ".")) > 100:
+            if len(foutmeldingGegevens) > 0: #De naam is ook niet goed ingevoerd
+                foutmeldingGegevens = "Uw naam en werkinformatie zijn niet (goed) ingevuld. "
+            else: 
+                foutmeldingGegevens = "Uw werkinformatie is niet (goed) ingevuld. "
+        #controleer of de deelnemer al de pensioenleeftijd heeft behaald
+        if self.ui.sbJaar.text() < str(pensioensdatum())[3:7]:
+            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
+        elif self.ui.sbJaar.text() == str(pensioensdatum())[3:7] and int(self.ui.sbMaand.text()) < int(str(pensioensdatum())[0:2]):
+            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
+        
+        #controleer pensioengegevens
+        #lijst met pensioensgegevens [regeling, ZL, AegonOP65, AegonOP67, NNOP65, NNPP65,NNOP67, NNPP67, PFVLCOP68, PFVLCPP68]
+        Pensioensgegevens = [self.ui.cbHuidigeRegeling.currentText(), "", "", "", "", "", "", "", "", ""]
+        #lijst met invoervelden van het userform
+        invoerPensioenen = [[self.ui.CheckZL, self.ui.txtOPZL, "ZL"], [self.ui.CheckAegon65, self.ui.txtOPAegon65, "Aegon65"], 
+                            [self.ui.CheckAegon67, self.ui.txtOPAegon67, "Aegon67"], [self.ui.CheckNN65, self.ui.txtOPNN65, self.ui.txtPPNN65, "NN65"], 
+                            [self.ui.CheckNN67, self.ui.txtOPNN67, self.ui.txtPPNN67, "NN67"], [self.ui.CheckPFVLC68, self.ui.txtOPVLC68, self.ui.txtPPVLC68, "VLC68"]]
+        tellerPensioenen = 1    #zorgt dat juist pensioen op juiste plek in Pensioensgegevens komt
+        
+        for i in invoerPensioenen:
+            if i[0].isChecked() == True:    #het pensioen is aangevinkt
+                AantalPensioenen += 1       #houdt het aantal aangevinkte pensioenen bij
+                for x in i[1:-1]:
+                    if isfloat(x.text()) == True:   #Er is een getal-waarde ingevuld
+                        Pensioensgegevens[tellerPensioenen] = float(x.text().replace(".", "").replace(",", "."))
+                    else:
+                        FouteRegelingen.append(i[-1])   #regeling aan foutmelding toevoegen
+                    tellerPensioenen += 1
+            else:
+                for x in i[1:-1]:
+                    if isfloat(x.text()) == True:   #wel een getal-waarde ingevuld, maar pensioen niet aangevinkt
+                        FouteRegelingen.append(i[-1])
+                tellerPensioenen += len(i)-2        #tellerPensioenen ophogen met aantal pensioenopties OP of OP+PP
+        #foutmelding pensioensgegevens genereren
+        if AantalPensioenen == 0 and len(FouteRegelingen) == 0: #foutmelding als er geen regeling aangegeven is
+            foutmeldingPensioen = "U heeft nog geen opgebouwd pensioen aangegeven"
+        elif len(FouteRegelingen) > 0: #foutmelding als regelingen niet volledig of fout zijn ingevuld
+            foutmeldingPensioen = "De volgende regelingen zijn niet (goed) ingevoerd: " + FouteRegelingen[0]
+            for i in FouteRegelingen[1:]:
+                foutmeldingPensioen = foutmeldingPensioen + ", " + i        
+           
+        #gegevens invullen of foutmelding geven
+        if foutmeldingGegevens == "" and foutmeldingPensioen == "":
+            geboortedatum = self.ui.sbDag.text() + "-" + self.ui.sbMaand.text() + "-" + self.ui.sbJaar.text() 
+            achternaam = self.ui.txtAchternaam.text()[0].upper() + self.ui.txtAchternaam.text()[1:]
+            #voorletters met hoofdletters en punten ertussen
+            voorletters = ""
+            for i in self.ui.txtVoorletters.text().replace(".", "").upper():
+                voorletters += i + "."
+            #fulltime loon en parttime percentage als float
+            fulltimeLoon = float(self.ui.txtFulltimeLoon.text().replace(".", "").replace(",", "."))
+            ptPercentage = float(self.ui.txtParttimePercentage.text().replace(",", "."))/100    #delen door 100, zodat het in excel als % komt
+            #lijst met deelnemersgegevens [achternaam, tussenvoegsel, voorletters, geboortedatum, geslacht, burg.staat, ftloon, pt%]
+            Deelnemersgegevens = [achternaam, self.ui.txtTussenvoegsel.text(), voorletters, geboortedatum, self.ui.cbGeslacht.currentText(), 
+                                  self.ui.cbBurgerlijkeStaat.currentText(), fulltimeLoon, ptPercentage]
+            #lijst met alle gegevens
+            gegevens = Deelnemersgegevens + Pensioensgegevens
+            #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
+            ToevoegenDeelnemer(gegevens)
+            
+            #window sluiten en deelnemerselectie openen
             self.close()
             self._windowdeelnemer = Deelnemerselectie(self.book)
             self._windowdeelnemer.show()
+        else: 
+            #foutmelding tonen
+            self.ui.lblFoutmeldingGegevens.setText(foutmeldingGegevens)
+            self.ui.lblFoutmeldingPensioen.setText(foutmeldingPensioen)
+        
+        
+        
+        #if self.ui.txtVoorletters.text() == "" or self.ui.txtAchternaam.text() == "":
+        #    print("Naam gegevens incompleet")
+        #elif self.ui.txtFulltimeLoon.text() == "" or self.ui.txtParttimePercentage.text() == "":
+        #    print("Loon informatie incompleet")
+        #else:
+         #   self.close()
+          #  self._windowdeelnemer = Deelnemerselectie(self.book)
+           # self._windowdeelnemer.show()
+    
     
     def onChange(self): functions.maanddag(self)
 
