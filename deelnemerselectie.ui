@@ -80,7 +80,7 @@
      <string>Start flexibiliseren</string>
     </property>
    </widget>
-   <widget class="QListWidget" name="listWidget">
+   <widget class="QListWidget" name="lwKeuzes">
     <property name="geometry">
      <rect>
       <x>280</x>
@@ -473,7 +473,7 @@
    <zorder>lbl_logo</zorder>
    <zorder>btnDeelnemerToevoegen</zorder>
    <zorder>btnStartFlexibiliseren</zorder>
-   <zorder>listWidget</zorder>
+   <zorder>lwKeuzes</zorder>
    <zorder>groupBox</zorder>
    <zorder>label_9</zorder>
    <zorder>btnTerug</zorder>
@@ -484,7 +484,7 @@
      <x>0</x>
      <y>0</y>
      <width>634</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
@@ -499,7 +499,7 @@
   <tabstop>sbMaand</tabstop>
   <tabstop>sbJaar</tabstop>
   <tabstop>cbGeslacht</tabstop>
-  <tabstop>listWidget</tabstop>
+  <tabstop>lwKeuzes</tabstop>
   <tabstop>btnStartFlexibiliseren</tabstop>
   <tabstop>btnTerug</tabstop>
  </tabstops>

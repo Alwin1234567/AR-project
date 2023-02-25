@@ -2,7 +2,9 @@
 Header
 Hier komen alle libraries die in het programma gebruikt worden
 """
+
 import xlwings as xw
+from datetime import datetime
 
 
 """
@@ -103,12 +105,9 @@ def maanddag(interface):
     if interface.ui.sbMaand.value() in maand30:
         interface.ui.sbDag.setMaximum(30)
     elif interface.ui.sbMaand.value() == 2:
-        if interface.ui.sbJaar.value()%4 == 0:
-            interface.ui.sbDag.setMaximum(29)
-        else: 
-            interface.ui.sbDag.setMaximum(28)
-    else:
-        interface.ui.sbDag.setMaximum(31)
+        if interface.ui.sbJaar.value()%4 == 0: interface.ui.sbDag.setMaximum(29)
+        else: interface.ui.sbDag.setMaximum(28)
+    else: interface.ui.sbDag.setMaximum(31)
 
 def regelingenophalen(rij):
     """
@@ -210,6 +209,72 @@ def regelingCodeNaam(code):
         naam = "Pensioenfonds VLC OP68"
     
     return naam
-    
-    
-    
+
+def getDeelnemersbestand(book, verzocht = None):
+    """
+    functie die het deelnemersbestand inleest uit excel en dit (gedeeltelijk) terug geeft.
+
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+    verzocht : list, optioneel
+        lijst met kolomnamen uit deelnemersbestand die opgevraagd worden. de standaard is None.
+
+    Returns
+    -------
+    kleinDeelnemersbestand : list(list())
+        Netsed list structuur van het deelnemersbestand met de opgevraagde kolommen.
+
+    """
+    deelnemersbestand = book.sheets["deelnemersbestand"].range((1,1)).expand("down").expand("right").value
+    if verzocht == None: return deelnemersbestand
+    kolommen = list()
+    for i, item in enumerate(deelnemersbestand[0]):
+        if item in verzocht: kolommen.append(i)
+    kleinDeelnemersbestand = list()
+    for rij in deelnemersbestand:
+        nieuweRij = list()
+        for i, item in enumerate(rij): 
+            if i in kolommen: nieuweRij.append(item)
+        kleinDeelnemersbestand.append(nieuweRij)
+    return kleinDeelnemersbestand
+
+
+def filterkolom(deelnemersbestand, zoekterm, kolomnaam):
+    """
+    functie die door de kolommen filterd om te kijken of ze aan de zoekterm voldoen.
+
+    Parameters
+    ----------
+    deelnemersbestand : list(list())
+        lijst met daarin de rijen van het (mogelijk verkleind) deelnemersbestand.
+    zoekterm : None of str of datetime
+        de waarde waarop gefilterd moet worden.
+    kolomnaam : str
+        de kolomnaam van de kolom waarin gefilterd moet worden.
+
+    Returns
+    -------
+    kleinDeelnemersbestand : list(list)
+        gefilterde versie van het deelnemersbestand.
+
+    """
+    if zoekterm == "" or zoekterm == "-" or zoekterm == datetime(1950, 1, 1): return deelnemersbestand
+    for i, naam in enumerate(deelnemersbestand[0]):
+        if naam == kolomnaam: 
+            kolom = i
+            break
+    if type(zoekterm) == str:
+        kleinDeelnemersbestand = [deelnemersbestand[0]]
+        for rij in deelnemersbestand[1:]:
+            if rij[kolom] == None: pass
+            elif len(rij[kolom]) < len(zoekterm): pass
+            else:
+                if rij[kolom][0:len(zoekterm)] == zoekterm: kleinDeelnemersbestand.append(rij)
+        deelnemersbestand = kleinDeelnemersbestand
+    if type(zoekterm) == datetime:
+        kleinDeelnemersbestand = [deelnemersbestand[0]]
+        for rij in deelnemersbestand[1:]:
+            if rij[kolom] == zoekterm: kleinDeelnemersbestand.append(rij)
+    return kleinDeelnemersbestand
