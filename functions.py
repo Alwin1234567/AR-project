@@ -5,6 +5,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 
 import xlwings as xw
 from datetime import datetime
+from Deelnemer import Deelnemer
 
 
 """
@@ -210,71 +211,63 @@ def regelingCodeNaam(code):
     
     return naam
 
-def getDeelnemersbestand(book, verzocht = None):
+def getDeelnemersbestand(book):
     """
-    functie die het deelnemersbestand inleest uit excel en dit (gedeeltelijk) terug geeft.
+    functie die het deelnemersbestand inleest uit excel en dit terug geeft.
 
     Parameters
     ----------
     book : xlwings.Book
         Het excel bestand waarin het programma runned.
-    verzocht : list, optioneel
-        lijst met kolomnamen uit deelnemersbestand die opgevraagd worden. de standaard is None.
-
+    
     Returns
     -------
-    kleinDeelnemersbestand : list(list())
-        Netsed list structuur van het deelnemersbestand met de opgevraagde kolommen.
+    deelnemerlijst : list(Deelnemer)
+        lijst met daarin Deelnemer objecten van alle deelnemers.
 
     """
     deelnemersbestand = book.sheets["deelnemersbestand"].range((1,1)).expand("down").expand("right").value
-    if verzocht == None: return deelnemersbestand
-    kolommen = list()
-    for i, item in enumerate(deelnemersbestand[0]):
-        if item in verzocht: kolommen.append(i)
-    kleinDeelnemersbestand = list()
-    for rij in deelnemersbestand:
-        nieuweRij = list()
-        for i, item in enumerate(rij): 
-            if i in kolommen: nieuweRij.append(item)
-        kleinDeelnemersbestand.append(nieuweRij)
-    return kleinDeelnemersbestand
+    
+    deelnemersbestand[0].append("rijNr")
+    for i in range(len(deelnemersbestand) - 1):
+        deelnemersbestand[i+1].append(i + 2)
+    deelnemerlijst = list()
+    for deelnemer in deelnemersbestand[1:]:
+        informatie = [deelnemersbestand[0], deelnemer]
+        deelnemerlijst.append(Deelnemer(book, informatie))
+    return deelnemerlijst
 
 
-def filterkolom(deelnemersbestand, zoekterm, kolomnaam):
+def filterkolom(deelnemerlijst, zoekterm, attribuutnaam):
     """
     functie die door de kolommen filterd om te kijken of ze aan de zoekterm voldoen.
 
     Parameters
     ----------
-    deelnemersbestand : list(list())
-        lijst met daarin de rijen van het (mogelijk verkleind) deelnemersbestand.
+    deelnemerlijst : list(Deelnemer)
+        Lijst met daarin de deelneemers waarover gefilterd moet worden
     zoekterm : None of str of datetime
         de waarde waarop gefilterd moet worden.
-    kolomnaam : str
-        de kolomnaam van de kolom waarin gefilterd moet worden.
+    attribuutnaam : str
+        De naam van de attribuut waarop wordt gezocht.
 
     Returns
     -------
-    kleinDeelnemersbestand : list(list)
+    kleinDeelnemerlijst : list(Deelnemer)
         gefilterde versie van het deelnemersbestand.
 
     """
-    if zoekterm == "" or zoekterm == "-" or zoekterm == datetime(1950, 1, 1): return deelnemersbestand
-    for i, naam in enumerate(deelnemersbestand[0]):
-        if naam == kolomnaam: 
-            kolom = i
-            break
+    if zoekterm == "" or zoekterm == "-" or zoekterm == datetime(1950, 1, 1): return deelnemerlijst
+    kleinDeelnemerlijst = list()
     if type(zoekterm) == str:
-        kleinDeelnemersbestand = [deelnemersbestand[0]]
-        for rij in deelnemersbestand[1:]:
-            if rij[kolom] == None: pass
-            elif len(rij[kolom]) < len(zoekterm): pass
+        for deelnemer in deelnemerlijst:
+            attribuut = getattr(deelnemer, attribuutnaam)
+            if attribuut == None: pass
+            elif len(attribuut) < len(zoekterm): pass
             else:
-                if rij[kolom][0:len(zoekterm)] == zoekterm: kleinDeelnemersbestand.append(rij)
-        deelnemersbestand = kleinDeelnemersbestand
-    if type(zoekterm) == datetime:
-        kleinDeelnemersbestand = [deelnemersbestand[0]]
-        for rij in deelnemersbestand[1:]:
-            if rij[kolom] == zoekterm: kleinDeelnemersbestand.append(rij)
-    return kleinDeelnemersbestand
+                if attribuut[0:len(zoekterm)] == zoekterm: kleinDeelnemerlijst.append(deelnemer)
+    elif type(zoekterm) == datetime:
+        for deelnemer in deelnemerlijst:
+            attribuut = getattr(deelnemer, attribuutnaam)
+            if attribuut == zoekterm: kleinDeelnemerlijst.append(deelnemer)
+    return kleinDeelnemerlijst

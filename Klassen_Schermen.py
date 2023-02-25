@@ -71,7 +71,8 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self.book = book
         self.ui = Ui_MainWindow3()
         self.ui.setupUi(self)
-        self.deelnemersbestand = functions.getDeelnemersbestand(self.book, ["Geboortedatum", "voorletter", "tussenvoegsels", "Naam", "Geslacht"])
+        self.deelnemerlijst = functions.getDeelnemersbestand(self.book)
+        self.kleinDeelnemerlijst = list()
         self.ui.btnDeelnemerToevoegen.clicked.connect(self.btnDeelnemerToevoegenClicked)
         self.ui.btnStartFlexibiliseren.clicked.connect(self.btnStartFlexibiliserenClicked)
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
@@ -82,6 +83,7 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self.ui.txtTussenvoegsel.textChanged.connect(lambda: self.onChange(False))
         self.ui.txtAchternaam.textChanged.connect(lambda: self.onChange(False))
         self.ui.cbGeslacht.currentTextChanged.connect(lambda: self.onChange(False))
+        self.ui.lwKeuzes.currentItemChanged.connect(self.clearError)
         
         
     def btnDeelnemerToevoegenClicked(self):
@@ -90,35 +92,36 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self._windowtoevoeg.show()
         
     def btnStartFlexibiliserenClicked(self):
+        if self.ui.lwKeuzes.currentRow() == -1: 
+            self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te slecteren voordat u gaat flexibiliseren")
+            return
+        print(self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()].achternaam)
         self.close()
-        self._windowflex = Flexmenu(self.book)
+        self._windowflex = Flexmenu(self.book, self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()])
         self._windowflex.show()
         
     def btnTerugClicked(self):
         self.close()
         self.windowstart = Functiekeus(self.book)
         self.windowstart.show()
+    
+    def clearError(self): self.ui.lblFoutmeldingKiezen.clear()
         
     def onChange(self, datumChange):
         if datumChange: functions.maanddag(self)
-        kleindeelnemersbestand = self.deelnemersbestand
-        kleindeelnemersbestand = functions.filterkolom(kleindeelnemersbestand, self.ui.txtVoorletters.text(), "voorletter")
-        kleindeelnemersbestand = functions.filterkolom(kleindeelnemersbestand, self.ui.txtTussenvoegsel.text(), "tussenvoegsels")
-        kleindeelnemersbestand = functions.filterkolom(kleindeelnemersbestand, self.ui.txtAchternaam.text(), "Naam")
-        kleindeelnemersbestand = functions.filterkolom(kleindeelnemersbestand, datetime(self.ui.sbJaar.value(), self.ui.sbMaand.value(), self.ui.sbDag.value()), "Geboortedatum")
-        kleindeelnemersbestand = functions.filterkolom(kleindeelnemersbestand, self.ui.cbGeslacht.currentText(), "Geslacht")
+        kleinDeelnemerlijst = self.deelnemerlijst
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, self.ui.txtVoorletters.text(), "voorletters")
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, self.ui.txtTussenvoegsel.text(), "tussenvoegsels")
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, self.ui.txtAchternaam.text(), "achternaam")
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, datetime(self.ui.sbJaar.value(), self.ui.sbMaand.value(), self.ui.sbDag.value()), "geboortedatum")
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, self.ui.cbGeslacht.currentText(), "geslacht")
         self.ui.lwKeuzes.clear()
-        for i, naam in enumerate(self.deelnemersbestand[0]):
-            if naam == "voorletter": voorletters = i
-            elif naam == "tussenvoegsels": tussenvoegsels = i
-            elif naam == "Naam": achternaam = i
-            elif naam == "Geboortedatum": geboortedatum = i
-            elif naam == "Geslacht": geslacht = i
-        for rij in kleindeelnemersbestand[1:]:
-            weergave = "{} {}".format(rij[voorletters], rij[achternaam])
-            if rij[tussenvoegsels] != None: weergave += ", {}".format(rij[tussenvoegsels])
-            weergave += " | {} | {}".format(rij[geboortedatum].date(), rij[geslacht])
+        for deelnemer in kleinDeelnemerlijst:
+            weergave = "{} {}".format(getattr(deelnemer, "voorletters"), getattr(deelnemer, "achternaam"))
+            if getattr(deelnemer, "tussenvoegsels") != None: weergave += ", {}".format(getattr(deelnemer, "tussenvoegsels"))
+            weergave += " | {} | {}".format(getattr(deelnemer, "geboortedatum").date(), getattr(deelnemer, "geslacht"))
             self.ui.lwKeuzes.addItem(weergave)
+        self.kleinDeelnemerlijst = kleinDeelnemerlijst
         self.ui.lwKeuzes.repaint()
         
         
@@ -157,7 +160,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
 
 
 class Flexmenu(QtWidgets.QMainWindow):
-    def __init__(self, book):
+    def __init__(self, book, deelnemer):
         Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
         super(Flexmenu, self).__init__()
         self.book = book
