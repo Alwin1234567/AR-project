@@ -146,7 +146,7 @@ def invoer_test_klikken():
     book = xw.Book.caller()
     invoer = book.sheets["Tijdelijk invoerscherm"]
     sterftetafel= book.sheets["Sterftetafels"] 
-    AG2020= book.sheets["AG2020, unisex"]
+    AG2020= book.sheets["AG2020"]
     pensioencontracten= book.sheets["Gegevens pensioencontracten"]
     
     
@@ -157,15 +157,8 @@ def invoer_test_klikken():
     pensioenleeftijd_range= invoer.range((10,5),(18,5))
     koopsom_range= invoer.range((10,6),(18,6))
     
-    
-    #testing
     Aegon2011= sterftetafel.range((5,2),(123,2))
-    
-    # levend_pensioenleeftijd= Aegon2011(65).value
-    
 
-    #list met alle eigenschappen en vanuit daar rekenen
-    
     
     pensioenleeftijd=[]
     rente=[]
@@ -175,67 +168,66 @@ def invoer_test_klikken():
     for p in range(3):
         if len(letters)>=26:
             for i in ascii_uppercase:
-                letters.append( letters[p] + i)
+                letters.append( letters[p-1] + i)
         else:
             for i in ascii_uppercase:
                 letters.append(i)
     
-    
-    
-    
+    print(letters)
     counter=1
     for i in range(1,10):
         print(i)
         if pensioenbedragen(i).value != None:
             kolom_t= (counter-1)*8+8
-            kolom_leeftijd=(counter-1)*8+9           
+            kolom_leeftijd= (counter-1)*8+9
+            kolom_jaar= (counter-1)*8+10
+            kolom_tpx= (counter-1)*8+11
+            kolom_tqx= (counter-1)*8+12
+            kolom_dt= (counter-1)*8+13
+            komol_dt_half= (counter-1)*8+14
             
+            
+            print(letters[kolom_t-1])
             rente.append(rentes(i).value)
             pensioenleeftijd.append(pensioenleeftijd_range(i).value)
             
+            invoer.range((1, kolom_t)).value= "t"
             invoer.range((2, kolom_t)).value= 0
-            invoer.range((3, kolom_t), (61, kolom_t)).formula= [['=1+' + str(letters[kolom_t-1]) + '2']]
+            invoer.range((3, kolom_t), (61- (int(pensioenleeftijd[i-1])-60), kolom_t)).formula= [['=1+' + str(letters[kolom_t-1]) + '2']]
             
+            invoer.range((1, kolom_leeftijd)).value= "Leeftijd"
             invoer.range((2, kolom_leeftijd)).value= pensioenleeftijd_range(i).value
-            invoer.range((3, kolom_leeftijd), (61, kolom_leeftijd)).formula= [['=1+' + str(letters[kolom_leeftijd-1]) + '2']]
+            invoer.range((3, kolom_leeftijd), (61- (int(pensioenleeftijd[i-1])-60), kolom_leeftijd)).formula= [['=1+' + str(letters[kolom_leeftijd-1]) + '2']]
+            
+            invoer.range((1, kolom_jaar)).value= "Jaar"
+            invoer.range((2, kolom_jaar)).formula= [['=year(B4)+' + str(int(pensioenleeftijd[i-1]))]]
+            invoer.range((3, kolom_jaar), (61- (int(pensioenleeftijd[i-1])-60), kolom_jaar)).formula= [['=1+' + str(letters[kolom_jaar-1]) + '2']]
+            
+            invoer.range((1,kolom_tqx)).value= "tqx"
+            invoer.range((2, kolom_tqx), (61- (int(pensioenleeftijd[i-1])-60), kolom_tqx)).formula= [['=1-' + str(letters[kolom_tpx-1]) + '2']]
+            
+            invoer.range((1, kolom_dt)).value= "dt"
+            invoer.range((2, kolom_dt), (61- (int(pensioenleeftijd[i-1])-60), kolom_dt)).formula= [['=(1+' + str(rente[i-1]) + ')^-' + str(letters[kolom_t-1]) + '2']]
+            
+            
+            if sterftetafel_range(i).value== "AG_2020":
+                invoer.range((1, kolom_tpx)).value= "tpx"
+                invoer.range((2, kolom_tpx)).value= 1
+                invoer.range((3, kolom_tpx), (61- (int(pensioenleeftijd[i-1])-60), kolom_tpx)).formula= [['=(1-INDEX(INDIRECT($C$' + str(i+9) + '),' + str(letters[kolom_leeftijd-1]) + '2+1, ' + str(letters[kolom_jaar-1]) + '2-2018))*' + str(letters[kolom_tpx-1]) + '2']]
+                
+                
+            else:
+                invoer.range((1, kolom_tpx)).value= "tpx"
+                invoer.range((2, kolom_tpx), (61- (int(pensioenleeftijd[i-1])-60), kolom_tpx)).formula= [['=INDEX(INDIRECT($C$' + str(i+9) + '),' + str(letters[kolom_leeftijd-1]) + '2+1,1)/ INDEX(INDIRECT($C$' + str(i+9) + '),$' + str(letters[kolom_leeftijd-1]) + '$2+1,1)']]
             
             counter+= 1
             
-
-                #koopsom_range(2).formula= [['=SUMPRODUCT(J2:J61,K2:K61)']]
         else:
             rente.append(0)
             pensioenleeftijd.append(0)
             
             
-    #test voor 1 pensioenvorm
-    # if pensioenbedragen(2).value != None:
-    #     kolom_tpx.formula= 
-    
-    # test=invoer.range(2,12)
-    # print(str(2))
-    
-    
-    
-    print(pensioenleeftijd)   
-    # print(rente)
-    #kolom_tqx.formula= [['=1-kolom_tpx(1).value']]
 
-        
-    #tqx_formula= [['=1-'+ str(letters[9])+str(2)]]
-    
-    # kolom_tpx.formula= [['=Sterftetafels!B' + str(int(pensioenleeftijd[1]+4)) + '/Sterftetafels!$B$' + str(int(pensioenleeftijd[1]+4))]]
-    # kolom_tqx.formula= [['=1-' + letters[9] + '2']]
-    
-    p= pensioenleeftijd[1]
-    x=1
-    # while p<=119:
-    #     # kolom_t(x).value=x-1
-    #     # kolom_leeftijd(x).value=p
-    #     kolom_tpx(x).value=(Aegon2011(p).value/Aegon2011(pensioenleeftijd[1]).value)
-    #     kolom_tqx(x).value= 1-kolom_tpx(x).value
-    #     x=x+1
-    #     p=p+1
         
     
 
