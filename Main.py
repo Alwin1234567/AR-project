@@ -141,7 +141,6 @@ def vergelijken_afbeelding_generatie():
 @xw.sub
 #Idee voor berekeningen uitvoeren: Functies schrijven
 def invoer_test_klikken():
-    
     #sheets en book opslaan in variabelen
     book = xw.Book.caller()
     invoer = book.sheets["Tijdelijk invoerscherm"]
@@ -149,15 +148,16 @@ def invoer_test_klikken():
     AG2020= book.sheets["AG2020"]
     pensioencontracten= book.sheets["Gegevens pensioencontracten"]
     
+    kolommen= invoer.range((1,8), (61,78))
+    #Kolommen legen waar de berekeningen komen
+    kolommen.clear_contents()
     
-    
+    regeling_range= invoer.range((10,1), (18,1))
     pensioenbedragen=invoer.range((10,2),(18,2))
     sterftetafel_range= invoer.range((10,3),(18,3))
     rentes= invoer.range((10,4),(18,4))
     pensioenleeftijd_range= invoer.range((10,5),(18,5))
     koopsom_range= invoer.range((10,6),(18,6))
-    
-    Aegon2011= sterftetafel.range((5,2),(123,2))
 
     
     pensioenleeftijd=[]
@@ -165,66 +165,89 @@ def invoer_test_klikken():
 
     
     letters=[]
-    for p in range(3):
+    for p in range(4):
         if len(letters)>=26:
             for i in ascii_uppercase:
                 letters.append( letters[p-1] + i)
         else:
             for i in ascii_uppercase:
-                letters.append(i)
+                letters.append(i)   
     
-    print(letters)
+
     counter=1
     for i in range(1,10):
-        print(i)
+
         if pensioenbedragen(i).value != None:
-            kolom_t= (counter-1)*8+8
-            kolom_leeftijd= (counter-1)*8+9
-            kolom_jaar= (counter-1)*8+10
-            kolom_tpx= (counter-1)*8+11
-            kolom_tqx= (counter-1)*8+12
-            kolom_dt= (counter-1)*8+13
-            komol_dt_half= (counter-1)*8+14
+            kolom_t= (counter-1)*10+8
+            kolom_leeftijd= (counter-1)*10+9
+            kolom_jaar= (counter-1)*10+10
+            kolom_tpx= (counter-1)*10+11
+            kolom_tqx= (counter-1)*10+12
+            kolom_tqx_juli= (counter-1)*10+13
+            kolom_dt= (counter-1)*10+14
+            kolom_dt_juli= (counter-1)*10+15
             
-            
-            print(letters[kolom_t-1])
+
             rente.append(rentes(i).value)
             pensioenleeftijd.append(pensioenleeftijd_range(i).value)
             
+            tussenstap= 61- (int(pensioenleeftijd[i-1])-60)
+            
             invoer.range((1, kolom_t)).value= "t"
             invoer.range((2, kolom_t)).value= 0
-            invoer.range((3, kolom_t), (61- (int(pensioenleeftijd[i-1])-60), kolom_t)).formula= [['=1+' + str(letters[kolom_t-1]) + '2']]
+            invoer.range((3, kolom_t), (tussenstap, kolom_t)).formula= [['=1+' + letters[kolom_t-1] + '2']]
             
             invoer.range((1, kolom_leeftijd)).value= "Leeftijd"
             invoer.range((2, kolom_leeftijd)).value= pensioenleeftijd_range(i).value
-            invoer.range((3, kolom_leeftijd), (61- (int(pensioenleeftijd[i-1])-60), kolom_leeftijd)).formula= [['=1+' + str(letters[kolom_leeftijd-1]) + '2']]
+            invoer.range((3, kolom_leeftijd), (tussenstap, kolom_leeftijd)).formula= [['=1+' + letters[kolom_leeftijd-1] + '2']]
             
             invoer.range((1, kolom_jaar)).value= "Jaar"
             invoer.range((2, kolom_jaar)).formula= [['=year(B4)+' + str(int(pensioenleeftijd[i-1]))]]
-            invoer.range((3, kolom_jaar), (61- (int(pensioenleeftijd[i-1])-60), kolom_jaar)).formula= [['=1+' + str(letters[kolom_jaar-1]) + '2']]
+            invoer.range((3, kolom_jaar), (tussenstap, kolom_jaar)).formula= [['=1+' + letters[kolom_jaar-1] + '2']]
             
-            invoer.range((1,kolom_tqx)).value= "tqx"
-            invoer.range((2, kolom_tqx), (61- (int(pensioenleeftijd[i-1])-60), kolom_tqx)).formula= [['=1-' + str(letters[kolom_tpx-1]) + '2']]
+            invoer.range((1, kolom_tqx)).value= "tqx"
+            invoer.range((2, kolom_tqx), (tussenstap, kolom_tqx)).formula= [['=1-' + letters[kolom_tpx-1] + '2']]
+            
+            invoer.range((1, kolom_tqx_juli)).value= "tqx op 1 juli"
+            invoer.range((2, kolom_tqx_juli), (tussenstap-1, kolom_tqx_juli)).formula= [['=(((13-month($B$4))*' + letters[kolom_tqx-1] + '2)+((month($B$4)-1)*' + letters[kolom_tqx-1] + '3))/12']]
             
             invoer.range((1, kolom_dt)).value= "dt"
-            invoer.range((2, kolom_dt), (61- (int(pensioenleeftijd[i-1])-60), kolom_dt)).formula= [['=(1+' + str(rente[i-1]) + ')^-' + str(letters[kolom_t-1]) + '2']]
+            invoer.range((2, kolom_dt), (tussenstap, kolom_dt)).formula= [['=(1+' + str(rente[i-1]) + ')^-' + letters[kolom_t-1] + '2']]
+            
+            invoer.range((1, kolom_dt_juli)).value= "dt op 1 juli"
+            invoer.range((2, kolom_dt_juli), (tussenstap-1, kolom_dt_juli)).formula= [['=(1+' + str(rente[i-1]) + ')^-(' + letters[kolom_t-1] + '2+(month($B$4)-1)/12)']]
             
             
             if sterftetafel_range(i).value== "AG_2020":
                 invoer.range((1, kolom_tpx)).value= "tpx"
                 invoer.range((2, kolom_tpx)).value= 1
-                invoer.range((3, kolom_tpx), (61- (int(pensioenleeftijd[i-1])-60), kolom_tpx)).formula= [['=(1-INDEX(INDIRECT($C$' + str(i+9) + '),' + str(letters[kolom_leeftijd-1]) + '2+1, ' + str(letters[kolom_jaar-1]) + '2-2018))*' + str(letters[kolom_tpx-1]) + '2']]
+                invoer.range((3, kolom_tpx), (tussenstap, kolom_tpx)).formula= [['=(1-INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1, ' + letters[kolom_jaar-1] + '2-2018))*' + letters[kolom_tpx-1] + '2']]
                 
                 
             else:
                 invoer.range((1, kolom_tpx)).value= "tpx"
-                invoer.range((2, kolom_tpx), (61- (int(pensioenleeftijd[i-1])-60), kolom_tpx)).formula= [['=INDEX(INDIRECT($C$' + str(i+9) + '),' + str(letters[kolom_leeftijd-1]) + '2+1,1)/ INDEX(INDIRECT($C$' + str(i+9) + '),$' + str(letters[kolom_leeftijd-1]) + '$2+1,1)']]
+                invoer.range((2, kolom_tpx), (tussenstap, kolom_tpx)).formula= [['=INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1,1)/ INDEX(INDIRECT($C$' + str(i+9) + '),$' + letters[kolom_leeftijd-1] + '$2+1,1)']]
             
             counter+= 1
+            
+            if regeling_range(i).value== "ZL":
+                koopsom_range(i).value= pensioenbedragen(i).value
+                
+            elif "OP" in regeling_range(i).value:
+                koopsom_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + str(tussenstap) + ',' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + str(tussenstap) + ')*B' + str(i+9) ]]
+            
+            else:
+                koopsom_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + str(tussenstap) + ',' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + str(tussenstap) + ','+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + str(tussenstap) + ')*B' + str(i+9)]]
+                
             
         else:
             rente.append(0)
             pensioenleeftijd.append(0)
+            
+            
+            
+            
+        
             
             
 
