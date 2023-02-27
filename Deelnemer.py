@@ -32,8 +32,6 @@ class Deelnemer():
         self._rijNr = self.informatieOpslaan(informatie, "rijNr")
         self._pensioenen = self.pensioenenOpslaan(informatie)
         
-        
-        
     def informatieOpslaan(self, informatie, kolomNaam):
         index = None
         for i, kolom in enumerate(informatie[0]):
@@ -57,12 +55,12 @@ class Deelnemer():
         return pensioenen
                 
     def pensioenenInit(self):
-        # ZL = Pensioeninformatie("ZL", (10, None), 3)
-        Aegon65 = Pensioeninformatie("Aegon65", (11, None), 4)
-        Aegon67 = Pensioeninformatie("Aegon67", (12, None), 5)
-        NN65 = Pensioeninformatie("NN65", (13, 14), 6)
-        NN67 = Pensioeninformatie("NN67", (15, 16), 7)
-        PF_VLC68 = Pensioeninformatie("PF_VLC68", (17, 18), 8)
+        # ZL = Pensioeninformatie("ZL", (9, None), 3)
+        Aegon65 = Pensioeninformatie("Aegon65", (10, None), 4)
+        Aegon67 = Pensioeninformatie("Aegon67", (11, None), 5)
+        NN65 = Pensioeninformatie("NN65", (12, 13), 6)
+        NN67 = Pensioeninformatie("NN67", (14, 15), 7)
+        PF_VLC68 = Pensioeninformatie("PF_VLC68", (16, 17), 8)
         return [Aegon65, Aegon67, NN65, NN67, PF_VLC68]
         
     @property

@@ -137,10 +137,10 @@ def regelingenophalen(rij):
         regelingCode.append("ZL")
     if deelnemersBestand.cells(rij,"K").value is not None:
         regelingen.append("Aegon OP65")
-        regelingCode.append("A65")
+        regelingCode.append("Aegon67")
     if deelnemersBestand.cells(rij,"L").value is not None:
         regelingen.append("Aegon OP67")
-        regelingCode.append("A67")
+        regelingCode.append("Aegon67")
     if deelnemersBestand.cells(rij,"M").value is not None:
         regelingen.append("Nationale Nederlanden OP65")
         regelingCode.append("NN65")
@@ -149,7 +149,7 @@ def regelingenophalen(rij):
         regelingCode.append("NN67")
     if deelnemersBestand.cells(rij,"Q").value is not None:
         regelingen.append("Pensioenfonds VLC OP68")
-        regelingCode.append("VLC68")
+        regelingCode.append("PF_VLC68")
     
     return regelingen, regelingCode
 
@@ -170,15 +170,15 @@ def regelingNaamCode(naam):
     if naam == "ZwitserLeven":
         code = "ZL"
     elif naam == "Aegon OP65":
-        code = "A65"
+        code = "Aegon65"
     elif naam == "Aegon OP67":
-        code = "A67"
+        code = "Aegon67"
     elif naam == "Nationale Nederlanden OP65":
         code = "NN65"
     elif naam == "Nationale Nederlanden OP67":
         code = "NN67"
     elif naam == "Pensioenfonds VLC OP68":
-        code = "VLC68"
+        code = "PF_VLC68"
     
     return code
     
@@ -198,15 +198,15 @@ def regelingCodeNaam(code):
     
     if code == "ZL":
         naam = "ZwitserLeven"
-    elif code == "A65":
+    elif code == "Aegon65":
         naam = "Aegon OP65"
-    elif naam == "A67":
+    elif naam == "Aegon67":
         naam = "Aegon OP67"
     elif code == "NN65":
         naam = "Nationale Nederlanden OP65"
     elif code == "NN67":
         naam = "Nationale Nederlanden OP67"
-    elif code == "VLC68":
+    elif code == "PF_VLC68":
         naam = "Pensioenfonds VLC OP68"
     
     return naam

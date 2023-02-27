@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import functions
 from datetime import datetime
 from functions import pensioensdatum, isfloat, ToevoegenDeelnemer, gegevenscontrole #deze zouden ook moeten inladen met de import functions hierboven, maar dat werkt niet
+from Deelnemer import Deelnemer
 
 """
 Body
@@ -262,15 +263,16 @@ class Flexmenu(QtWidgets.QMainWindow):
         Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
         super(Flexmenu, self).__init__()
         self.book = book
+        
         # Setup van UI
         self.ui = Ui_MainWindow5()
         self.ui.setupUi(self)
         
         # Deelnemer
-        self.deelnemer = 4 #Dit moet een variabel worden, het getal is de regel waar de deelnemer staat in het bestand
+        self.deelnemerObject = deelnemer
         
         # Regeling selectie
-        self.ui.cbRegeling.addItems(functions.regelingenophalen(self.deelnemer)[0])
+        self.dropdownRegelingen()
     
         # Knoppen
         self.ui.btnAndereDeelnemer.clicked.connect(self.btnAndereDeelnemerClicked)
@@ -294,6 +296,15 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.txtHLVerhoudingHoog.textEdited.connect(self.invoerVerandering)
         self.ui.txtHLVerhoudingLaag.textEdited.connect(self.invoerVerandering)
         self.ui.txtHLVerschil.textEdited.connect(self.invoerVerandering)
+    
+    def dropdownRegelingen(self):
+        regelingenActief = list()
+        for regeling in self.deelnemerObject._pensioenen:
+            if regeling.ouderdomsPensioen != None:
+                if regeling.ouderdomsPensioen > 0:
+                    regelingenActief.append(regeling.pensioenVolNaam)
+                    
+        self.ui.cbRegeling.addItems(regelingenActief)
         
     def regelingenObject(self):
         """
@@ -301,20 +312,25 @@ class Flexmenu(QtWidgets.QMainWindow):
         uit flex_keuzes.py. Functie checkt ook welke regelingen actief zijn. 
         """
     
+        """ 
+        Onderstaande code is verouderd! De "self.deelnemer" variabel was de rij waar
+        de deelnemer in het Excel deelnemersbestand stond. Deze variabel is nu verouderd 
+        en er gaat nog uitgezocht worden hoe dit aangepast moet worden.
+        
         if "ZL" in functions.regelingenophalen(self.deelnemer)[1]:
             self._ZL = flexibilisering("ZL",True)
         else:
             self._ZL = flexibilisering("ZL",False)
             
-        if "A65" in functions.regelingenophalen(self.deelnemer)[1]:
-            self._A65 = flexibilisering("A65",True)
+        if "Aegon65" in functions.regelingenophalen(self.deelnemer)[1]:
+            self._A65 = flexibilisering("Aegon65",True)
         else:
-            self._A65 = flexibilisering("A65",True)
+            self._A65 = flexibilisering("Aegon65",True)
             
-        if "A67" in functions.regelingenophalen(self.deelnemer)[1]:
-            self._A67 = flexibilisering("A67",True)
+        if "Aegon67" in functions.regelingenophalen(self.deelnemer)[1]:
+            self._A67 = flexibilisering("Aegon67",True)
         else:
-            self._A67 = flexibilisering("A67",True)
+            self._A67 = flexibilisering("Aegon67",True)
             
         if "NN65" in functions.regelingenophalen(self.deelnemer)[1]:
             self._NN65 = flexibilisering("NN65",True)
@@ -326,10 +342,11 @@ class Flexmenu(QtWidgets.QMainWindow):
         else:
             self._NN67 = flexibilisering("NN67",True)
             
-        if "VLC68" in functions.regelingenophalen(self.deelnemer)[1]:
-            self._VLC68 = flexibilisering("VLC68",True)
+        if "PF_VLC68" in functions.regelingenophalen(self.deelnemer)[1]:
+            self._VLC68 = flexibilisering("PF_VLC68",True)
         else:
-            self._VLC68 = flexibilisering("VLC68",False)
+            self._VLC68 = flexibilisering("PF_LC68",False)
+        """
         
     def invoerVerandering(self):
         self.regelingCode = functions.regelingNaamCode(str(self.ui.cbRegeling.currentText()))

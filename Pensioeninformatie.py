@@ -22,14 +22,14 @@ class Pensioeninformatie():
     """
     
     def __init__(self, naam, deelnemersbestandKolommen, gegevensRij):
-        self._naam = naam
+        self._pensioenNaam = naam
         self._deelnemersbestandKolommen = deelnemersbestandKolommen
         self._gegevensRij = gegevensRij
         
     
     @property
-    def naam(self):
-        return self._naam
+    def pensioenNaam(self):
+        return self._pensioenNaam
     
     @property
     def deelnemersbestandKolommen(self):
