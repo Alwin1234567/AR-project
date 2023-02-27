@@ -148,7 +148,7 @@ def invoer_test_klikken():
     AG2020= book.sheets["AG2020"]
     pensioencontracten= book.sheets["Gegevens pensioencontracten"]
     
-    kolommen= invoer.range((1,8), (61,78))
+    kolommen= invoer.range((1,8), (61,104))
     #Kolommen legen waar de berekeningen komen
     kolommen.clear_contents()
     
