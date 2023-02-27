@@ -6,7 +6,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 import xlwings as xw
 from datetime import datetime
 from Deelnemer import Deelnemer
-
+import ctypes
 
 """
 Body
@@ -328,4 +328,114 @@ def ToevoegenDeelnemer(gegevens):
      
     #gegevens deelnemer invullen in de lege regel
     deelnemersbestand.cells(legeRegel, 1).value = gegevens
+
+
+def Mbox(title, text, style):
+    """
+    functie die een messagebox maakt
+
+    Parameters
+    ----------
+    title : string
+        Wordt de titel van de messagebox
+    text : string
+        bevat de tekst die in de messagebox moet komen
+    style : integer
+        Geeft aan welke knoppen er op de messagebox komen
+        ##  Styles:
+        ##  0 : OK
+        ##  1 : OK | Cancel
+        ##  2 : Abort | Retry | Ignore
+        ##  3 : Yes | No | Cancel
+        ##  4 : Yes | No
+        ##  5 : Retry | Cancel 
+        ##  6 : Cancel | Try Again | Continue
+
+   
+    Returns
+    -------
+    str
+        DESCRIPTION.
+
+    """
+    returnValue = ctypes.windll.user32.MessageBoxW(0, text, title, style)
+    if returnValue == 0:
+        raise Exception('Oops')
+    #controleren op welke knop gedrukt is
+    elif returnValue == 1: #OK
+        return "OK Clicked"
+    elif returnValue == 2: #Cancel
+        return "Cancel Clicked"
+    elif returnValue == 3: #Abort
+        return "Abort Clicked"
+    elif returnValue == 4: #Retry
+        return "Retry Clicked"
+    elif returnValue == 5: #Ignore
+        return "Ignore Clicked"
+    elif returnValue == 6: #Yes
+        return "Ja"
+    elif returnValue == 7: #No
+        return "Nee"
+    
+
+def gegevenscontrole(gegevens):
+    """
+    functie die een messagebox met alle gegevens van een deelnemer maakt
+
+    Parameters
+    ----------
+    gegevens : list
+        een lijst met alle gegevens van de deelnemer in de vorm:
+            ["Achternaam", "tussen", "voor", "geboorte", "geslacht", "burg", "fulltimeLoon", "PT% als kans", "regeling", "Zl", "Aegon", "Aegon", "NN", "NN", "NN", "NN", "VLC", "VLC"]
+
+    Returns
+    -------
+    string "correct" of "fout"
+        Bij "correct" zijn de gegevens goed, bij "fout" zijn niet alle gegevens goed
+
+    """
+    #het parttime percentage in de vorm van een percentage zetten
+    gegevens[7] = str(gegevens[7] * 100)
+    #alle gegevens omzetten naar een string
+    for g in range(0,len(gegevens)):
+        gegevens[g] = str(gegevens[g])
+        
+    invoer = [] #lijst met alle deelnemersgegevens met uitleg in juiste volgorde
+    invoer.append("Naam: " + gegevens[2] + " " + gegevens[1] + " " + gegevens[0])
+    invoer.append("Geboortedatum: " + gegevens[3])
+    invoer.append("Geslacht: " + gegevens[4])
+    invoer.append("Burgerlijke staat: " + gegevens[5])
+    invoer.append("Fulltime loon: €" + gegevens[6])
+    invoer.append("Parttime percentage: " + gegevens[7] + "%")
+    invoer.append("Huidige regeling: " + gegevens[8])
+    invoer.append("\n")     #lege regel tussenvoegen voor opgebouwde pensioenen
+    
+    #opgebouwde pensioenen toevoegen, als deze ingevuld zijn
+    teller = 0  #bijhouden welk pensioen het is
+    for p1 in gegevens[9:12]:
+        if p1 != "":
+            regeling = ["ZL: ", "Aegon 65: ", "Aegon 67: "][teller]
+            invoer.append(regeling + "OP = €" + p1)
+        teller += 1
+    
+    teller = 0
+    for p2 in range(12,17,2):
+        if gegevens[p2] != "":
+            regeling = ["NN 65: ", "NN 67: ", "PF VLC 68: "][teller]
+            invoer.append(regeling + "OP = €" + gegevens[p2] + " en PP = €" + gegevens[p2+1])
+        teller += 1
+    
+    #alle gegevens met uitleg op een nieuwe regel in een string
+    message = "Uw gegevens: "        
+    for i in invoer:
+        message = message + i + "\n"
+    message = message + "\nKloppen bovenstaande gegevens?"
+    
+    #messagebox tonen
+    controle = Mbox("Gegevenscontrole", message, 4)
+    if controle == "Ja":
+        return "correct"
+    else:
+        return "fout"
+
 
