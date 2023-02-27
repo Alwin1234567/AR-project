@@ -8,7 +8,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 Body
 Hier komen alle functies
 """
-class flexibilisering:
+class Flexibilisering:
     """
     Een object van deze klasse bevat alle huidige flexibiliseringskeuzes waarmee
     verder gerekend moet worden. Voor elke regeling kan een object van deze klasse
@@ -17,8 +17,8 @@ class flexibilisering:
     naam : str
         Naam van de pensioenregeling
     """
-    def __init__(self, naam, actief=False):
-        self._naam = naam
+    def __init__(self, pensioen, actief=False):
+        # self._naam = naam
         self._actief = actief
         
         # Pensioenleeftijd

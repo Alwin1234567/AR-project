@@ -4,6 +4,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 """
 from Pensioenfonds import Pensioenfonds
 from Pensioeninformatie import Pensioeninformatie
+from flex_keuzes import Flexibilisering
 """
 Body
 Hier komen alle functies
@@ -31,6 +32,7 @@ class Deelnemer():
         self._regeling = self.informatieOpslaan(informatie, "Regeling")
         self._rijNr = self.informatieOpslaan(informatie, "rijNr")
         self._pensioenen = self.pensioenenOpslaan(informatie)
+        self._flexibilsaties = list()
         
         
         
@@ -64,6 +66,12 @@ class Deelnemer():
         NN67 = Pensioeninformatie("NN67", (15, 16), 7)
         PF_VLC68 = Pensioeninformatie("PF_VLC68", (17, 18), 8)
         return [Aegon65, Aegon67, NN65, NN67, PF_VLC68]
+    
+    def actieveerFlexibilisatie(self):
+        flexibilsaties = list()
+        for pensioen in self._pensioenen: flexibilsaties.append(Flexibilisering(pensioen))
+        self._flexibilsaties = flexibilsaties
+            
         
     @property
     def achternaam(self): return self._achternaam
