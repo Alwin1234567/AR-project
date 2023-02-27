@@ -96,9 +96,10 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         if self.ui.lwKeuzes.currentRow() == -1: 
             self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te slecteren voordat u gaat flexibiliseren")
             return
-        print(self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()].achternaam)
+        deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
+        deelnemer.actieveerFlexibilisatie()
         self.close()
-        self._windowflex = Flexmenu(self.book, self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()])
+        self._windowflex = Flexmenu(self.book, deelnemer)
         self._windowflex.show()
         
     def btnTerugClicked(self):

@@ -2,13 +2,15 @@
 Header
 Hier komen alle libraries die in het programma gebruikt worden
 """
-from Deelnemer import Deelnemer
+
 
 """
 Body
 Hier komen alle functies
 """
-class flexibilisering(Deelnemer):
+
+class flexibilisering:
+
     """
     Een object van deze klasse bevat alle huidige flexibiliseringskeuzes waarmee
     verder gerekend moet worden. Voor elke regeling kan een object van deze klasse
@@ -20,9 +22,10 @@ class flexibilisering(Deelnemer):
     actief : bool
         Geeft aan of de deelnemer geld heeft staan bij deze pensioenregeling
     """
-    def __init__(self, naam, actief=False):
-        super().__init__()
-        self._naam = naam
+
+
+    def __init__(self, pensioen, actief=False):
+        # self._naam = naam
         self._actief = actief
         
         # Pensioenleeftijd
