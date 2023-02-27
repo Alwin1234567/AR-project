@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 import matplotlib.pyplot as plt
 import functions
 from datetime import datetime
-from functions import pensioensdatum, isfloat, ToevoegenDeelnemer #deze zouden ook moeten inladen met de import functions hierboven, maar dat werkt niet
+from functions import pensioensdatum, isfloat, ToevoegenDeelnemer, gegevenscontrole #deze zouden ook moeten inladen met de import functions hierboven, maar dat werkt niet
 
 """
 Body
@@ -215,19 +215,27 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                 voorletters += i + "."
             #fulltime loon en parttime percentage als float
             fulltimeLoon = float(self.ui.txtFulltimeLoon.text().replace(".", "").replace(",", "."))
-            ptPercentage = float(self.ui.txtParttimePercentage.text().replace(",", "."))/100    #delen door 100, zodat het in excel als % komt
+            ptPercentage = float(self.ui.txtParttimePercentage.text().replace(",", "."))/10000    #delen door 100, zodat het in excel als % komt
             #lijst met deelnemersgegevens [achternaam, tussenvoegsel, voorletters, geboortedatum, geslacht, burg.staat, ftloon, pt%]
             Deelnemersgegevens = [achternaam, self.ui.txtTussenvoegsel.text(), voorletters, geboortedatum, self.ui.cbGeslacht.currentText(), 
                                   self.ui.cbBurgerlijkeStaat.currentText(), fulltimeLoon, ptPercentage]
             #lijst met alle gegevens
             gegevens = Deelnemersgegevens + Pensioensgegevens
-            #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
-            ToevoegenDeelnemer(gegevens)
             
-            #window sluiten en deelnemerselectie openen
-            self.close()
-            self._windowdeelnemer = Deelnemerselectie(self.book)
-            self._windowdeelnemer.show()
+            #deelnemer zijn gegevens laten controleren
+            controle = gegevenscontrole(gegevens)
+            if controle == "correct":
+                #window sluiten
+                self.close()
+                #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
+                ToevoegenDeelnemer(gegevens)
+                #deelnemerselectie openen
+                self._windowdeelnemer = Deelnemerselectie(self.book)
+                self._windowdeelnemer.show()
+            elif controle == "fout":
+                self.ui.lblFoutmeldingGegevens.setText("Pas uw gegevens aan en druk weer op Deelnemer toevoegen")
+                #als niet op "ja" wordt geklikt, wordt de messagebox gesloten en het invoerveld weer getoont
+            
         else: 
             #foutmelding tonen
             self.ui.lblFoutmeldingGegevens.setText(foutmeldingGegevens)
