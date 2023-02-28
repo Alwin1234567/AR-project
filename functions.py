@@ -9,6 +9,7 @@ from Deelnemer import Deelnemer
 from Pensioenfonds import Pensioenfonds
 import ctypes
 import logging
+import os
 import sys
 
 
@@ -471,10 +472,8 @@ def setup_logger(name):
 
     logger.setLevel(logging.DEBUG)
     today = date.today().strftime("%Y_%m_%d")
-    f = open("{}\\Logs\\{}.log".format(sys.path[0], today), "w")
-    f.close()
-    f = open("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today), "w")
-    f.close()
+    os.makedirs(os.path.dirname("{}\\Logs\\{}.log".format(sys.path[0], today)))
+    os.makedirs(os.path.dirname("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)))
     filename = "{}\\Logs\\{}.log".format(sys.path[0], today)
     errorname = "{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)
     
