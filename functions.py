@@ -4,10 +4,13 @@ Hier komen alle libraries die in het programma gebruikt worden
 """
 
 import xlwings as xw
-from datetime import datetime
+from datetime import datetime, date
 from Deelnemer import Deelnemer
 from Pensioenfonds import Pensioenfonds
 import ctypes
+import logging
+import sys
+
 
 """
 Body
@@ -462,5 +465,35 @@ def gegevenscontrole(gegevens):
         return "correct"
     else:
         return "fout"
+
+def setup_logger(name):
+    logger = logging.getLogger(name)
+
+    logger.setLevel(logging.DEBUG)
+    today = date.today().strftime("%Y_%m_%d")
+    f = open("{}\\Logs\\{}.log".format(sys.path[0], today), "w")
+    f.close()
+    f = open("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today), "w")
+    f.close()
+    filename = "{}\\Logs\\{}.log".format(sys.path[0], today)
+    errorname = "{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)
+    
+    chat_logger = logging.StreamHandler()
+    file_logger = logging.FileHandler(filename)
+    error_logger = logging.FileHandler(errorname)
+    
+    chat_logger.setLevel(logging.WARNING)
+    file_logger.setLevel(logging.INFO)
+    error_logger.setLevel(logging.ERROR)
+
+    chat_logger.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+    file_logger.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+    error_logger.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(message)s"))
+
+    logger.addHandler(chat_logger)
+    logger.addHandler(file_logger)
+    logger.addHandler(error_logger)
+    logger.info("Setup logger is done")
+    return logger
 
 

@@ -18,7 +18,9 @@ Body
 Hier komen alle functies
 """
 class Functiekeus(QtWidgets.QMainWindow):
-    def __init__(self, book):
+    def __init__(self, book, logger):
+        self._logger = logger
+        self._logger.info("Functiekeus scherm geopend")
         Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))
         super(Functiekeus, self).__init__()
         self.book = book
