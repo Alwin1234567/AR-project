@@ -38,11 +38,11 @@ class Pensioenfonds():
     
     def volledigeNaam(self):
         if self._naam == "ZL": self._volNaam = "ZwitserLeven"
-        elif self._naam == "Aegon OP65": self._volNaam = self._naam
-        elif self._naam == "Aegon OP67": self._volNaam = self._naam
-        elif self._naam == "NN OP65": self._volNaam = "Nationale Nederlanden OP65"
-        elif self._naam == "NN OP67": self._volNaam = "Nationale Nederlanden OP67"
-        elif self._naam == "PF VLC OP68": self._volNaam = "Pensioenfonds VLC OP68"
+        elif self._naam == "Aegon OP65": self._volNaam = "Aegon 65"
+        elif self._naam == "Aegon OP67": self._volNaam = "Aegon 67"
+        elif self._naam == "NN OP65": self._volNaam = "Nationale Nederlanden 65"
+        elif self._naam == "NN OP67": self._volNaam = "Nationale Nederlanden 67"
+        elif self._naam == "PF VLC OP68": self._volNaam = "Pensioenfonds VLC 68"
             
     @property
     def pensioenVolNaam(self):
