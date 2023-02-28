@@ -28,6 +28,7 @@ class Flexibilisering:
         # self._naam = naam
         self._actief = actief
         
+        self._pensioen = pensioen
         # Pensioenleeftijd
         self._leeftijd_Actief = False
         self._pLeeftijdJaar = 60
@@ -194,6 +195,10 @@ class Flexibilisering:
     @HL_Percentage.setter
     def HL_Percentage(self, HL_Percentage):
         self._HL_Percentage= HL_Percentage
+        
+
+    @property
+    def pensioen(self): return self._pensioen
         
         
         

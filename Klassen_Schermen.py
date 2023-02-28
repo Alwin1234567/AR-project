@@ -370,7 +370,11 @@ class Flexmenu(QtWidgets.QMainWindow):
         """
         
     def invoerVerandering(self):
-        self.regelingCode = functions.regelingNaamCode(str(self.ui.cbRegeling.currentText()))
+        for flexibilisatie in self.deelnemerObject.flexibilisaties:
+            if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
+                self.regelingCode = flexibilisatie
+                break
+        # self.regelingCode = functions.regelingNaamCode(str(self.ui.cbRegeling.currentText()))
         
         if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
             # Sla de nieuwe leeftijd op

@@ -30,7 +30,7 @@ class Deelnemer():
         self._regeling = self.informatieOpslaan(informatie, "Regeling")
         self._rijNr = self.informatieOpslaan(informatie, "rijNr")
         self._pensioenen = self.pensioenenOpslaan(informatie, pensioeninformatie)
-        self._flexibilsaties = list()
+        self._flexibilisaties = list()
         
     def informatieOpslaan(self, informatie, kolomNaam):
         index = None
@@ -55,9 +55,9 @@ class Deelnemer():
         return pensioenen
     
     def actieveerFlexibilisatie(self):
-        flexibilsaties = list()
-        for pensioen in self._pensioenen: flexibilsaties.append(Flexibilisering(pensioen))
-        self._flexibilsaties = flexibilsaties
+        flexibilisaties = list()
+        for pensioen in self._pensioenen: flexibilisaties.append(Flexibilisering(pensioen))
+        self._flexibilisaties = flexibilisaties
             
         
     @property
@@ -94,5 +94,5 @@ class Deelnemer():
     def pensioenen(self): return self._pensioenen
     
     @property
-    def flexibilsaties(self): return self._flexibilsaties
+    def flexibilisaties(self): return self._flexibilisaties
     
