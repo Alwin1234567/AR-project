@@ -12,8 +12,6 @@ class Deelnemer():
     """
     Een class waarin de informatie over een deelnemer staat opgeslagen.
     
-    book : xlwings.Book
-        Het excel bestand waarin het programma runned.
     informatie : list
         Een lijst met daarin de naam van een attribuut en de waarde van de attribuut.
     pensioeninformatie : list

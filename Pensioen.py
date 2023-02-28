@@ -9,6 +9,16 @@ Body
 Hier komen alle functies
 """
 class Pensioen():
+    """
+    Een class waarin de informatie van een pensioen van een deelnemer staat opgeslagen.
+    
+    pensioen : Pensioen class
+        hierin staat alle pensioen informatie behalve OP en PP.
+    OP : float
+        Het OP bedrag van de deelnemer bij dit pensioen.
+    PP : float
+        Het PP bedrag van de deelnemer bij dit pensioen, kan ook 0 zijn.
+    """
     
     def __init__(self, pensioen, OP, PP):
         self._pensioen = pensioen

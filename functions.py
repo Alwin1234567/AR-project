@@ -4,10 +4,14 @@ Hier komen alle libraries die in het programma gebruikt worden
 """
 
 import xlwings as xw
-from datetime import datetime
+from datetime import datetime, date
 from Deelnemer import Deelnemer
 from Pensioenfonds import Pensioenfonds
 import ctypes
+import logging
+import os
+import sys
+
 
 """
 Body
@@ -241,6 +245,20 @@ def getDeelnemersbestand(book):
 
 
 def getPensioeninformatie(book):
+    """
+    functie die de informatie van de pensioenen verzameld
+
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+
+    Returns
+    -------
+    pensioeninformatie : list(Pensioenfonds)
+        lijst met de pensioenfonds objecten van alle verschillende pensioenen.
+
+    """    
     kolommen = dict()
     kolommen["naamkolom"] = 2
     kolommen["pensioenleeftijdkolom"] = 4
@@ -462,5 +480,47 @@ def gegevenscontrole(gegevens):
         return "correct"
     else:
         return "fout"
+
+def setup_logger(name):
+    """
+    functie die de logger met handlers maakt
+
+    Parameters
+    ----------
+    naam : str
+        naam van de logger.
+
+    Returns
+    -------
+    logger : Logger
+        Het logger object dat gebruikt wordt.
+
+    """
+    logger = logging.getLogger(name)
+
+    logger.setLevel(logging.DEBUG)
+    today = date.today().strftime("%Y_%m_%d")
+    os.makedirs(os.path.dirname("{}\\Logs\\{}.log".format(sys.path[0], today)))
+    os.makedirs(os.path.dirname("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)))
+    filename = "{}\\Logs\\{}.log".format(sys.path[0], today)
+    errorname = "{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)
+    
+    chat_logger = logging.StreamHandler()
+    file_logger = logging.FileHandler(filename)
+    error_logger = logging.FileHandler(errorname)
+    
+    chat_logger.setLevel(logging.WARNING)
+    file_logger.setLevel(logging.INFO)
+    error_logger.setLevel(logging.ERROR)
+
+    chat_logger.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+    file_logger.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+    error_logger.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(message)s"))
+
+    logger.addHandler(chat_logger)
+    logger.addHandler(file_logger)
+    logger.addHandler(error_logger)
+    logger.info("Setup logger is done")
+    return logger
 
 

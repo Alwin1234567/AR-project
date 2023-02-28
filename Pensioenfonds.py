@@ -10,14 +10,14 @@ Hier komen alle functies
 """
 class Pensioenfonds():
     """
-    Een class waarin de informatie over een pensioenfonds van een deelnemer staat opgeslagen.
+    Een class waarin de informatie over een pensioenfonds staat opgeslagen.
     
-    book : xlwings.Book
-        Het excel bestand waarin het programma runned.
-    pensioenrij : int
-        De rij waarin de informatie over het pensioenfonds staat.
-    OPenPP : tuple
-        Een tuple met de waarde van het ouderdomspensioen en het partnerpensioen.
+    gegevensSheet : xlwings.Book.sheets
+        Het excel sheet waarin de pensioen informatie staat.
+    kolommen : dict
+        dictionary met daarin de kolommen nummers.
+    pensioen : tuple(int)
+        Een tuple met de kolom van het ouderdomspensioen en het partnerpensioen.
     """
     
     def __init__(self, gegevensSheet, kolommen, pensioen):

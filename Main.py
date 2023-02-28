@@ -3,13 +3,13 @@ Header
 Hier komen alle libraries die in het programma gebruikt worden
 """
 import xlwings as xw
-import datetime as dt
 import matplotlib.pyplot as plt
 import sys
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtWidgets
 from string import ascii_uppercase
 import functions
 import Klassen_Schermen
+from logging import getLogger
 
 
 """
@@ -17,11 +17,11 @@ Body
 Hier komen alle functies
 """
 @xw.sub
-def Schermen():  
-             
+def Schermen():
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
     app = 0
     app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.Functiekeus(xw.Book.caller())
+    window = Klassen_Schermen.Functiekeus(xw.Book.caller(), logger)
     window.show()
     app.exec_()
 
