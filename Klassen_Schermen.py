@@ -32,17 +32,18 @@ class Functiekeus(QtWidgets.QMainWindow):
         
     def btnAdviseurClicked(self):
         self.close()
-        self._windowdeelnemer = Deelnemerselectie(self.book)
+        self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
         self._windowdeelnemer.show()
     def btnBeheerderClicked(self): 
         self.close()
-        self._windowinlog = Inloggen(self.book)
+        self._windowinlog = Inloggen(self.book, self._logger)
         self._windowinlog.show()
         
 
 
 class Inloggen(QtWidgets.QMainWindow):
-    def __init__(self, book):
+    def __init__(self, book, logger):
+        self._logger = logger
         Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\2InlogBeheerder.ui".format(sys.path[0]))
         super(Inloggen, self).__init__()
         self.book = book
@@ -56,19 +57,20 @@ class Inloggen(QtWidgets.QMainWindow):
     def btnInloggenClicked(self):
         if self.ui.txtBeheerderscode.text() == self._Wachtwoord:
             self.close()
-            self._windowdeelnemer = Deelnemerselectie(self.book)
+            self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
             self._windowdeelnemer.show()
         else:
             self.ui.lblFoutmeldingInlog.setText("Wachtwoord incorrrect")
     def btnTerugClicked(self):
         self.close()
-        self._windowkeus = Functiekeus(self.book)
+        self._windowkeus = Functiekeus(self.book, self._logger)
         self._windowkeus.show()
         
         
 
 class Deelnemerselectie(QtWidgets.QMainWindow):
-    def __init__(self, book):
+    def __init__(self, book, logger):
+        self._logger = logger
         Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
         super(Deelnemerselectie, self).__init__()
         self.book = book
@@ -91,7 +93,7 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         
     def btnDeelnemerToevoegenClicked(self):
         self.close()
-        self._windowtoevoeg = Deelnemertoevoegen(self.book)
+        self._windowtoevoeg = Deelnemertoevoegen(self.book, self._logger)
         self._windowtoevoeg.show()
         
     def btnStartFlexibiliserenClicked(self):
@@ -101,12 +103,12 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
         deelnemer.actieveerFlexibilisatie()
         self.close()
-        self._windowflex = Flexmenu(self.book, deelnemer)
+        self._windowflex = Flexmenu(self.book, deelnemer, self._logger)
         self._windowflex.show()
         
     def btnTerugClicked(self):
         self.close()
-        self.windowstart = Functiekeus(self.book)
+        self.windowstart = Functiekeus(self.book, self._logger)
         self.windowstart.show()
     
     def clearError(self): self.ui.lblFoutmeldingKiezen.clear()
@@ -132,7 +134,8 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         
         
 class Deelnemertoevoegen(QtWidgets.QMainWindow):
-    def __init__(self, book):
+    def __init__(self, book, logger):
+        self._logger = logger
         Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
         super(Deelnemertoevoegen, self).__init__()
         self.book = book
@@ -154,7 +157,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         
     def btnTerugClicked(self):
         self.close()
-        self._windowdeelnemer = Deelnemerselectie(self.book)
+        self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
         self._windowdeelnemer.show()
         
     def btnToevoegenClicked(self):
@@ -234,7 +237,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                 #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
                 ToevoegenDeelnemer(gegevens)
                 #deelnemerselectie openen
-                self._windowdeelnemer = Deelnemerselectie(self.book)
+                self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
                 self._windowdeelnemer.show()
             elif controle == "fout":
                 self.ui.lblFoutmeldingGegevens.setText("Pas uw gegevens aan en druk weer op Deelnemer toevoegen")
@@ -262,7 +265,8 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
 
 
 class Flexmenu(QtWidgets.QMainWindow):
-    def __init__(self, book, deelnemer):
+    def __init__(self, book, deelnemer, logger):
+        self._logger = logger
         Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
         super(Flexmenu, self).__init__()
         self.book = book
@@ -377,7 +381,7 @@ class Flexmenu(QtWidgets.QMainWindow):
 
     def btnAndereDeelnemerClicked(self):
         self.close()
-        self._windowdeelnemer = Deelnemerselectie(self.book)
+        self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
         self._windowdeelnemer.show()
         
     def btnVergelijkenClicked(self):
