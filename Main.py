@@ -198,7 +198,7 @@ def invoer_test_klikken():
             invoer.range((3, kolom_t), (tussenstap, kolom_t)).formula= [['=1+' + letters[kolom_t-1] + '2']]
             
             invoer.range((1, kolom_leeftijd)).value= "Leeftijd"
-            invoer.range((2, kolom_leeftijd)).value= pensioenleeftijd_range(i).value
+            invoer.range((2, kolom_leeftijd)).formula= [['=$E' + str(i+9)]]
             invoer.range((3, kolom_leeftijd), (tussenstap, kolom_leeftijd)).formula= [['=1+' + letters[kolom_leeftijd-1] + '2']]
             
             invoer.range((1, kolom_jaar)).value= "Jaar"
@@ -212,10 +212,10 @@ def invoer_test_klikken():
             invoer.range((2, kolom_tqx_juli), (tussenstap-1, kolom_tqx_juli)).formula= [['=(((13-month($B$4))*' + letters[kolom_tqx-1] + '2)+((month($B$4)-1)*' + letters[kolom_tqx-1] + '3))/12']]
             
             invoer.range((1, kolom_dt)).value= "dt"
-            invoer.range((2, kolom_dt), (tussenstap, kolom_dt)).formula= [['=(1+' + str(rente[i-1]) + ')^-' + letters[kolom_t-1] + '2']]
+            invoer.range((2, kolom_dt), (tussenstap, kolom_dt)).formula= [['=(1+$D$' + str(i+9) + ')^-' + letters[kolom_t-1] + '2']]
             
             invoer.range((1, kolom_dt_juli)).value= "dt op 1 juli"
-            invoer.range((2, kolom_dt_juli), (tussenstap-1, kolom_dt_juli)).formula= [['=(1+' + str(rente[i-1]) + ')^-(' + letters[kolom_t-1] + '2+(month($B$4)-1)/12)']]
+            invoer.range((2, kolom_dt_juli), (tussenstap-1, kolom_dt_juli)).formula= [['=(1+$D$' + str(i+9) + ')^-(' + letters[kolom_t-1] + '2+(month($B$4)-1)/12)']]
             
             
             if sterftetafel_range(i).value== "AG_2020":
@@ -231,7 +231,7 @@ def invoer_test_klikken():
             counter+= 1
             
             if regeling_range(i).value== "ZL":
-                koopsom_range(i).value= pensioenbedragen(i).value
+                koopsom_range(i).formula= [['=$B' + str(i+9)]]
                 
             elif "OP" in regeling_range(i).value:
                 koopsom_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + str(tussenstap) + ',' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + str(tussenstap) + ')*B' + str(i+9) ]]
