@@ -32,17 +32,21 @@ class Functiekeus(QtWidgets.QMainWindow):
         
     def btnAdviseurClicked(self):
         self.close()
-        self._windowdeelnemer = Deelnemerselectie(self.book)
+        self._logger.info("Functiekeus scherm gesloten")
+        self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
         self._windowdeelnemer.show()
     def btnBeheerderClicked(self): 
         self.close()
-        self._windowinlog = Inloggen(self.book)
+        self._logger.info("Functiekeus scherm gesloten")
+        self._windowinlog = Inloggen(self.book, self._logger)
         self._windowinlog.show()
         
 
 
 class Inloggen(QtWidgets.QMainWindow):
-    def __init__(self, book):
+    def __init__(self, book, logger):
+        self._logger = logger
+        self._logger.info("Inloggen scherm geopend")
         Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\2InlogBeheerder.ui".format(sys.path[0]))
         super(Inloggen, self).__init__()
         self.book = book
@@ -55,20 +59,24 @@ class Inloggen(QtWidgets.QMainWindow):
         
     def btnInloggenClicked(self):
         if self.ui.txtBeheerderscode.text() == self._Wachtwoord:
+            self._logger.info("Inloggen scherm gesloten")
             self.close()
-            self._windowdeelnemer = Deelnemerselectie(self.book)
+            self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
             self._windowdeelnemer.show()
         else:
             self.ui.lblFoutmeldingInlog.setText("Wachtwoord incorrrect")
     def btnTerugClicked(self):
         self.close()
-        self._windowkeus = Functiekeus(self.book)
+        self._logger.info("Inloggen scherm gesloten")
+        self._windowkeus = Functiekeus(self.book, self._logger)
         self._windowkeus.show()
         
         
 
 class Deelnemerselectie(QtWidgets.QMainWindow):
-    def __init__(self, book):
+    def __init__(self, book, logger):
+        self._logger = logger
+        self._logger.info("Deelnemerselectie scherm geopend")
         Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
         super(Deelnemerselectie, self).__init__()
         self.book = book
@@ -91,7 +99,8 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         
     def btnDeelnemerToevoegenClicked(self):
         self.close()
-        self._windowtoevoeg = Deelnemertoevoegen(self.book)
+        self._logger.info("Deelnemerselectie scherm gesloten")
+        self._windowtoevoeg = Deelnemertoevoegen(self.book, self._logger)
         self._windowtoevoeg.show()
         
     def btnStartFlexibiliserenClicked(self):
@@ -101,12 +110,14 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
         deelnemer.actieveerFlexibilisatie()
         self.close()
-        self._windowflex = Flexmenu(self.book, deelnemer)
+        self._logger.info("Deelnemerselectie scherm gesloten")
+        self._windowflex = Flexmenu(self.book, deelnemer, self._logger)
         self._windowflex.show()
         
     def btnTerugClicked(self):
         self.close()
-        self.windowstart = Functiekeus(self.book)
+        self._logger.info("Deelnemerselectie scherm gesloten")
+        self.windowstart = Functiekeus(self.book, self._logger)
         self.windowstart.show()
     
     def clearError(self): self.ui.lblFoutmeldingKiezen.clear()
@@ -120,7 +131,7 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, datetime(self.ui.sbJaar.value(), self.ui.sbMaand.value(), self.ui.sbDag.value()), "geboortedatum")
         kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, self.ui.cbGeslacht.currentText(), "geslacht")
         self.ui.lwKeuzes.clear()
-        for deelnemer in kleinDeelnemerlijst:
+        for deelnemer in kleinDeelnemerlijst[:10]:
             weergave = "{} {}".format(getattr(deelnemer, "voorletters"), getattr(deelnemer, "achternaam"))
             if getattr(deelnemer, "tussenvoegsels") != None: weergave += ", {}".format(getattr(deelnemer, "tussenvoegsels"))
             weergave += " | {} | {}".format(getattr(deelnemer, "geboortedatum").date(), getattr(deelnemer, "geslacht"))
@@ -132,7 +143,9 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         
         
 class Deelnemertoevoegen(QtWidgets.QMainWindow):
-    def __init__(self, book):
+    def __init__(self, book, logger):
+        self._logger = logger
+        self._logger.info("Deelnemer toevoegen scherm geopend")
         Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
         super(Deelnemertoevoegen, self).__init__()
         self.book = book
@@ -154,7 +167,8 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         
     def btnTerugClicked(self):
         self.close()
-        self._windowdeelnemer = Deelnemerselectie(self.book)
+        self._logger.info("Deelnemer toevoegen scherm gesloten")
+        self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
         self._windowdeelnemer.show()
         
     def btnToevoegenClicked(self):
@@ -231,10 +245,11 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
             if controle == "correct":
                 #window sluiten
                 self.close()
+                self._logger.info("Deelnemer toevoegen scherm gesloten")
                 #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
                 ToevoegenDeelnemer(gegevens)
                 #deelnemerselectie openen
-                self._windowdeelnemer = Deelnemerselectie(self.book)
+                self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
                 self._windowdeelnemer.show()
             elif controle == "fout":
                 self.ui.lblFoutmeldingGegevens.setText("Pas uw gegevens aan en druk weer op Deelnemer toevoegen")
@@ -262,7 +277,10 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
 
 
 class Flexmenu(QtWidgets.QMainWindow):
-    def __init__(self, book, deelnemer):
+    
+    def __init__(self, book, deelnemer, logger):
+        self._logger = logger
+        self._logger.info("Flexmenu scherm geopend")
         Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
         super(Flexmenu, self).__init__()
         self.book = book
@@ -352,7 +370,11 @@ class Flexmenu(QtWidgets.QMainWindow):
         """
         
     def invoerVerandering(self):
-        self.regelingCode = functions.regelingNaamCode(str(self.ui.cbRegeling.currentText()))
+        for flexibilisatie in self.deelnemerObject.flexibilisaties:
+            if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
+                self.regelingCode = flexibilisatie
+                break
+        # self.regelingCode = functions.regelingNaamCode(str(self.ui.cbRegeling.currentText()))
         
         if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
             # Sla de nieuwe leeftijd op
@@ -377,14 +399,17 @@ class Flexmenu(QtWidgets.QMainWindow):
 
     def btnAndereDeelnemerClicked(self):
         self.close()
-        self._windowdeelnemer = Deelnemerselectie(self.book)
+        self._logger.info("Flexmenu scherm gesloten")
+        self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
         self._windowdeelnemer.show()
         
     def btnVergelijkenClicked(self):
         # Sheet van vergelijkingen openen
         self.close()
+        self._logger.info("Flexmenu scherm gesloten")
         
     def btnOpslaanClicked(self): 
         # Alle huidige flexibiliserignen opslaan in een Excel sheet
         # Huidig diagram opslaan en plaats in vergelijking sheet
         self.close()
+        self._logger.info("Flexmenu scherm gesloten")
