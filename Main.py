@@ -179,8 +179,8 @@ def invoer_test_klikken():
 
         if pensioenbedragen(i).value != None:
             kolom_t= (counter-1)*10+8
-            kolom_leeftijd= (counter-1)*10+9
-            kolom_jaar= (counter-1)*10+10
+            kolom_jaar= (counter-1)*10+9
+            kolom_leeftijd= (counter-1)*10+10
             kolom_tpx= (counter-1)*10+11
             kolom_tqx= (counter-1)*10+12
             kolom_tqx_juli= (counter-1)*10+13
@@ -191,42 +191,41 @@ def invoer_test_klikken():
             rente.append(rentes(i).value)
             pensioenleeftijd.append(pensioenleeftijd_range(i).value)
             
-            tussenstap= 61- (int(pensioenleeftijd[i-1])-60)
-            
+            #'=if(' + letters[kolom_leeftijd-1] + '2+1<=119;
             invoer.range((1, kolom_t)).value= "t"
             invoer.range((2, kolom_t)).value= 0
-            invoer.range((3, kolom_t), (tussenstap, kolom_t)).formula= [['=1+' + letters[kolom_t-1] + '2']]
-            
-            invoer.range((1, kolom_leeftijd)).value= "Leeftijd"
-            invoer.range((2, kolom_leeftijd)).formula= [['=$E' + str(i+9)]]
-            invoer.range((3, kolom_leeftijd), (tussenstap, kolom_leeftijd)).formula= [['=1+' + letters[kolom_leeftijd-1] + '2']]
+            invoer.range((3, kolom_t), (61, kolom_t)).formula= [['=1+' + letters[kolom_t-1] + '2']]
             
             invoer.range((1, kolom_jaar)).value= "Jaar"
             invoer.range((2, kolom_jaar)).formula= [['=year(B4)+' + str(int(pensioenleeftijd[i-1]))]]
-            invoer.range((3, kolom_jaar), (tussenstap, kolom_jaar)).formula= [['=1+' + letters[kolom_jaar-1] + '2']]
+            invoer.range((3, kolom_jaar), (61, kolom_jaar)).formula= [['=1+' + letters[kolom_jaar-1] + '2']]
+            
+            invoer.range((1, kolom_leeftijd)).value= "Leeftijd"
+            invoer.range((2, kolom_leeftijd)).formula= [['=$E' + str(i+9)]]
+            invoer.range((3, kolom_leeftijd), (61, kolom_leeftijd)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<119, 1+' + letters[kolom_leeftijd-1] + '2,"")']]
             
             invoer.range((1, kolom_tqx)).value= "tqx"
-            invoer.range((2, kolom_tqx), (tussenstap, kolom_tqx)).formula= [['=1-' + letters[kolom_tpx-1] + '2']]
+            invoer.range((2, kolom_tqx), (61, kolom_tqx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", 1-' + letters[kolom_tpx-1] + '2, "")']]
             
             invoer.range((1, kolom_tqx_juli)).value= "tqx op 1 juli"
-            invoer.range((2, kolom_tqx_juli), (tussenstap-1, kolom_tqx_juli)).formula= [['=(((13-month($B$4))*' + letters[kolom_tqx-1] + '2)+((month($B$4)-1)*' + letters[kolom_tqx-1] + '3))/12']]
+            invoer.range((2, kolom_tqx_juli), (60, kolom_tqx_juli)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (((13-month($B$4))*' + letters[kolom_tqx-1] + '2)+((month($B$4)-1)*' + letters[kolom_tqx-1] + '3))/12, "")']]
             
             invoer.range((1, kolom_dt)).value= "dt"
-            invoer.range((2, kolom_dt), (tussenstap, kolom_dt)).formula= [['=(1+$D$' + str(i+9) + ')^-' + letters[kolom_t-1] + '2']]
+            invoer.range((2, kolom_dt), (61, kolom_dt)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", (1+$D$' + str(i+9) + ')^-' + letters[kolom_t-1] + '2, "")']]
             
             invoer.range((1, kolom_dt_juli)).value= "dt op 1 juli"
-            invoer.range((2, kolom_dt_juli), (tussenstap-1, kolom_dt_juli)).formula= [['=(1+$D$' + str(i+9) + ')^-(' + letters[kolom_t-1] + '2+(month($B$4)-1)/12)']]
+            invoer.range((2, kolom_dt_juli), (60, kolom_dt_juli)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (1+$D$' + str(i+9) + ')^-(' + letters[kolom_t-1] + '2+(month($B$4)-1)/12), "")']]
             
             
             if sterftetafel_range(i).value== "AG_2020":
                 invoer.range((1, kolom_tpx)).value= "tpx"
                 invoer.range((2, kolom_tpx)).value= 1
-                invoer.range((3, kolom_tpx), (tussenstap, kolom_tpx)).formula= [['=(1-INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1, ' + letters[kolom_jaar-1] + '2-2018))*' + letters[kolom_tpx-1] + '2']]
+                invoer.range((3, kolom_tpx), (61, kolom_tpx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (1-INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1, ' + letters[kolom_jaar-1] + '2-2018))*' + letters[kolom_tpx-1] + '2,"")']]
                 
                 
             else:
                 invoer.range((1, kolom_tpx)).value= "tpx"
-                invoer.range((2, kolom_tpx), (tussenstap, kolom_tpx)).formula= [['=INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1,1)/ INDEX(INDIRECT($C$' + str(i+9) + '),$' + letters[kolom_leeftijd-1] + '$2+1,1)']]
+                invoer.range((2, kolom_tpx), (61, kolom_tpx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1,1)/ INDEX(INDIRECT($C$' + str(i+9) + '),$' + letters[kolom_leeftijd-1] + '$2+1,1),"")']]
             
             counter+= 1
             
@@ -234,10 +233,10 @@ def invoer_test_klikken():
                 koopsom_range(i).formula= [['=$B' + str(i+9)]]
                 
             elif "OP" in regeling_range(i).value:
-                koopsom_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + str(tussenstap) + ',' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + str(tussenstap) + ')*B' + str(i+9) ]]
+                koopsom_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + '61)*B' + str(i+9) ]]
             
             else:
-                koopsom_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + str(tussenstap) + ',' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + str(tussenstap) + ','+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + str(tussenstap) + ')*B' + str(i+9)]]
+                koopsom_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + '61,'+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + '61)*B' + str(i+9)]]
                 
             
         else:
