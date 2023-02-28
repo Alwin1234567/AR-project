@@ -94,26 +94,6 @@
       <pointsize>10</pointsize>
      </font>
     </property>
-    <item>
-     <property name="text">
-      <string>A. Albers | 13-4-1959 | M | Samenwonend</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>M. Ali | 22-4-1961 | M | Alleenstaand</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>R.B. Bazoer | 20-5-1959 | V | Samenwonend</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>G.H. Berendse | 12-12-1952 | M | Alleenstaand</string>
-     </property>
-    </item>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
@@ -484,7 +464,7 @@
      <x>0</x>
      <y>0</y>
      <width>634</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
