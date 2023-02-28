@@ -2,8 +2,7 @@
 Header
 Hier komen alle libraries die in het programma gebruikt worden
 """
-from Pensioenfonds import Pensioenfonds
-from Pensioeninformatie import Pensioeninformatie
+from Pensioen import Pensioen
 from flex_keuzes import Flexibilisering
 """
 Body
@@ -17,10 +16,11 @@ class Deelnemer():
         Het excel bestand waarin het programma runned.
     informatie : list
         Een lijst met daarin de naam van een attribuut en de waarde van de attribuut.
+    pensioeninformatie : list
+        Een lijst met daarin pensioenfonds objecten van de verschillende fondsen.
     """
     
-    def __init__(self, book, informatie):
-        self.book = book
+    def __init__(self, informatie, pensioeninformatie):
         self._achternaam = self.informatieOpslaan(informatie, "Naam")
         self._tussenvoegsels = self.informatieOpslaan(informatie, "tussenvoegsels")
         self._voorletters = self.informatieOpslaan(informatie, "voorletter")
@@ -31,7 +31,7 @@ class Deelnemer():
         self._pt = self.informatieOpslaan(informatie, "PT%")
         self._regeling = self.informatieOpslaan(informatie, "Regeling")
         self._rijNr = self.informatieOpslaan(informatie, "rijNr")
-        self._pensioenen = self.pensioenenOpslaan(informatie)
+        self._pensioenen = self.pensioenenOpslaan(informatie, pensioeninformatie)
         self._flexibilsaties = list()
         
     def informatieOpslaan(self, informatie, kolomNaam):
@@ -45,25 +45,16 @@ class Deelnemer():
             return
         return informatie[1][index]
     
-    def pensioenenOpslaan(self, informatie):
-        pensioenenlijst = self.pensioenenInit()
+    def pensioenenOpslaan(self, informatie, pensioeninformatie):
         pensioenen = list()
-        for pensioen in pensioenenlijst:
-            bedragen = list()
-            for kolom in pensioen.deelnemersbestandKolommen:
-                if kolom == None: bedragen.append(0)
-                else: bedragen.append(informatie[1][kolom])
-            pensioenen.append(Pensioenfonds(self.book, pensioen.gegevensRij, bedragen))
+        for pensioen in pensioeninformatie:
+            if informatie[1][pensioen.ouderdomsPensioen] != None: 
+                OP = informatie[1][pensioen.ouderdomsPensioen]
+                if pensioen.partnerPensioen == None: PP = 0
+                elif informatie[1][pensioen.partnerPensioen] == None: PP = 0
+                else: PP = informatie[1][pensioen.partnerPensioen]
+                pensioenen.append(Pensioen(pensioen, OP, PP))
         return pensioenen
-                
-    def pensioenenInit(self):
-        # ZL = Pensioeninformatie("ZL", (9, None), 3)
-        Aegon65 = Pensioeninformatie("Aegon65", (10, None), 4)
-        Aegon67 = Pensioeninformatie("Aegon67", (11, None), 5)
-        NN65 = Pensioeninformatie("NN65", (12, 13), 6)
-        NN67 = Pensioeninformatie("NN67", (14, 15), 7)
-        PF_VLC68 = Pensioeninformatie("PF_VLC68", (16, 17), 8)
-        return [Aegon65, Aegon67, NN65, NN67, PF_VLC68]
     
     def actieveerFlexibilisatie(self):
         flexibilsaties = list()
@@ -103,4 +94,7 @@ class Deelnemer():
     
     @property
     def pensioenen(self): return self._pensioenen
+    
+    @property
+    def flexibilsaties(self): return self._flexibilsaties
     

@@ -4,14 +4,14 @@ Hier komen alle libraries die in het programma gebruikt worden
 """
 import sys
 from PyQt5 import QtWidgets, uic
-from flex_keuzes import flexibilisering
+
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
 import functions
 from datetime import datetime
 from functions import pensioensdatum, isfloat, ToevoegenDeelnemer, gegevenscontrole #deze zouden ook moeten inladen met de import functions hierboven, maar dat werkt niet
-from Deelnemer import Deelnemer
+
 
 """
 Body

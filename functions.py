@@ -6,6 +6,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 import xlwings as xw
 from datetime import datetime
 from Deelnemer import Deelnemer
+from Pensioenfonds import Pensioenfonds
 import ctypes
 
 """
@@ -231,11 +232,35 @@ def getDeelnemersbestand(book):
     deelnemersbestand[0].append("rijNr")
     for i in range(len(deelnemersbestand) - 1):
         deelnemersbestand[i+1].append(i + 2)
+    pensioeninformatie = getPensioeninformatie(book)
     deelnemerlijst = list()
     for deelnemer in deelnemersbestand[1:]:
         informatie = [deelnemersbestand[0], deelnemer]
-        deelnemerlijst.append(Deelnemer(book, informatie))
+        deelnemerlijst.append(Deelnemer(informatie, pensioeninformatie))
     return deelnemerlijst
+
+
+def getPensioeninformatie(book):
+    kolommen = dict()
+    kolommen["naamkolom"] = 2
+    kolommen["pensioenleeftijdkolom"] = 4
+    kolommen["rentekolom"] = 5
+    kolommen["sterftetafelkolom"] = 6
+    
+    gegevens_pensioenenSheet = book.sheets["Gegevens pensioencontracten"]
+    
+    pensioenen = dict()
+    # pensioenen["ZL"] = ((9, None), 3)
+    pensioenen["Aegon65"] = ((10, None), 4)
+    pensioenen["Aegon67"] = ((11, None), 5)
+    pensioenen["NN65"] = ((12, 13), 6)
+    pensioenen["NN67"] = ((14, 15), 7)
+    pensioenen["PF_VLC68"] = ((16, 17), 8)
+    
+    pensioeninformatie = list()
+    for pensioen in pensioenen.values():
+        pensioeninformatie.append(Pensioenfonds(gegevens_pensioenenSheet, kolommen, pensioen))
+    return pensioeninformatie
 
 
 def filterkolom(deelnemerlijst, zoekterm, attribuutnaam):

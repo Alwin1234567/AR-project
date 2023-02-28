@@ -9,7 +9,7 @@ Body
 Hier komen alle functies
 """
 
-class flexibilisering:
+class Flexibilisering:
 
     """
     Een object van deze klasse bevat alle huidige flexibiliseringskeuzes waarmee

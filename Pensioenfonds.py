@@ -20,22 +20,18 @@ class Pensioenfonds():
         Een tuple met de waarde van het ouderdomspensioen en het partnerpensioen.
     """
     
-    def __init__(self, book, pensioenrij, OPenPP):
-        naamkolom = 2
-        pensioenleeftijdkolom = 4
-        rentekolom = 5
-        sterftetafelkolom = 6
+    def __init__(self, gegevensSheet, kolommen, pensioen):
+        OPenPP = pensioen[0]
+        gegevensRij = pensioen[1]
         
-        self.book = book
-        self.gegevensPensioencontracten = book.sheets["Gegevens pensioencontracten"]
         
-        self._naam = self.gegevensPensioencontracten.range((pensioenrij, naamkolom)).value
+        self._naam = gegevensSheet.range((gegevensRij, kolommen["naamkolom"])).value
         self._volNaam = ""
         self.volledigeNaam()
         
-        self._pensioenleefijd = self.gegevensPensioencontracten.range((pensioenrij, pensioenleeftijdkolom)).value
-        self._rente = float(self.gegevensPensioencontracten.range((pensioenrij, rentekolom)).options(numbers = float).value)
-        self._sterftetafel = self.gegevensPensioencontracten.range((pensioenrij, sterftetafelkolom)).value
+        self._pensioenleefijd = gegevensSheet.range((gegevensRij, kolommen["pensioenleeftijdkolom"])).value
+        self._rente = float(gegevensSheet.range((gegevensRij, kolommen["rentekolom"])).options(numbers = float).value)
+        self._sterftetafel = gegevensSheet.range((gegevensRij, kolommen["sterftetafelkolom"])).value
         
         self._ouderdomsPensioen = OPenPP[0]
         self._partnerPensioen = OPenPP[1]
@@ -75,4 +71,5 @@ class Pensioenfonds():
     @property
     def partnerPensioen(self):
         return self._partnerPensioen
+    
     
