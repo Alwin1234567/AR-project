@@ -245,6 +245,20 @@ def getDeelnemersbestand(book):
 
 
 def getPensioeninformatie(book):
+    """
+    functie die de informatie van de pensioenen verzameld
+
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+
+    Returns
+    -------
+    pensioeninformatie : list(Pensioenfonds)
+        lijst met de pensioenfonds objecten van alle verschillende pensioenen.
+
+    """    
     kolommen = dict()
     kolommen["naamkolom"] = 2
     kolommen["pensioenleeftijdkolom"] = 4
@@ -468,6 +482,20 @@ def gegevenscontrole(gegevens):
         return "fout"
 
 def setup_logger(name):
+    """
+    functie die de logger met handlers maakt
+
+    Parameters
+    ----------
+    naam : str
+        naam van de logger.
+
+    Returns
+    -------
+    logger : Logger
+        Het logger object dat gebruikt wordt.
+
+    """
     logger = logging.getLogger(name)
 
     logger.setLevel(logging.DEBUG)
