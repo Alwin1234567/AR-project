@@ -45,7 +45,7 @@ class Flexibilisering:
         # Hoog/laag constructie
         self._HL_Actief = False
         self._HL_Volgorde = "Hoog-laag"
-        self._HL_Methode = "Opvullen AOW"
+        self._HL_Methode = "Opvullen AOW" 
         self._HL_Verhouding_Hoog = 100
         self._HL_Verhouding_Laag = 0
         self._HL_Percentage = 0

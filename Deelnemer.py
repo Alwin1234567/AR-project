@@ -54,7 +54,7 @@ class Deelnemer():
                 pensioenen.append(Pensioen(pensioen, OP, PP))
         return pensioenen
     
-    def actieveerFlexibilisatie(self):
+    def activeerFlexibilisatie(self):
         flexibilisaties = list()
         for pensioen in self._pensioenen: flexibilisaties.append(Flexibilisering(pensioen))
         self._flexibilisaties = flexibilisaties
