@@ -105,7 +105,7 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         
     def btnStartFlexibiliserenClicked(self):
         if self.ui.lwKeuzes.currentRow() == -1: 
-            self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te slecteren voordat u gaat flexibiliseren")
+            self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren voordat u gaat flexibiliseren")
             return
         deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
         deelnemer.actieveerFlexibilisatie()
@@ -378,6 +378,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
             # Sla de nieuwe leeftijd op
+            
             pass
         else:
             # Sla de oude leeftijd op
