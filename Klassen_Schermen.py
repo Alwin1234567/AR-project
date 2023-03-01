@@ -26,6 +26,7 @@ class Functiekeus(QtWidgets.QMainWindow):
         self.book = book
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setWindowTitle("Kies uw functie")
         self.ui.btnAdviseur.clicked.connect(self.btnAdviseurClicked)
         self.ui.btnBeheerder.clicked.connect(self.btnBeheerderClicked)
         
@@ -52,6 +53,7 @@ class Inloggen(QtWidgets.QMainWindow):
         self.book = book
         self.ui = Ui_MainWindow2()
         self.ui.setupUi(self)
+        self.setWindowTitle("Inloggen als beheerder")
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
         self.ui.btnInloggen.clicked.connect(self.btnInloggenClicked)
         self._Wachtwoord = "wachtwoord"
@@ -82,6 +84,7 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self.book = book
         self.ui = Ui_MainWindow3()
         self.ui.setupUi(self)
+        self.setWindowTitle("Deelnemerselectie")
         self.deelnemerlijst = functions.getDeelnemersbestand(self.book)
         self.kleinDeelnemerlijst = list()
         self.ui.btnDeelnemerToevoegen.clicked.connect(self.btnDeelnemerToevoegenClicked)
@@ -151,6 +154,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         self.book = book
         self.ui = Ui_MainWindow4()
         self.ui.setupUi(self)
+        self.setWindowTitle("Deelnemer toevoegen")
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
         self.ui.btnToevoegen.clicked.connect(self.btnToevoegenClicked)
         self.ui.sbMaand.valueChanged.connect(self.onChange)
@@ -288,6 +292,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         # Setup van UI
         self.ui = Ui_MainWindow5()
         self.ui.setupUi(self)
+        self.setWindowTitle("Flexibilisatie menu") #Het moet na de setup, daarom staat het nu even hier
         
         # Deelnemer
         self.deelnemerObject = deelnemer
