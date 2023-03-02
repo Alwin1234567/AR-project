@@ -501,8 +501,8 @@ def setup_logger(name):
 
     logger.setLevel(logging.DEBUG)
     today = date.today().strftime("%Y_%m_%d")
-    if not exists("{}\\Logs\\{}.log".format(sys.path[0], today)): os.makedirs(os.path.dirname("{}\\Logs\\{}.log".format(sys.path[0], today)))
-    if not exists("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)): os.makedirs(os.path.dirname("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)))
+    if not exists("{}\\Logs\\{}.log".format(sys.path[0], today)): os.makedirs(os.path.dirname("{}\\Logs\\{}.log".format(sys.path[0], today)), exist_ok=True)
+    if not exists("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)): os.makedirs(os.path.dirname("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)), exist_ok=True)
     filename = "{}\\Logs\\{}.log".format(sys.path[0], today)
     errorname = "{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)
     
