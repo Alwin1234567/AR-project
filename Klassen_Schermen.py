@@ -246,6 +246,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
             gegevens = Deelnemersgegevens + Pensioensgegevens
             
             #deelnemer zijn gegevens laten controleren
+            self._logger.info("Ingevulde gegevens worden getoont voor controle")
             controle = gegevenscontrole(gegevens)
             if controle == "correct":
                 #window sluiten
@@ -254,17 +255,21 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                 
                 #het parttime percentage delen door 100, zodat het in excel als % komt
                 gegevens[7] = float(gegevens[7])/100
-                #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
-                ToevoegenDeelnemer(gegevens)
+                try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
+                    ToevoegenDeelnemer(gegevens)
+                    self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
+                except Exception as e:
+                    self._logger.exception("Er is iets fout gegaan bij het toevoegen van een deelnemer aan het deelnemersbestand")
                 
                 #deelnemerselectie openen
                 self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
                 self._windowdeelnemer.show()
             elif controle == "fout":
-                self.ui.lblFoutmeldingGegevens.setText("Pas uw gegevens aan en druk weer op Deelnemer toevoegen")
+                self._logger.info("Deelnemer wil zijn ingevulde gegevens aanpassen. Deelnemer toevoegen scherm blijft open")
                 #als niet op "ja" wordt geklikt, wordt de messagebox gesloten en het invoerveld weer getoont
             
         else: 
+            self._logger.info("Niet alle deelnemersgegevens zijn goed ingevuld. De deelnemer moet zijn gegevens aanpassen")
             #foutmelding tonen
             self.ui.lblFoutmeldingGegevens.setText(foutmeldingGegevens)
             self.ui.lblFoutmeldingPensioen.setText(foutmeldingPensioen)
