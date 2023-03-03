@@ -326,15 +326,20 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.txtHLVerhoudingHoog.textEdited.connect(self.invoerVerandering)
         self.ui.txtHLVerhoudingLaag.textEdited.connect(self.invoerVerandering)
         self.ui.txtHLVerschil.textEdited.connect(self.invoerVerandering)
+        self.ui.sbHLJaar.valueChanged.connect(self.invoerVerandering)
+        self.ui.sbHLMaand.valueChanged.connect(self.invoerVerandering)
+        
+        # Aanpassing: Regeling
+        self.ui.cbRegeling.activated.connect(self.wijzigVelden)
         
         # Laatste UI update
-        self.samenvattingUpdate()
+        self.invoerVerandering()
     
     def dropdownRegelingen(self):
         regelingenActief = list()
         regelingenActiefKort = list()
         
-        for regeling in self.deelnemerObject._pensioenen:
+        for regeling in self.deelnemerObject.pensioenen:
             if regeling.ouderdomsPensioen != None:
                 if regeling.ouderdomsPensioen > 0:
                     regelingenActief.append(regeling.pensioenVolNaam)
@@ -350,45 +355,78 @@ class Flexmenu(QtWidgets.QMainWindow):
         Als een regeling geselecteerd wordt waar nog niet eerder aanpassingen voor gemaakt zijn dan moet 
         deze functie alle velden weer leegmaken.
         """
-        pass
+        
+        for flexibilisatie in self.deelnemerObject.flexibilisaties:
+            if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
+                self.regelingCode = flexibilisatie
+                break
+        
+        # Eerst alle velden terug naar standaard
+        # Pensioenleeftijd
+        self.ui.CheckLeeftijdWijzigen.setChecked(False)
+        self.ui.sbJaar.setValue(60)
+        self.ui.sbMaand.setValue(0)
+        
+        # OP/PP
+        self.ui.CheckUitruilen.setChecked(False)
+        self.ui.cbUitruilenVan.setCurrentIndex(0)
+        self.ui.cbUMethode.setCurrentIndex(0)
+        self.ui.txtUVerhoudingOP.clear()
+        self.ui.txtUVerhoudingPP.clear()
+        self.ui.txtUPercentage.clear()
+           
+        # Hoog-laag constructie
+        self.ui.CheckHoogLaag.setChecked(False)
+        self.ui.cbHLVolgorde.setCurrentIndex(0)
+        self.ui.cbHLMethode.setCurrentIndex(0)
+        self.ui.txtHLVerhoudingHoog.clear()
+        self.ui.txtHLVerhoudingLaag.clear()
+        self.ui.txtHLVerschil.clear()
+        self.ui.sbHLJaar.setValue(5)
+        self.ui.sbHLMaand.setValue(0)
+        
+        # Check of regeling al actieve onderdelen heeft, zo ja dan moeten deze flex opties teruggehaald worden.
+        if self.regelingCode.leeftijd_Actief == True:
+            # Verander de waardes naar wat opgeslagen is in het object
+            pass
+        
+        if self.regelingCode.OP_PP_Actief == True:
+            # Verander de waardes naar wat opgeslagen is in het object
+            pass
+        
+        if self.regelingCode.HL_Actief == True:
+            # Verander de waardes naar wat opgeslagen is in het object
+            pass
+
 
     def invoerVerandering(self):
         """ 
         Deze functie activeert zodra de gebruiker een verandering maakt in het flexmenu scherm.
         Zo kan het scherm live aanpassen op basis van input van de gebruiker.
         """
+        # Functie voor invoer check
+        #  > Is alles wat ingevoerd wel correct? (dus geen letters waar cijfers horen enzo)
+        #  > Is alles ingevoerd waar invoer moet staan?
+        # Als beide eisen voldoen, kunnen de volgende functies doorgevoerd worden
+
+        self.flexkeuzesOpslaan() # Sla flex keuzes op
+        self.samenvattingUpdate() # Update de samenvatting
         
+        
+    def flexkeuzesOpslaan(self):
+        """
+        Deze functie checkt welke flexkeuzes op actief gezet zijn, en slaat vervolgens
+        deze actieve flexkeuzes op in de flex_keuzes klasse.
+        """
+        
+        # Selecteer huidige regeling-object voor flex keuzes
         for flexibilisatie in self.deelnemerObject.flexibilisaties:
             if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
                 self.regelingCode = flexibilisatie
                 break
         # self.regelingCode = functions.regelingNaamCode(str(self.ui.cbRegeling.currentText()))
         
-        if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
-            # Sla de nieuwe leeftijd op
-            
-            pass
-        else:
-            # Sla de oude leeftijd op
-            pass
         
-        if self.ui.CheckUitruilen.isChecked() == True:
-            # Sla de OP/PP flexibiliseringen op
-            pass
-        else:
-            # Sla op dat er geen flexibiliseringen zijn
-            pass
-        
-        if self.ui.CheckHoogLaag.isChecked() ==  True:
-            # Sla de hoog-laag flexibiliseringen op
-            pass
-        else:
-            # Sla op dat er geen flexibiliseringen zijn
-            pass
-
-
-        #Onderstaande if-statement checkt of (en wat) er geflexibiliseerd moet worden
-
         # --- Leeftijd wijzigen ---
         if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
             self._logger.info("Leeftijd wijzigen staat in flexmenu.ui op actief, dit en de veranderingen worden opgeslagen.")
@@ -419,13 +457,10 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.regelingCode.OP_PP_Actief = True
 
             # Sla de VOLGORDE van de OP/PP uitruiling op
-            try:
-                if str(self.ui.cbUitruilenVan.currentText()) == "OP naar PP":
-                    self.regelingCode.OP_PP_UitruilenVan = "OP naar PP"
-                elif str(self.ui.cbUitruilenVan.currentText()) == "PP naar OP":
-                    self.regelingCode.OP_PP_UitruilenVan = "PP naar OP"
+            try: 
+                self.regelingCode.OP_PP_UitruilenVan = str(self.ui.cbUitruilenVan.currentText())
             except Exception as e:
-                self._loggerr.info("Huidig geselecteerde OP/PP volgorde in flexmenu.ui cbUitruilenVan wordt niet herkend.")
+                self._loggerr.info("Huidig geselecteerde OP/PP volgorde in flexmenu.ui cbUitruilenVan kan niet worden opgeslagen.")
             
             # Sla de METHODE van de OP/PP uitruiling op
             try:
@@ -466,12 +501,9 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             # Sla de VOLGORDE van de H/L constructie op
             try:
-                if str(self.ui.cbHLVolgorde.currentText()) == "Hoog-laag":
-                    self.regelingCode.HL_Volgorde = "Hoog-laag"
-                elif str(self.ui.cbHLVolgorde.currentText()) == "Laag-hoog":
-                    self.regelingCode.HL_Volgorde = "Laag-hoog"
+                self.regelingCode.HL_Volgorde = str(self.ui.cbHLVolgorde.currentText())
             except Exception as e:
-                self._logger.exception("Huidig geselecteerde Hoog/Laag volgorde in flexmenu.ui cbHLVolgorde wordt niet herkend.")
+                self._logger.exception("Huidig geselecteerde Hoog/Laag volgorde in flexmenu.ui cbHLVolgorde kan niet opgeslagen worden.")
             
             # Sla de METHODE van de H/L constructie op
             try:
@@ -497,47 +529,66 @@ class Flexmenu(QtWidgets.QMainWindow):
             except Exception as e:
                 self._logger.exception("Huidig geselecteerde Hoog/Laag rekenmethode in flexmenu.ui cbHLMethode wordt niet herkend.")
             
+            # Sla de DUUR VAN EERSTE PERIODE op
+            try:
+                self.regelingCode.HL_Jaar = self.ui.sbHLJaar.value()
+                self.regelingCode.HL_Maand = self.ui.sbHLMaand.value()
+            except Exception as e:
+                self._logger.exception("Er gaat iets fout bij het opslaan van de huidig geselecteerde duur voor eerste periode van H/L constructie in flexmenu.ui")
+            
         elif self.ui.CheckHoogLaag.isChecked() ==  False:
             self._logger.info("Hoog-laag constructie staat in flexmenu.ui niet geselecteerd, dit wordt opgeslagen.")
             
             # Sla op dat H/L constructie NIET ACTIEF is
             self.regelingCode.HL_Actief = False
-        
-        self.samenvattingUpdate()
+    
+    def berekenen(self):
+        """
+        Deze functie zal alle flexibiliseringswaarden naar de Excel sheet plaatsen voor berekenen.
+        """
+        pass
+    
+    def diagramUpdate(self):
+        """
+        Deze functie update het diagram.
+        """
+        pass
     
     def samenvattingUpdate(self):
         """
         Deze functie update de waarden in de samenvatting boxes.
         """
         #self.ui.lblName.setText("string")
-        for flexibilisatie in self.deelnemerObject.flexibilisaties:
-            if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
-                self._regelingCode = flexibilisatie
-                break
+
+        #Selecteer huidige regeling-object voor flex keuzes
+        # for flexibilisatie in self.deelnemerObject.flexibilisaties:
+        #     if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
+        #         self._regelingCode = flexibilisatie
+        #         break
+        
         # ZwitserLeven
         if "ZL" in self._regelingenActiefKort:
-            if str(self.ui.cbRegeling.currentText()) == "ZwitserLeven":
-                self._regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "ZL")
-                self.ui.lbl_ZL.setText("ZL")
-                self.ui.lbl_ZL_OP.setText("€—")
-                self.ui.lbl_ZL_PP.setText("€—")
-                
-                if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
-                    self.ui.lbl_ZL_pLeeftijd.setText(str(self._regelingCode.leeftijdJaar)+" jaar en "+str(self._regelingCode.leeftijdMaand)+" maanden")
-                elif self.ui.CheckLeeftijdWijzigen.isChecked() == False:
-                    # Hier moet de originele leeftijd van de pensioenvorm weergegeven worden
-                    pass
-                
-                if self.ui.CheckUitruilen.isChecked() == True: 
-                    self.ui.lbl_ZL_OP_PP.setText(str(self._regelingCode.OP_PP_UitruilenVan))
-                elif self.ui.CheckUitruilen.isChecked() == False:
-                    self.ui.lbl_ZL_OP_PP.setText("OP/PP uitruiling n.v.t.")
-                
-                if self.ui.CheckHoogLaag.isChecked() ==  True:
-                    self.ui.lbl_ZL_hlConstructie.setText(str(self._regelingCode.HL_Volgorde))
-                elif self.ui.CheckHoogLaag.isChecked() ==  False:
-                    self.ui.lbl_ZL_hlConstructie.setText("H/L constructie n.v.t.")
-                
+            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "ZL")
+            
+            self.ui.lbl_ZL.setText("ZL")
+            self.ui.lbl_ZL_OP.setText("€—") 
+            self.ui.lbl_ZL_PP.setText("€—") 
+            
+            if self.regelingCode.leeftijd_Actief == True:
+                self.ui.lbl_ZL_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
+            elif self.regelingCode.leeftijd_Actief == False:
+                self.ui.lbl_ZL_pLeeftijd.setText("Leeftijd nog bepalen.")
+            
+            if self.regelingCode.OP_PP_Actief == True:
+                self.ui.lbl_ZL_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
+            elif self.regelingCode.OP_PP_Actief == False:
+                self.ui.lbl_ZL_OP_PP.setText("OP/PP uitruiling n.v.t.")
+            
+            if self.regelingCode.HL_Actief == True:
+                self.ui.lbl_ZL_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
+            elif self.regelingCode.HL_Actief == False:
+                self.ui.lbl_ZL_hlConstructie.setText("H/L constructie n.v.t.")
+                                          
         else:
             self.ui.lbl_ZL.setText("ZL (n.v.t.)")
             self.ui.lbl_ZL_OP.setText("€—")
@@ -549,27 +600,26 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # Aegon OP65
         if "Aegon OP65" in self._regelingenActiefKort:
-            if str(self.ui.cbRegeling.currentText()) == "Aegon 65":
-                self._regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "Aegon OP65")
-                self.ui.lbl_A65.setText("Aegon 65")
-                self.ui.lbl_A65_OP.setText("€—")
-                self.ui.lbl_A65_PP.setText("€—")
-                
-                if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
-                    self.ui.lbl_A65_pLeeftijd.setText(str(self._regelingCode.leeftijdJaar)+" jaar en "+str(self._regelingCode.leeftijdMaand)+" maanden")
-                elif self.ui.CheckLeeftijdWijzigen.isChecked() == False:
-                    # Hier moet de originele leeftijd van de pensioenvorm weergegeven worden
-                    pass
-                
-                if self.ui.CheckUitruilen.isChecked() == True: 
-                    self.ui.lbl_A65_OP_PP.setText(str(self._regelingCode.OP_PP_UitruilenVan))
-                elif self.ui.CheckUitruilen.isChecked() == False:
-                    self.ui.lbl_A65_OP_PP.setText("OP/PP uitruiling n.v.t.")
-                
-                if self.ui.CheckHoogLaag.isChecked() ==  True:
-                    self.ui.lbl_A65_hlConstructie.setText(str(self._regelingCode.HL_Volgorde))
-                elif self.ui.CheckHoogLaag.isChecked() ==  False:
-                    self.ui.lbl_A65_hlConstructie.setText("H/L constructie n.v.t.")
+            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "Aegon OP65")
+            
+            self.ui.lbl_A65.setText("Aegon 65")
+            self.ui.lbl_A65_OP.setText("€—")
+            self.ui.lbl_A65_PP.setText("€—")
+            
+            if self.regelingCode.leeftijd_Actief == True:
+                self.ui.lbl_A65_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
+            elif self.regelingCode.leeftijd_Actief == False:
+                self.ui.lbl_A65_pLeeftijd.setText("65 jaar en 0 maanden")
+            
+            if self.regelingCode.OP_PP_Actief == True:
+                self.ui.lbl_A65_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
+            elif self.regelingCode.OP_PP_Actief == False:
+                self.ui.lbl_A65_OP_PP.setText("OP/PP uitruiling n.v.t.")
+            
+            if self.regelingCode.HL_Actief == True:
+                self.ui.lbl_A65_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
+            elif self.regelingCode.HL_Actief == False:
+                self.ui.lbl_A65_hlConstructie.setText("H/L constructie n.v.t.")
                 
         else:
             self.ui.lbl_A65.setText("Aegon 65 (n.v.t.)")
@@ -582,27 +632,26 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # Aegon OP67
         if "Aegon OP67" in self._regelingenActiefKort:
-            if str(self.ui.cbRegeling.currentText()) == "Aegon 67":
-                self._regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "Aegon OP67")
-                self.ui.lbl_A67.setText("Aegon 67")
-                self.ui.lbl_A67_OP.setText("€—")
-                self.ui.lbl_A67_PP.setText("€—")
-                
-                if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
-                    self.ui.lbl_A67_pLeeftijd.setText(str(self._regelingCode.leeftijdJaar)+" jaar en "+str(self._regelingCode.leeftijdMaand)+" maanden")
-                elif self.ui.CheckLeeftijdWijzigen.isChecked() == False:
-                    # Hier moet de originele leeftijd van de pensioenvorm weergegeven worden
-                    pass
-                
-                if self.ui.CheckUitruilen.isChecked() == True: 
-                    self.ui.lbl_A67_OP_PP.setText(str(self._regelingCode.OP_PP_UitruilenVan))
-                elif self.ui.CheckUitruilen.isChecked() == False:
-                    self.ui.lbl_A67_OP_PP.setText("OP/PP uitruiling n.v.t.")
-                
-                if self.ui.CheckHoogLaag.isChecked() ==  True:
-                    self.ui.lbl_A67_hlConstructie.setText(str(self._regelingCode.HL_Volgorde))
-                elif self.ui.CheckHoogLaag.isChecked() ==  False:
-                    self.ui.lbl_A67_hlConstructie.setText("H/L constructie n.v.t.")
+            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "Aegon OP67")
+            
+            self.ui.lbl_A67.setText("Aegon 67")
+            self.ui.lbl_A67_OP.setText("€—")
+            self.ui.lbl_A67_PP.setText("€—")
+            
+            if self.regelingCode.leeftijd_Actief == True:
+                self.ui.lbl_A67_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
+            elif self.regelingCode.leeftijd_Actief == False:
+                self.ui.lbl_A67_pLeeftijd.setText("67 jaar en 0 maanden")
+            
+            if self.regelingCode.OP_PP_Actief == True:
+                self.ui.lbl_A67_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
+            elif self.regelingCode.OP_PP_Actief == False:
+                self.ui.lbl_A67_OP_PP.setText("OP/PP uitruiling n.v.t.")
+            
+            if self.regelingCode.HL_Actief == True:
+                self.ui.lbl_A67_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
+            elif self.regelingCode.HL_Actief == False:
+                self.ui.lbl_A67_hlConstructie.setText("H/L constructie n.v.t.")
                 
         else:
             self.ui.lbl_A67.setText("Aegon 67 (n.v.t.)")
@@ -615,27 +664,26 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # NN OP65
         if "NN OP65" in self._regelingenActiefKort:
-            if str(self.ui.cbRegeling.currentText()) == "Nationale Nederlanden 65":
-                self._regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "NN OP65")
-                self.ui.lbl_NN65.setText("NN 65")
-                self.ui.lbl_NN65_OP.setText("€—")
-                self.ui.lbl_NN65_PP.setText("€—")
-                
-                if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
-                    self.ui.lbl_NN65_pLeeftijd.setText(str(self._regelingCode.leeftijdJaar)+" jaar en "+str(self._regelingCode.leeftijdMaand)+" maanden")
-                elif self.ui.CheckLeeftijdWijzigen.isChecked() == False:
-                    # Hier moet de originele leeftijd van de pensioenvorm weergegeven worden
-                    pass
-                
-                if self.ui.CheckUitruilen.isChecked() == True: 
-                    self.ui.lbl_NN65_OP_PP.setText(str(self._regelingCode.OP_PP_UitruilenVan))
-                elif self.ui.CheckUitruilen.isChecked() == False:
-                    self.ui.lbl_NN65_OP_PP.setText("OP/PP uitruiling n.v.t.")
-                
-                if self.ui.CheckHoogLaag.isChecked() ==  True:
-                    self.ui.lbl_NN65_hlConstructie.setText(str(self._regelingCode.HL_Volgorde))
-                elif self.ui.CheckHoogLaag.isChecked() ==  False:
-                    self.ui.lbl_NN65_hlConstructie.setText("H/L constructie n.v.t.")
+            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "NN OP65")
+            
+            self.ui.lbl_NN65.setText("NN 65")
+            self.ui.lbl_NN65_OP.setText("€—")
+            self.ui.lbl_NN65_PP.setText("€—")
+            
+            if self.regelingCode.leeftijd_Actief == True:
+                self.ui.lbl_NN65_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
+            elif self.regelingCode.leeftijd_Actief == False:
+                self.ui.lbl_NN65_pLeeftijd.setText("65 jaar en 0 maanden")
+            
+            if self.regelingCode.OP_PP_Actief == True:
+                self.ui.lbl_NN65_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
+            elif self.regelingCode.OP_PP_Actief == False:
+                self.ui.lbl_NN65_OP_PP.setText("OP/PP uitruiling n.v.t.")
+            
+            if self.regelingCode.HL_Actief == True:
+                self.ui.lbl_NN65_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
+            elif self.regelingCode.HL_Actief == False:
+                self.ui.lbl_NN65_hlConstructie.setText("H/L constructie n.v.t.")
                 
         else:
             self.ui.lbl_NN65.setText("NN 65 (n.v.t.)")
@@ -648,27 +696,26 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # NN OP67
         if "NN OP67" in self._regelingenActiefKort:
-            if str(self.ui.cbRegeling.currentText()) == "Nationale Nederlanden 67":
-                self._regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "NN OP67")
-                self.ui.lbl_NN67.setText("NN 67")
-                self.ui.lbl_NN67_OP.setText("€—")
-                self.ui.lbl_NN67_PP.setText("€—")
-                
-                if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
-                    self.ui.lbl_NN67_pLeeftijd.setText(str(self._regelingCode.leeftijdJaar)+" jaar en "+str(self._regelingCode.leeftijdMaand)+" maanden")
-                elif self.ui.CheckLeeftijdWijzigen.isChecked() == False:
-                    # Hier moet de originele leeftijd van de pensioenvorm weergegeven worden
-                    pass
-                
-                if self.ui.CheckUitruilen.isChecked() == True: 
-                    self.ui.lbl_NN67_OP_PP.setText(str(self._regelingCode.OP_PP_UitruilenVan))
-                elif self.ui.CheckUitruilen.isChecked() == False:
-                    self.ui.lbl_NN67_OP_PP.setText("OP/PP uitruiling n.v.t.")
-                
-                if self.ui.CheckHoogLaag.isChecked() ==  True:
-                    self.ui.lbl_NN67_hlConstructie.setText(str(self._regelingCode.HL_Volgorde))
-                elif self.ui.CheckHoogLaag.isChecked() ==  False:
-                    self.ui.lbl_NN67_hlConstructie.setText("H/L constructie n.v.t.")
+            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "NN OP67")
+            
+            self.ui.lbl_NN67.setText("NN 67")
+            self.ui.lbl_NN67_OP.setText("€—")
+            self.ui.lbl_NN67_PP.setText("€—")
+            
+            if self.regelingCode.leeftijd_Actief == True:
+                self.ui.lbl_NN67_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
+            elif self.regelingCode.leeftijd_Actief == False:
+                self.ui.lbl_NN67_pLeeftijd.setText("67 jaar en 0 maanden")
+            
+            if self.regelingCode.OP_PP_Actief == True:
+                self.ui.lbl_NN67_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
+            elif self.regelingCode.OP_PP_Actief == False:
+                self.ui.lbl_NN67_OP_PP.setText("OP/PP uitruiling n.v.t.")
+            
+            if self.regelingCode.HL_Actief == True:
+                self.ui.lbl_NN67_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
+            elif self.regelingCode.HL_Actief == False:
+                self.ui.lbl_NN67_hlConstructie.setText("H/L constructie n.v.t.")
                 
         else:
             self.ui.lbl_NN67.setText("NN 67 (n.v.t.)")
@@ -681,27 +728,27 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # PF VLC OP68
         if "PF VLC OP68" in self._regelingenActiefKort:
-            if str(self.ui.cbRegeling.currentText()) == "Pensioenfonds VLC 68":
-                self._regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "PF VLC 68")
-                self.ui.lbl_VLC.setText("PF VLC 68")
-                self.ui.lbl_VLC_OP.setText("€—")
-                self.ui.lbl_VLC_PP.setText("€—")
+            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "PF VLC OP68")
+            
+            self.ui.lbl_VLC.setText("PF VLC 68")
+            self.ui.lbl_VLC_OP.setText("€—")
+            self.ui.lbl_VLC_PP.setText("€—")
+            
+            if self.regelingCode.leeftijd_Actief == True:
+                self.ui.lbl_VLC_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
+            elif self.regelingCode.leeftijd_Actief == False:
+                self.ui.lbl_VLC_pLeeftijd.setText("68 jaar en 0 maanden")
+            
+            if self.regelingCode.OP_PP_Actief == True:
+                self.ui.lbl_VLC_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
+            elif self.regelingCode.OP_PP_Actief == False:
+                self.ui.lbl_VLC_OP_PP.setText("OP/PP uitruiling n.v.t.")
+            
+            if self.regelingCode.HL_Actief == True:
+                self.ui.lbl_VLC_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
+            elif self.regelingCode.HL_Actief == False:
+                self.ui.lbl_VLC_hlConstructie.setText("H/L constructie n.v.t.")
                 
-                if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
-                    self.ui.lbl_VLC_pLeeftijd.setText(str(self._regelingCode.leeftijdJaar)+" jaar en "+str(self._regelingCode.leeftijdMaand)+" maanden")
-                elif self.ui.CheckLeeftijdWijzigen.isChecked() == False:
-                    # Hier moet de originele leeftijd van de pensioenvorm weergegeven worden
-                    pass
-                
-                if self.ui.CheckUitruilen.isChecked() == True: 
-                    self.ui.lbl_VLC_OP_PP.setText(str(self._regelingCode.OP_PP_UitruilenVan))
-                elif self.ui.CheckUitruilen.isChecked() == False:
-                    self.ui.lbl_VLC_OP_PP.setText("OP/PP uitruiling n.v.t.")
-                
-                if self.ui.CheckHoogLaag.isChecked() ==  True:
-                    self.ui.lbl_VLC_hlConstructie.setText(str(self._regelingCode.HL_Volgorde))
-                elif self.ui.CheckHoogLaag.isChecked() ==  False:
-                    self.ui.lbl_VLC_hlConstructie.setText("H/L constructie n.v.t.")
         else:
             self.ui.lbl_VLC.setText("PF VLC 68 (n.v.t.)")
             self.ui.lbl_VLC_OP.setText("€—")

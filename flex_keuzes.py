@@ -49,6 +49,8 @@ class Flexibilisering:
         self._HL_Verhouding_Hoog = 100
         self._HL_Verhouding_Laag = 0
         self._HL_Percentage = 0
+        self._HL_Jaar = 5
+        self._HL_Maand = 0
         
         
     @property
@@ -82,7 +84,7 @@ class Flexibilisering:
     
     @leeftijdMaand.setter
     def leeftijdMaand(self, pLeeftijdMaand):
-        self._pLeeftijdMaand
+        self._pLeeftijdMaand = pLeeftijdMaand
     
     # --- OP/PP uitruiling ---
     # >>> Actief
@@ -195,8 +197,26 @@ class Flexibilisering:
     @HL_Percentage.setter
     def HL_Percentage(self, HL_Percentage):
         self._HL_Percentage= HL_Percentage
+    
+    # >>> Aantal jaren eerste periode
+    @property
+    def HL_Jaar(self):
+        return self._HL_Jaar
+    
+    @HL_Jaar.setter
+    def HL_Jaar(self, HL_Jaar):
+        self._HL_Jaar = HL_Jaar
+    
+    # >>> Aantal maanden eerste periode
+    @property
+    def HL_Maand(self):
+        return self._HL_Maand
+    
+    @HL_Maand.setter
+    def HL_Maand(self, HL_Maand):
+        self._HL_Maand = HL_Maand
         
-
+        
     @property
     def pensioen(self): return self._pensioen
         
