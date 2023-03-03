@@ -245,9 +245,51 @@ def invoer_test_klikken():
             
             
             
-            
-        
-            
+@xw.sub
+def AfbeeldingKiezen():
+    """
+    Functie die de gekozen afbeelding op de vergelijkings sheet kiest
+    """
+    
+    #sheets en book opslaan in variabelen
+    book = xw.Book.caller()
+    sheet = book.sheets["Vergelijken"]
+    #gekozen afbeelding inlezen
+    gekozenAfbeelding = sheet.cells(6,"B").value
+    #naam van gekozen afbeelding op sheet printen
+    sheet.cells(8, "M").value = gekozenAfbeelding
+
+
+@xw.sub
+def AfbeeldingVerwijderen():
+    """
+    Functie die de gekozen afbeelding op de vergelijkings sheet verwijderd
+    """
+    
+    #sheets en book opslaan in variabelen
+    book = xw.Book.caller()
+    sheet = book.sheets["Vergelijken"]
+    #gekozen afbeelding inlezen
+    gekozenAfbeelding = sheet.cells(6,"B").value
+    #naam van gekozen afbeelding op sheet printen
+    sheet.cells(11, "M").value = gekozenAfbeelding
+
+
+@xw.sub
+def AfbeeldingAanpassen():
+    """
+    Functie die de gekozen afbeelding op de vergelijkings sheet als basis neemt voor nieuwe flexibilisaties
+    """
+    
+    #sheets en book opslaan in variabelen
+    book = xw.Book.caller()
+    sheet = book.sheets["Vergelijken"]
+    #gekozen afbeelding inlezen
+    gekozenAfbeelding = sheet.cells(6,"B").value
+    #naam van gekozen afbeelding op sheet printen
+    sheet.cells(14, "M").value = gekozenAfbeelding
+
+
             
 
         
