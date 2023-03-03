@@ -401,7 +401,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 self.regelingCode.leeftijdJaar = self.ui.sbJaar.value()
                 self.regelingCode.leeftijdMaand = self.ui.sbMaand.value()
             except Exception as e:
-                self._logger.info("Er gaat iets fout bij het opslaan van de nieuwe pensioenleeftijd in flexmenu.ui")
+                self._logger.exception("Er gaat iets fout bij het opslaan van de nieuwe pensioenleeftijd in flexmenu.ui")
             
         elif self.ui.CheckLeeftijdWijzigen.isChecked() == False:
             self._logger.info("Leeftijd wijzigen staat in flexmenu.ui niet geselecteerd, dit wordt opgeslagen.")
