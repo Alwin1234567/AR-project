@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import functions
 from datetime import datetime
 from functions import pensioensdatum, isfloat, ToevoegenDeelnemer, gegevenscontrole #deze zouden ook moeten inladen met de import functions hierboven, maar dat werkt niet
-
+from decimal import getcontext, Decimal
 
 """
 Body
@@ -237,7 +237,8 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                 voorletters += i + "."
             #fulltime loon en parttime percentage als float
             fulltimeLoon = float(self.ui.txtFulltimeLoon.text().replace(".", "").replace(",", "."))
-            ptPercentage = float(self.ui.txtParttimePercentage.text().replace(",", "."))/10000    #delen door 100, zodat het in excel als % komt
+            getcontext().prec = 7
+            ptPercentage = Decimal(self.ui.txtParttimePercentage.text().replace(",", "."))
             #lijst met deelnemersgegevens [achternaam, tussenvoegsel, voorletters, geboortedatum, geslacht, burg.staat, ftloon, pt%]
             Deelnemersgegevens = [achternaam, self.ui.txtTussenvoegsel.text(), voorletters, geboortedatum, self.ui.cbGeslacht.currentText(), 
                                   self.ui.cbBurgerlijkeStaat.currentText(), fulltimeLoon, ptPercentage]
@@ -250,8 +251,12 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                 #window sluiten
                 self.close()
                 self._logger.info("Deelnemer toevoegen scherm gesloten")
+                
+                #het parttime percentage delen door 100, zodat het in excel als % komt
+                gegevens[7] = float(gegevens[7])/100
                 #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
                 ToevoegenDeelnemer(gegevens)
+                
                 #deelnemerselectie openen
                 self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
                 self._windowdeelnemer.show()
@@ -264,16 +269,6 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
             self.ui.lblFoutmeldingGegevens.setText(foutmeldingGegevens)
             self.ui.lblFoutmeldingPensioen.setText(foutmeldingPensioen)
         
-        
-        
-        #if self.ui.txtVoorletters.text() == "" or self.ui.txtAchternaam.text() == "":
-        #    print("Naam gegevens incompleet")
-        #elif self.ui.txtFulltimeLoon.text() == "" or self.ui.txtParttimePercentage.text() == "":
-        #    print("Loon informatie incompleet")
-        #else:
-         #   self.close()
-          #  self._windowdeelnemer = Deelnemerselectie(self.book)
-           # self._windowdeelnemer.show()
     
     
     def onChange(self): functions.maanddag(self)

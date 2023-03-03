@@ -13,7 +13,6 @@ import os
 from os.path import exists
 import sys
 
-
 """
 Body
 Hier komen alle functies
@@ -422,13 +421,13 @@ def Mbox(title, text, style):
         return "Nee"
     
 
-def gegevenscontrole(gegevens):
+def gegevenscontrole(gegevenslijst):
     """
     functie die een messagebox met alle gegevens van een deelnemer maakt
 
     Parameters
     ----------
-    gegevens : list
+    gegevenslijst : list
         een lijst met alle gegevens van de deelnemer in de vorm:
             ["Achternaam", "tussen", "voor", "geboorte", "geslacht", "burg", "fulltimeLoon", "PT% als kans", "regeling", "Zl", "Aegon", "Aegon", "NN", "NN", "NN", "NN", "VLC", "VLC"]
 
@@ -438,25 +437,23 @@ def gegevenscontrole(gegevens):
         Bij "correct" zijn de gegevens goed, bij "fout" zijn niet alle gegevens goed
 
     """
-    #het parttime percentage in de vorm van een percentage zetten
-    gegevens[7] = str(gegevens[7] * 100)
     #alle gegevens omzetten naar een string
-    for g in range(0,len(gegevens)):
-        gegevens[g] = str(gegevens[g])
+    for g in range(0,len(gegevenslijst)):
+        gegevenslijst[g] = str(gegevenslijst[g])
         
     invoer = [] #lijst met alle deelnemersgegevens met uitleg in juiste volgorde
-    invoer.append("Naam: " + gegevens[2] + " " + gegevens[1] + " " + gegevens[0])
-    invoer.append("Geboortedatum: " + gegevens[3])
-    invoer.append("Geslacht: " + gegevens[4])
-    invoer.append("Burgerlijke staat: " + gegevens[5])
-    invoer.append("Fulltime loon: €" + gegevens[6])
-    invoer.append("Parttime percentage: " + gegevens[7] + "%")
-    invoer.append("Huidige regeling: " + gegevens[8])
+    invoer.append("Naam: " + gegevenslijst[2] + " " + gegevenslijst[1] + " " + gegevenslijst[0])
+    invoer.append("Geboortedatum: " + gegevenslijst[3])
+    invoer.append("Geslacht: " + gegevenslijst[4])
+    invoer.append("Burgerlijke staat: " + gegevenslijst[5])
+    invoer.append("Fulltime loon: €" + gegevenslijst[6])
+    invoer.append("Parttime percentage: " + gegevenslijst[7] + "%")
+    invoer.append("Huidige regeling: " + gegevenslijst[8])
     invoer.append("\n")     #lege regel tussenvoegen voor opgebouwde pensioenen
     
     #opgebouwde pensioenen toevoegen, als deze ingevuld zijn
     teller = 0  #bijhouden welk pensioen het is
-    for p1 in gegevens[9:12]:
+    for p1 in gegevenslijst[9:12]:
         if p1 != "":
             regeling = ["ZL: ", "Aegon 65: ", "Aegon 67: "][teller]
             invoer.append(regeling + "OP = €" + p1)
@@ -464,9 +461,9 @@ def gegevenscontrole(gegevens):
     
     teller = 0
     for p2 in range(12,17,2):
-        if gegevens[p2] != "":
+        if gegevenslijst[p2] != "":
             regeling = ["NN 65: ", "NN 67: ", "PF VLC 68: "][teller]
-            invoer.append(regeling + "OP = €" + gegevens[p2] + " en PP = €" + gegevens[p2+1])
+            invoer.append(regeling + "OP = €" + gegevenslijst[p2] + " en PP = €" + gegevenslijst[p2+1])
         teller += 1
     
     #alle gegevens met uitleg op een nieuwe regel in een string
