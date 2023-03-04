@@ -48,7 +48,7 @@ class Flexibilisering:
         self._HL_Methode = "Opvullen AOW" 
         self._HL_Verhouding_Hoog = 100
         self._HL_Verhouding_Laag = 0
-        self._HL_Percentage = 0
+        self._HL_Verschil = 0
         self._HL_Jaar = 5
         self._HL_Maand = 0
         
@@ -191,12 +191,12 @@ class Flexibilisering:
     
     # >>> Percentage H/L of L/H
     @property
-    def HL_Percentage(self):
-        return self._HL_Percentage
+    def HL_Verschil(self):
+        return self._HL_Verschil
     
-    @HL_Percentage.setter
-    def HL_Percentage(self, HL_Percentage):
-        self._HL_Percentage= HL_Percentage
+    @HL_Verschil.setter
+    def HL_Verschil(self, HL_Verschil):
+        self._HL_Verschil = HL_Verschil
     
     # >>> Aantal jaren eerste periode
     @property
