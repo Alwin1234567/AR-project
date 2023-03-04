@@ -229,7 +229,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
            
         #gegevens invullen of foutmelding geven
         if foutmeldingGegevens == "" and foutmeldingPensioen == "":
-            geboortedatum = self.ui.sbDag.text() + "-" + self.ui.sbMaand.text() + "-" + self.ui.sbJaar.text() 
+            geboortedatum = self.ui.sbMaand.text() + "-" + self.ui.sbDag.text() + "-" + self.ui.sbJaar.text() #dit geefft in excel een dag/maand/jaar-notatie
             achternaam = self.ui.txtAchternaam.text()[0].upper() + self.ui.txtAchternaam.text()[1:]
             #voorletters met hoofdletters en punten ertussen
             voorletters = ""

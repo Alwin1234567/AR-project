@@ -443,7 +443,10 @@ def gegevenscontrole(gegevenslijst):
         
     invoer = [] #lijst met alle deelnemersgegevens met uitleg in juiste volgorde
     invoer.append("Naam: " + gegevenslijst[2] + " " + gegevenslijst[1] + " " + gegevenslijst[0])
-    invoer.append("Geboortedatum: " + gegevenslijst[3])
+    #geboortedatum van maand-dag-jaar naar dag-maand-jaar notatie
+    datumSplit = gegevenslijst[3].split("-")
+    geboortedatum = datumSplit[1] + "-" +  datumSplit[0] + "-" +  datumSplit[2]
+    invoer.append("Geboortedatum: " + geboortedatum)
     invoer.append("Geslacht: " + gegevenslijst[4])
     invoer.append("Burgerlijke staat: " + gegevenslijst[5])
     invoer.append("Fulltime loon: €" + gegevenslijst[6])
