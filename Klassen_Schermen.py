@@ -328,12 +328,14 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.txtHLVerschil.textEdited.connect(self.invoerVerandering)
         self.ui.sbHLJaar.valueChanged.connect(self.invoerVerandering)
         self.ui.sbHLMaand.valueChanged.connect(self.invoerVerandering)
-        
+
         # Aanpassing: Regeling
         self.ui.cbRegeling.activated.connect(self.wijzigVelden)
         
         # Laatste UI update
+        self.ui.sbMaand.setValue(0)
         self.invoerVerandering()
+        self.wijzigVelden()
     
     def dropdownRegelingen(self):
         regelingenActief = list()
@@ -348,6 +350,80 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.cbRegeling.addItems(regelingenActief)
         self._regelingenActiefKort = regelingenActiefKort
     
+    def blokkeerSignalen(self, actief):
+        """
+        Een verandering in een invoervakje geeft een 'signaal'.
+        Deze functie kan de 'signalen' van invoervakjes blokkeren en activeren.
+        
+        actief : bool
+            Als True, dan zullen wijzigingen in de window NIET geregistreerd worden.
+            Als False, dan zullen wijzigingen in de window WEL geregistreerd worden.
+        """
+        
+        if actief == True:
+            self._logger.info("Veld signalen worden geblokkerd.")
+        elif actief == False:
+            self._logger.info("Veld signalen worden geactiveerd.")
+        
+        # Aanpassing: pensioenleeftijd
+        self.ui.CheckLeeftijdWijzigen.blockSignals(actief)
+        self.ui.sbJaar.blockSignals(actief)
+        self.ui.sbMaand.blockSignals(actief)
+ 
+        # Aanpassing: OP/PP
+        self.ui.CheckUitruilen.blockSignals(actief)
+        self.ui.cbUitruilenVan.blockSignals(actief)
+        self.ui.cbUMethode.blockSignals(actief)
+        self.ui.txtUVerhoudingOP.blockSignals(actief)
+        self.ui.txtUVerhoudingPP.blockSignals(actief)
+        self.ui.txtUPercentage.blockSignals(actief)
+           
+        # Aanpassing: hoog-laag constructie
+        self.ui.CheckHoogLaag.blockSignals(actief)
+        self.ui.cbHLVolgorde.blockSignals(actief)
+        self.ui.cbHLMethode.blockSignals(actief)
+        self.ui.txtHLVerhoudingHoog.blockSignals(actief)
+        self.ui.txtHLVerhoudingLaag.blockSignals(actief)
+        self.ui.txtHLVerschil.blockSignals(actief)
+        self.ui.sbHLJaar.blockSignals(actief)
+        self.ui.sbHLMaand.blockSignals(actief)
+    
+    def invoerCheck(self):
+        """
+        Deze functie checkt voor de volgende velden of de invoer klopt:
+            - OP verhouding
+            - PP verhouding
+            - OP/PP uitruil percentage
+            - Hoog verhouding
+            - Laag verhouding
+            - Hoog/laag verschil
+        
+        Er wordt voor al deze velden gecheckt of er letters staan.
+        Er wordt alleen voor de relevante velden voor de methode gecheckt of er missende invoer is.
+        
+        Bij missende invoer en/of letters returnt deze functie False.
+        Als alles klopt, returnt deze functie True.
+        """
+        
+        melding_OP, OK_OP = functions.checkVeldInvoer(self.ui.cbUMethode.currentText(),
+                                  self.ui.txtUPercentage.text(),
+                                  self.ui.txtUVerhoudingOP.text(),
+                                  self.ui.txtUVerhoudingPP.text())
+        
+        self.ui.lblFoutmeldingUitruilen.setText(melding_OP)
+        
+        melding_HL, OK_HL = functions.checkVeldInvoer(self.ui.cbHLMethode.currentText(),
+                                                      self.ui.txtHLVerschil.text(),
+                                                      self.ui.txtHLVerhoudingHoog.text(),
+                                                      self.ui.txtHLVerhoudingLaag.text())
+        
+        self.ui.lblFoutmeldingHoogLaag.setText(melding_HL)
+
+        if (OK_OP == True and OK_HL == True):
+            return True
+        else:
+            return False
+
     def wijzigVelden(self):
         """
         Deze functie wordt geactiveerd als de regeling in de dropdown aangepast wordt.
@@ -356,49 +432,76 @@ class Flexmenu(QtWidgets.QMainWindow):
         deze functie alle velden weer leegmaken.
         """
         
+        self.blokkeerSignalen(True)
+
+        self._logger.info("Veldwijziging geïnitialiseerd.")
+        
         for flexibilisatie in self.deelnemerObject.flexibilisaties:
             if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
                 self.regelingCode = flexibilisatie
                 break
-        
-        # Eerst alle velden terug naar standaard
-        # Pensioenleeftijd
-        self.ui.CheckLeeftijdWijzigen.setChecked(False)
-        self.ui.sbJaar.setValue(60)
-        self.ui.sbMaand.setValue(0)
-        
-        # OP/PP
-        self.ui.CheckUitruilen.setChecked(False)
-        self.ui.cbUitruilenVan.setCurrentIndex(0)
-        self.ui.cbUMethode.setCurrentIndex(0)
-        self.ui.txtUVerhoudingOP.clear()
-        self.ui.txtUVerhoudingPP.clear()
-        self.ui.txtUPercentage.clear()
-           
-        # Hoog-laag constructie
-        self.ui.CheckHoogLaag.setChecked(False)
-        self.ui.cbHLVolgorde.setCurrentIndex(0)
-        self.ui.cbHLMethode.setCurrentIndex(0)
-        self.ui.txtHLVerhoudingHoog.clear()
-        self.ui.txtHLVerhoudingLaag.clear()
-        self.ui.txtHLVerschil.clear()
-        self.ui.sbHLJaar.setValue(5)
-        self.ui.sbHLMaand.setValue(0)
-        
-        # Check of regeling al actieve onderdelen heeft, zo ja dan moeten deze flex opties teruggehaald worden.
-        if self.regelingCode.leeftijd_Actief == True:
-            # Verander de waardes naar wat opgeslagen is in het object
-            pass
-        
-        if self.regelingCode.OP_PP_Actief == True:
-            # Verander de waardes naar wat opgeslagen is in het object
-            pass
-        
-        if self.regelingCode.HL_Actief == True:
-            # Verander de waardes naar wat opgeslagen is in het object
-            pass
 
+        # --- Leeftijd velden ---
+        self._logger.info("Leeftijdvelden wijzigen...")
+        try:
+            self.ui.CheckLeeftijdWijzigen.setChecked(self.regelingCode.leeftijd_Actief)
+            self.ui.sbJaar.setValue(int(self.regelingCode.leeftijdJaar))
+            self.ui.sbMaand.setValue(int(self.regelingCode.leeftijdMaand))
+            
+        except Exception as e:
+            self._logger.exception("Probleem bij het wijzigen van leeftijdvelden.")
 
+        # --- OP/PP velden ---
+        self._logger.info("OP/PP velden wijzigen...")
+        try:
+            self.ui.CheckUitruilen.setChecked(self.regelingCode.OP_PP_Actief)
+            
+            if self.regelingCode.OP_PP_UitruilenVan == "OP naar PP":
+                self.ui.cbUitruilenVan.setCurrentIndex(0)
+            elif self.regelingCode.OP_PP_UitruilenVan == "PP naar OP":
+                self.ui.cbUitruilenVan.setCurrentIndex(1)
+            
+            if self.regelingCode.OP_PP_Methode == "Percentage":
+                self.ui.cbUMethode.setCurrentIndex(0)
+            elif self.regelingCode.OP_PP_Methode == "Verhouding":
+                self.ui.cbUMethode.setCurrentIndex(1)
+            
+            self.ui.txtUVerhoudingOP.setText(str(self.regelingCode.OP_PP_Verhouding_OP))
+            self.ui.txtUVerhoudingPP.setText(str(self.regelingCode.OP_PP_Verhouding_PP))
+            self.ui.txtUPercentage.setText(str(self.regelingCode.OP_PP_Percentage))
+            
+        except Exception as e:
+            self._logger.exception("Probleem bij het wijzigen van OP/PP velden.")
+        
+        # --- Hoog/Laag velden ---
+        self._logger.info("Hoog/laag velden wijzigen...")
+        try:
+            self.ui.CheckHoogLaag.setChecked(self.regelingCode.HL_Actief)
+            if self.regelingCode.HL_Volgorde == "Hoog-laag":
+                self.ui.cbHLVolgorde.setCurrentIndex(0)
+            elif self.regelingCode.HL_Volgorde == "Laag-hoog":
+                self.ui.cbHLVolgorde.setCurrentIndex(1)
+            
+            if self.regelingCode.HL_Methode == "Opvullen AOW":
+                self.ui.cbHLMethode.setCurrentIndex(0)
+            elif self.regelingCode.HL_Methode == "Verhouding":
+                self.ui.cbHLMethode.setCurrentIndex(1)
+            elif self.regelingCode.HL_Methode == "Verschil":
+                self.ui.cbHLMethode.setCurrentIndex(2)
+    
+            self.ui.txtHLVerhoudingHoog.setText(str(self.regelingCode.HL_Verhouding_Hoog))
+            self.ui.txtHLVerhoudingLaag.setText(str(self.regelingCode.HL_Verhouding_Laag))
+            self.ui.txtHLVerschil.setText(str(self.regelingCode.HL_Verschil))
+            self.ui.sbHLJaar.setValue(int(self.regelingCode.HL_Jaar))
+            self.ui.sbHLMaand.setValue(int(self.regelingCode.HL_Maand))
+            
+        except Exception as e:
+            self._logger.exception("Probleem bij het wijzigen van hoog/laag velden.")
+        
+        self._logger.info("Veldwijziging afgerond.")
+        
+        self.blokkeerSignalen(False)
+        
     def invoerVerandering(self):
         """ 
         Deze functie activeert zodra de gebruiker een verandering maakt in het flexmenu scherm.
@@ -408,140 +511,117 @@ class Flexmenu(QtWidgets.QMainWindow):
         #  > Is alles wat ingevoerd wel correct? (dus geen letters waar cijfers horen enzo)
         #  > Is alles ingevoerd waar invoer moet staan?
         # Als beide eisen voldoen, kunnen de volgende functies doorgevoerd worden
-
-        self.flexkeuzesOpslaan() # Sla flex keuzes op
-        self.samenvattingUpdate() # Update de samenvatting
         
+        if self.ui.sbHLJaar.value() == 10:
+            self.ui.sbHLMaand.setValue(0)
+        
+        if self.invoerCheck() == True:
+            self.flexkeuzesOpslaan() # Sla flex keuzes op
+            self.samenvattingUpdate() # Update de samenvatting
         
     def flexkeuzesOpslaan(self):
         """
-        Deze functie checkt welke flexkeuzes op actief gezet zijn, en slaat vervolgens
-        deze actieve flexkeuzes op in de flex_keuzes klasse.
+        Deze functie slaat huidig ingevulde flex opties op in het flexibiliseringsobject.
         """
         
+        # self.regelingCode = functions.regelingNaamCode(str(self.ui.cbRegeling.currentText()))
+        
+        self._logger.info("Flexkeuze opslaan geïnitialiseerd.")
+
         # Selecteer huidige regeling-object voor flex keuzes
         for flexibilisatie in self.deelnemerObject.flexibilisaties:
             if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
                 self.regelingCode = flexibilisatie
                 break
-        # self.regelingCode = functions.regelingNaamCode(str(self.ui.cbRegeling.currentText()))
-        
         
         # --- Leeftijd wijzigen ---
-        if self.ui.CheckLeeftijdWijzigen.isChecked() == True:
-            self._logger.info("Leeftijd wijzigen staat in flexmenu.ui op actief, dit en de veranderingen worden opgeslagen.")
-            
-            # Sla op dat leeftijd wijzigen ACTIEF is
-            self.regelingCode.leeftijd_Actief = True
-            
-            # Sla de JAREN en MAANDEN op van de leeftijdswijziging
-            try:
-                self.regelingCode.leeftijdJaar = self.ui.sbJaar.value()
-                self.regelingCode.leeftijdMaand = self.ui.sbMaand.value()
-            except Exception as e:
-                self._logger.exception("Er gaat iets fout bij het opslaan van de nieuwe pensioenleeftijd in flexmenu.ui")
-            
-        elif self.ui.CheckLeeftijdWijzigen.isChecked() == False:
-            self._logger.info("Leeftijd wijzigen staat in flexmenu.ui niet geselecteerd, dit wordt opgeslagen.")
-            
-            # Sla op dat leeftijd wijzigen NIET ACTIEF is
-            self.regelingCode.leeftijd_Actief = False
-        
-        
+        try:
+            self.regelingCode.leeftijd_Actief = self.ui.CheckLeeftijdWijzigen.isChecked()
+            self.regelingCode.leeftijdJaar = int(self.ui.sbJaar.value())
+            self.regelingCode.leeftijdMaand = int(self.ui.sbMaand.value())
+        except Exception as e:
+            self._logger.exception("Er gaat iets fout bij het opslaan van de pensioenleeftijd in flexmenu.ui")
         
         # --- OP/PP uitruiling ---
-        if self.ui.CheckUitruilen.isChecked() == True:
-            self._logger.info("OP/PP uitruiling staat in flexmenu.ui op actief, dit en de veranderingen worden opgeslagen.")
-    
-            # Sla op dat OP/PP uitruiling ACTIEF is
-            self.regelingCode.OP_PP_Actief = True
+        try:
+            self.regelingCode.OP_PP_Actief = self.ui.CheckUitruilen.isChecked() 
+            self.regelingCode.OP_PP_UitruilenVan = str(self.ui.cbUitruilenVan.currentText()) 
+            self.regelingCode.OP_PP_Methode = str(self.ui.cbUMethode.currentText()) 
+            
+            if str(self.ui.cbUMethode.currentText()) == "Verhouding":
+                self.regelingCode.OP_PP_Verhouding_OP = int(self.ui.txtUVerhoudingOP.text())
+                self.regelingCode.OP_PP_Verhouding_PP = int(self.ui.txtUVerhoudingPP.text())
+                
+                if str(self.ui.txtUPercentage.text()) == "":
+                    self.regelingCode.OP_PP_Percentage = 0
+                else:
+                    self.regelingCode.OP_PP_Percentage = int(self.ui.txtUPercentage.text())
+            
+            elif str(self.ui.cbUMethode.currentText()) == "Percentage":
+                self.regelingCode.OP_PP_Percentage = int(self.ui.txtUPercentage.text())
+                
+                if str(self.ui.txtUVerhoudingOP.text()) == "":
+                    self.regelingCode.OP_PP_Verhouding_OP = 0
+                else:
+                    self.regelingCode.OP_PP_Verhouding_OP = int(self.ui.txtUVerhoudingOP.text())
+                
+                if str(self.ui.txtUVerhoudingPP.text()) == "":
+                    self.regelingCode.OP_PP_Verhouding_PP = 0
+                else:
+                    self.regelingCode.OP_PP_Verhouding_PP = int(self.ui.txtUVerhoudingPP.text())
 
-            # Sla de VOLGORDE van de OP/PP uitruiling op
-            try: 
-                self.regelingCode.OP_PP_UitruilenVan = str(self.ui.cbUitruilenVan.currentText())
-            except Exception as e:
-                self._loggerr.info("Huidig geselecteerde OP/PP volgorde in flexmenu.ui cbUitruilenVan kan niet worden opgeslagen.")
-            
-            # Sla de METHODE van de OP/PP uitruiling op
-            try:
-                if str(self.ui.cbUMethode.currentText()) == "Percentage":
-                    self.regelingCode.OP_PP_Methode = "Percentage"
-                    
-                    try:
-                        self.regelingCode.OP_PP_Percentage = int(self.ui.txtUPercentage.text())
-                    except Exception as e:
-                        self._logger.exception("Er gaat iets fout bij het opslaan van OP/PP flexibiliseringswaarden in flexmenu.ui")
-                        
-                elif str(self.ui.cbUMethode.currentText()) == "Verhouding":
-                    self.regelingCode.OP_PP_Methode = "Percentage"
-                    
-                    try:
-                        self.regelingCode.OP_PP_Verhouding_OP = int(self.ui.txtUVerhoudingOP.text())
-                        self.regelingCode.OP_PP_Verhouding_PP = int(self.ui.txtUVerhoudingPP.text())
-                    except Exception as e:
-                        self._logger.exception("Er gaat iets fout bij het opslaan van OP/PP flexibiliseringswaarden in flexmenu.ui")
-                        
-            except Exception as e:
-                self._logger.info("Huidig geselecteerde OP/PP uitruilingsmethode in flexmenu.ui cbUMethode wordt niet herkend.")
-            
-        elif self.ui.CheckUitruilen.isChecked() == False:
-            self._logger.info("OP/PP uitruiling staat in flexmenu.ui niet geselecteerd, dit wordt opgeslagen.")
-    
-            # Sla op dat OP/PP uitruiling NIET ACTIEF is
-            self.regelingCode.OP_PP_Actief = False
-        
-        
+        except Exception as e:
+            self._logger.exception("Huidig geselecteerde OP/PP flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
         
         # --- Hoog/laag constructie ---
-        if self.ui.CheckHoogLaag.isChecked() ==  True:
-            self._logger.info("Hoog-laag constructie staat in flexmenu.ui op actief, dit en de veranderingen worden opgeslagen.")
+        try:
+            self.regelingCode.HL_Actief = self.ui.CheckHoogLaag.isChecked() 
+            self.regelingCode.HL_Volgorde = str(self.ui.cbHLVolgorde.currentText()) 
+            self.regelingCode.HL_Methode = str(self.ui.cbHLMethode.currentText()) 
+            self.regelingCode.HL_Jaar = int(self.ui.sbHLJaar.value()) 
+            self.regelingCode.HL_Maand = int(self.ui.sbHLMaand.value())
             
-            # Sla op dat H/L constructie ACTIEF is
-            self.regelingCode.HL_Actief = True
-            
-            # Sla de VOLGORDE van de H/L constructie op
-            try:
-                self.regelingCode.HL_Volgorde = str(self.ui.cbHLVolgorde.currentText())
-            except Exception as e:
-                self._logger.exception("Huidig geselecteerde Hoog/Laag volgorde in flexmenu.ui cbHLVolgorde kan niet opgeslagen worden.")
-            
-            # Sla de METHODE van de H/L constructie op
-            try:
-                if str(self.ui.cbHLMethode.currentText()) == "Opvullen AOW":
-                    self.regelingCode.HL_Methode = "Opvullen AOW"
-                elif str(self.ui.cbHLMethode.currentText()) == "Verhouding":
-                    self.regelingCode.HL_Methode = "Verhouding"
+            if str(self.ui.cbHLMethode.currentText()) == "Verhouding":
+                self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
+                self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
+                
+                if str(self.ui.txtHLVerhoudingHoog.text()) == "":
+                    self.regelingCode.HL_Verhouding_Hoog = 0
+                else:
+                    self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
+                
+            elif str(self.ui.cbHLMethode.currentText()) == "Verschil":
+                self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
+                
+                if str(self.ui.txtHLVerhoudingHoog.text()) == "":
+                    self.regelingCode.HL_Verhouding_Hoog = 0
+                else:
+                    self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
+                
+                if str(self.ui.txtHLVerhoudingLaag.text()) == "":
+                    self.regelingCode.HL_Verhouding_Laag = 0
+                else:
+                    self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
                     
-                    try:
-                        self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
-                        self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
-                    except Exception as e:
-                        self._logger.exception("Er gaat iets fout bij het opslaan van Hoog-Laag constructie flexibiliseringswaarden in flexmenu.ui")
-                        
-                elif str(self.ui.cbHLMethode.currentText()) == "Verschil":
-                    self.regelingCode.HL_Methode = "Verschil"
+            elif str(self.ui.cbHLMethode.currentText()) == "Opvullen AOW":
+                if str(self.ui.txtHLVerhoudingHoog.text()) == "":
+                    self.regelingCode.HL_Verhouding_Hoog = 0
+                else:
+                    self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
                     
-                    try:
-                        self.regelingCode.HL_Percentage = int(self.ui.txtHLVerschil.text())
-                    except Exception as e:
-                        self._logger.exception("Er gaat iets fout bij het opslaan van Hoog-Laag constructie flexibiliseringswaarden in flexmenu.ui")
-                        
-            except Exception as e:
-                self._logger.exception("Huidig geselecteerde Hoog/Laag rekenmethode in flexmenu.ui cbHLMethode wordt niet herkend.")
-            
-            # Sla de DUUR VAN EERSTE PERIODE op
-            try:
-                self.regelingCode.HL_Jaar = self.ui.sbHLJaar.value()
-                self.regelingCode.HL_Maand = self.ui.sbHLMaand.value()
-            except Exception as e:
-                self._logger.exception("Er gaat iets fout bij het opslaan van de huidig geselecteerde duur voor eerste periode van H/L constructie in flexmenu.ui")
-            
-        elif self.ui.CheckHoogLaag.isChecked() ==  False:
-            self._logger.info("Hoog-laag constructie staat in flexmenu.ui niet geselecteerd, dit wordt opgeslagen.")
-            
-            # Sla op dat H/L constructie NIET ACTIEF is
-            self.regelingCode.HL_Actief = False
-    
+                if str(self.ui.txtHLVerhoudingHoog.text()) == "":
+                    self.regelingCode.HL_Verhouding_Hoog = 0
+                else:
+                    self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
+                
+                if str(self.ui.txtHLVerhoudingLaag.text()) == "":
+                    self.regelingCode.HL_Verhouding_Laag = 0
+                else:
+                    self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
+                 
+        except Exception as e:
+            self._logger.exception("Huidig geselecteerde hoog/laag flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
+
     def berekenen(self):
         """
         Deze functie zal alle flexibiliseringswaarden naar de Excel sheet plaatsen voor berekenen.
@@ -558,21 +638,23 @@ class Flexmenu(QtWidgets.QMainWindow):
         """
         Deze functie update de waarden in de samenvatting boxes.
         """
-        #self.ui.lblName.setText("string")
-
-        #Selecteer huidige regeling-object voor flex keuzes
-        # for flexibilisatie in self.deelnemerObject.flexibilisaties:
-        #     if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
-        #         self._regelingCode = flexibilisatie
-        #         break
+        
+        self._logger.info("Samenvatting updaten...")
         
         # ZwitserLeven
         if "ZL" in self._regelingenActiefKort:
             self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "ZL")
             
             self.ui.lbl_ZL.setText("ZL")
-            self.ui.lbl_ZL_OP.setText("€—") 
-            self.ui.lbl_ZL_PP.setText("€—") 
+            
+            if (self.regelingCode.leeftijd_Actief == False
+                and self.regelingCode.OP_PP_Actief == False
+                and self.regelingCode.HL_Actief == False):
+                self.ui.lbl_ZL_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+                self.ui.lbl_ZL_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            else:
+                self.ui.lbl_ZL_OP.setText("€—")
+                self.ui.lbl_ZL_PP.setText("€—")
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_ZL_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -603,8 +685,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "Aegon OP65")
             
             self.ui.lbl_A65.setText("Aegon 65")
-            self.ui.lbl_A65_OP.setText("€—")
-            self.ui.lbl_A65_PP.setText("€—")
+            
+            if (self.regelingCode.leeftijd_Actief == False
+                and self.regelingCode.OP_PP_Actief == False
+                and self.regelingCode.HL_Actief == False):
+                self.ui.lbl_A65_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+                self.ui.lbl_A65_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            else:
+                self.ui.lbl_A65_OP.setText("€—")
+                self.ui.lbl_A65_PP.setText("€—")
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_A65_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -635,8 +724,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "Aegon OP67")
             
             self.ui.lbl_A67.setText("Aegon 67")
-            self.ui.lbl_A67_OP.setText("€—")
-            self.ui.lbl_A67_PP.setText("€—")
+            
+            if (self.regelingCode.leeftijd_Actief == False
+                and self.regelingCode.OP_PP_Actief == False
+                and self.regelingCode.HL_Actief == False):
+                self.ui.lbl_A67_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+                self.ui.lbl_A67_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            else:
+                self.ui.lbl_A67_OP.setText("€—")
+                self.ui.lbl_A67_PP.setText("€—")
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_A67_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -667,8 +763,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "NN OP65")
             
             self.ui.lbl_NN65.setText("NN 65")
-            self.ui.lbl_NN65_OP.setText("€—")
-            self.ui.lbl_NN65_PP.setText("€—")
+            
+            if (self.regelingCode.leeftijd_Actief == False
+                and self.regelingCode.OP_PP_Actief == False
+                and self.regelingCode.HL_Actief == False):
+                self.ui.lbl_NN65_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+                self.ui.lbl_NN65_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            else:
+                self.ui.lbl_NN65_OP.setText("€—")
+                self.ui.lbl_NN65_PP.setText("€—")
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_NN65_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -699,8 +802,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "NN OP67")
             
             self.ui.lbl_NN67.setText("NN 67")
-            self.ui.lbl_NN67_OP.setText("€—")
-            self.ui.lbl_NN67_PP.setText("€—")
+            
+            if (self.regelingCode.leeftijd_Actief == False
+                and self.regelingCode.OP_PP_Actief == False
+                and self.regelingCode.HL_Actief == False):
+                self.ui.lbl_NN67_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+                self.ui.lbl_NN67_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            else:
+                self.ui.lbl_NN67_OP.setText("€—")
+                self.ui.lbl_NN67_PP.setText("€—")
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_NN67_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -731,9 +841,16 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "PF VLC OP68")
             
             self.ui.lbl_VLC.setText("PF VLC 68")
-            self.ui.lbl_VLC_OP.setText("€—")
-            self.ui.lbl_VLC_PP.setText("€—")
             
+            if (self.regelingCode.leeftijd_Actief == False
+                and self.regelingCode.OP_PP_Actief == False
+                and self.regelingCode.HL_Actief == False):
+                self.ui.lbl_VLC_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+                self.ui.lbl_VLC_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            else:
+                self.ui.lbl_VLC_OP.setText("€—")
+                self.ui.lbl_VLC_PP.setText("€—")
+        
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_VLC_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
             elif self.regelingCode.leeftijd_Actief == False:
