@@ -131,7 +131,15 @@ def vergelijken_afbeelding_generatie():
     plt.suptitle(invoer.range(titel).value, fontweight='bold')
     
     
-    uitvoer.pictures.add(afbeelding, top = uitvoer.range((3,3)).top, left = uitvoer.range((3,3)).left, height = 300)
+    uitvoer.pictures.add(afbeelding, top = uitvoer.range((3,3)).top, left = uitvoer.range((3,3)).left, height = 300, name = "testnaam")
+    
+    
+@xw.sub
+def delimage():
+    book = xw.Book.caller()
+    uitvoer = book.sheets["Vergelijken"]
+    print(uitvoer.pictures["testnaam"].height)
+    uitvoer.pictures["testnaam"].api.Delete()
     
     
 
