@@ -266,7 +266,7 @@ def AfbeeldingKiezen():
     gekozenAfbeelding = sheet.cells(6,"B").value
     #naam van gekozen afbeelding op sheet printen
     sheet.cells(8, "M").value = gekozenAfbeelding
-
+    
 
 @xw.sub
 def AfbeeldingVerwijderen():
@@ -281,7 +281,9 @@ def AfbeeldingVerwijderen():
     gekozenAfbeelding = sheet.cells(6,"B").value
     #naam van gekozen afbeelding op sheet printen
     sheet.cells(11, "M").value = gekozenAfbeelding
-
+    
+    #gekozen afbeelding verwijderen
+    #sheet.pictures[naam].delete()
 
 @xw.sub
 def AfbeeldingAanpassen():
