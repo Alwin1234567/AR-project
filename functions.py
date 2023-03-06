@@ -443,7 +443,10 @@ def gegevenscontrole(gegevenslijst):
         
     invoer = [] #lijst met alle deelnemersgegevens met uitleg in juiste volgorde
     invoer.append("Naam: " + gegevenslijst[2] + " " + gegevenslijst[1] + " " + gegevenslijst[0])
-    invoer.append("Geboortedatum: " + gegevenslijst[3])
+    #geboortedatum van maand-dag-jaar naar dag-maand-jaar notatie
+    datumSplit = gegevenslijst[3].split("-")
+    geboortedatum = datumSplit[1] + "-" +  datumSplit[0] + "-" +  datumSplit[2]
+    invoer.append("Geboortedatum: " + geboortedatum)
     invoer.append("Geslacht: " + gegevenslijst[4])
     invoer.append("Burgerlijke staat: " + gegevenslijst[5])
     invoer.append("Fulltime loon: €" + gegevenslijst[6])
@@ -521,4 +524,66 @@ def setup_logger(name):
     logger.info("Setup logger is done")
     return logger
 
+def isInteger(veldInput):
+    try:
+        veldInput = int(veldInput)
+        return True
+    except:
+        return False
+        
+def checkVeldInvoer(methode,veld1,veld2,veld3):
+    intProblem = False
+    emptyProblem = False
+    
+    if str(methode) == "Percentage" or str(methode) == "Verschil":
+        if str(veld1) == "":
+            emptyProblem = True
+        elif isInteger(veld1) == False:
+            intProblem = True
+        
+        if str(veld2) == "":
+            pass
+        elif isInteger(veld2) == False:
+            intProblem = True
+            
+        if str(veld3) == "":
+            pass
+        elif isInteger(veld3) == False:
+            intProblem = True  
+        
+        
+    elif str(methode) == "Verhouding":
+        if str(veld1) == "":
+            pass
+        elif isInteger(veld1) == False:
+            intProblem = True
+        
+        if str(veld2) == "":
+            emptyProblem = True
+        elif isInteger(veld2) == False:
+            intProblem = True
+            
+        if str(veld3) == "":
+            emptyProblem = True
+        elif isInteger(veld3) == False:
+            intProblem = True       
+    
+    elif str(methode) == "Opvullen AOW":
+        if isInteger(veld1) == False:
+            intProblem = True
 
+        if isInteger(veld2) == False:
+            intProblem = True
+
+        if isInteger(veld3) == False:
+            intProblem = True   
+
+
+    if intProblem == True and emptyProblem == True:
+        return ["Er is foute invoer en missende invoer.",False]
+    elif intProblem == True and emptyProblem == False:
+        return ["Invoer mag alleen een geheel getal zijn.",False]
+    elif intProblem == False and emptyProblem == True:
+        return ["Er is missende invoer.",False]
+    else:
+        return ["",True]

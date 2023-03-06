@@ -131,7 +131,15 @@ def vergelijken_afbeelding_generatie():
     plt.suptitle(invoer.range(titel).value, fontweight='bold')
     
     
-    uitvoer.pictures.add(afbeelding, top = uitvoer.range((3,3)).top, left = uitvoer.range((3,3)).left, height = 300)
+    uitvoer.pictures.add(afbeelding, top = uitvoer.range((3,3)).top, left = uitvoer.range((3,3)).left, height = 300, name = "testnaam")
+    
+    
+@xw.sub
+def delimage():
+    book = xw.Book.caller()
+    uitvoer = book.sheets["Vergelijken"]
+    print(uitvoer.pictures["testnaam"].height)
+    uitvoer.pictures["testnaam"].api.Delete()
     
     
 
@@ -261,7 +269,7 @@ def AfbeeldingKiezen():
     gekozenAfbeelding = sheet.cells(6,"B").value
     #naam van gekozen afbeelding op sheet printen
     sheet.cells(8, "M").value = gekozenAfbeelding
-
+    
 
 @xw.sub
 def AfbeeldingVerwijderen():
@@ -276,7 +284,9 @@ def AfbeeldingVerwijderen():
     gekozenAfbeelding = sheet.cells(6,"B").value
     #naam van gekozen afbeelding op sheet printen
     sheet.cells(11, "M").value = gekozenAfbeelding
-
+    
+    #gekozen afbeelding verwijderen
+    #sheet.pictures[naam].delete()
 
 @xw.sub
 def AfbeeldingAanpassen():
