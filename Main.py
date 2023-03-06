@@ -154,18 +154,21 @@ def invoer_test_klikken():
     invoer = book.sheets["Tijdelijk invoerscherm"]
     
     #Berekeningskolommen leegmaken
-    kolommen= invoer.range((1,8), (61,104))
+    kolommen = invoer.range((1,8), (80,104))
+    Uitkomst_kolommen = invoer.range((10,6), (20,6))
     #Kolommen legen waar de berekeningen komen
     kolommen.clear_contents()
+    Uitkomst_kolommen.clear_contents()
     
-    regeling_range = invoer.range((10,1), (18,1))
-    pensioenbedragen = invoer.range((10,2),(18,2))
-    sterftetafel_range = invoer.range((10,3),(18,3))
-    rentes = invoer.range((10,4),(18,4))
-    pensioenleeftijd_range = invoer.range((10,5),(18,5))
-    koopsomfactor_range = invoer.range((10,6),(18,6))
     
-    basis_koopsom = invoer.range((10,7),(18,7))
+    
+    regeling_range = invoer.range((10,1), (20,1))
+    pensioenbedragen = invoer.range((10,2), (20,2))
+    sterftetafel_range = invoer.range((10,3), (20,3))
+    rentes = invoer.range((10,4), (20,4))
+    pensioenleeftijd_range = invoer.range((10,5), (20,5))
+    koopsomfactor_range = invoer.range((10,6), (20,6))
+    basis_koopsom = invoer.range((10,7), (20,7))
 
     
     pensioenleeftijd=[]
@@ -173,19 +176,23 @@ def invoer_test_klikken():
 
     
     letters=[]
-    for p in range(4):
+    for p in range(5):
         if len(letters) >= 26:
             for i in ascii_uppercase:
                 letters.append(letters[p-1] + i)
         else:
             for i in ascii_uppercase:
-                letters.append(i)   
+                letters.append(i)  
+                
+                
+    for c in range(2,12):
+        pensioenleeftijd_range(c).value= regeling_range(c).value[-2:]
     
 
     counter=1
-    for i in range(1,10):
+    for i in range(1,12):
 
-        if pensioenbedragen(i).value != None and pensioenbedragen(i).value != 0:
+        if pensioenbedragen(i).value != None:
             kolom_t = (counter-1)*10+9
             kolom_jaar = (counter-1)*10+10
             kolom_leeftijd = (counter-1)*10+11
@@ -245,12 +252,10 @@ def invoer_test_klikken():
             elif "OP" in regeling_range(i).value:
                 koopsomfactor_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + '61)']]
                 basis_koopsom(i).value= pensioenbedragen(i).value*koopsomfactor_range(i).value
-                pensioenleeftijd_range(i).value= regeling_range(i).value[-2:]
                 
             else:
                 koopsomfactor_range(i).formula = [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + '61,'+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + '61)']]
                 basis_koopsom(i).value = pensioenbedragen(i).value*koopsomfactor_range(i).value
-                pensioenleeftijd_range(i).value= regeling_range(i).value[-2:]
             
             
             counter+= 1
@@ -314,53 +319,56 @@ def flexibilisaties_testen():
    book = xw.Book.caller()
    invoer = book.sheets["Tijdelijk invoerscherm"] 
    
-   flexibilisaties= invoer.range((21,2), (55,6))
+   flexibilisaties= invoer.range((24,2), (55,6))
    
-   regeling_range= invoer.range((10,1), (18,1))
-   pensioenleeftijd= invoer.range((10,5), (18,5))
-   koopsomfactor_range= invoer.range((10,6), (18,6))
-   basis_koopsom= invoer.range((10,7), (18,7))
+   regeling_range= invoer.range((10,1), (20,1))
+   pensioenleeftijd= invoer.range((10,5), (20,5))
+   koopsomfactor= invoer.range((10,6), (20,6))
+   basis_koopsom= invoer.range((10,7), (20,7))
 
-   koopsommen= []
-   koopsommen= basis_koopsom.value
+   koopsommen = basis_koopsom.value
+   regelingen= regeling_range.value   
    
+   
+   #loop voor rijen
    for i in range(1,10):
-       regeling= (i-1)*8+1
-       soort= (i-1)*8+2
-       hoeveelheid= (i-1)*8+3
-       factor= (i-1)*8+4
-       aanspraak_OP= (i-1)*8+5
-       aanspraak_PP= (i-1)*8+6
+       regeling = (i-1)*8+1
+       soort = (i-1)*8+2
+       verhouding = (i-1)*8+3
+       duur = (i-1)*8+4
+       factor_OP = (i-1)*8+5
+       factor_PP = (i-1)*8+6
+       aanspraak_OP = (i-1)*8+7
+       aanspraak_PP = (i-1)*8+8
        
+       #loop voor kolommen
        for c in range(1,5):
-           if flexibilisaties(regeling, c).value!= None:
-               pass
-               
-               
-               
-               
-               
-               
-               
-           # if flexibilisaties(regeling).value[:-2] in invoer.range((11,1)).value and flexibilisaties(regeling).value[-2:] in invoer.range((11,1)).value:
-           #     print("test")
-           #     # if flexibilisaties(2).value== "vervroegen" or flexibilisaties(2).value== "verlaten":
-           #     #     #Bij corresponderende pensioenregelingsrij de hoeveelheid vervroegen/verlaten optellen
-           #     #     pensioenleeftijd(2).value= pensioenleeftijd(2).value+ flexibilisaties(3).value
+           if flexibilisaties(regeling, c).value != None:
+               rij= regelingen.index(flexibilisaties(regeling, c).value) + 1
+               if flexibilisaties(soort, c).value == "vervroegen" or flexibilisaties(soort, c).value == "verlaten":
+                   #Bij corresponderende pensioenregelingsrij de hoeveelheid vervroegen/verlaten optellen
+                   pensioenleeftijd(rij).value = pensioenleeftijd(rij).value + flexibilisaties(duur, c).value
+                   pensioenleeftijd(rij+1).value = pensioenleeftijd(rij+1).value + flexibilisaties(duur, c).value
+                   flexibilisaties(factor_OP, c).value = koopsomfactor(rij).value
+                   flexibilisaties(factor_PP, c).value = koopsomfactor(rij+1).value
+                   flexibilisaties(aanspraak_OP, c).value = float(koopsommen[rij]) / flexibilisaties(factor_OP, c).value
                    
+                   print("vervroegen of verlaten")
+                  
+                  
+               elif  "uitruilen" in flexibilisaties(soort, c).value:
+                   uitruilen_naar = flexibilisaties(soort, c).value[-2:]
+                   verhouding = flexibilisaties(verhouding, c).value[-2:]
+                   flexibilisaties(factor_OP, c).value = koopsomfactor(rij).value
+                   print("Uitruilen")
+                  
+               elif "hoog" in flexibilisaties(soort, c).value or "laag" in flexibilisaties(soort, c).value:
+                   flexibilisaties(factor_OP, c).formula = koopsomfactor(rij).formula
+                   print("Hoogconstructie of laagconstructie") 
                    
+               else:
+                   print("AOW overbruggen")
                    
-           #     # elif  flexibilisaties(2).value== "uitruilen":
-           #     #     print("Uitruilen")
-                   
-           #     # elif flexibilisaties(2).value== "hoog" or flexibilisaties(2).value== "laag":
-           #     #      print("Hoogconstructie of laagconstructie") 
-                    
-           #     # else:
-           #     #     print("AOW overbruggen")
-                   
-           # else:
-           #     print("Het werkt niet")
        
        
        
