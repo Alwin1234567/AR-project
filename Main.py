@@ -154,7 +154,7 @@ def invoer_test_klikken():
     invoer = book.sheets["Tijdelijk invoerscherm"]
     
     #Berekeningskolommen leegmaken
-    kolommen = invoer.range((1,8), (80,104))
+    kolommen = invoer.range((1,8), (80,130))
     Uitkomst_kolommen = invoer.range((10,6), (20,6))
     #Kolommen legen waar de berekeningen komen
     kolommen.clear_contents()
@@ -201,6 +201,7 @@ def invoer_test_klikken():
             kolom_tqx_juli = (counter-1)*10+14
             kolom_dt = (counter-1)*10+15
             kolom_dt_juli = (counter-1)*10+16
+            kolom_HL_factor = (counter-1)*10+17
             
             
             
@@ -251,11 +252,11 @@ def invoer_test_klikken():
                 
             elif "OP" in regeling_range(i).value:
                 koopsomfactor_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + '61)']]
-                basis_koopsom(i).value= pensioenbedragen(i).value*koopsomfactor_range(i).value
+                basis_koopsom(i).value= float(pensioenbedragen(i).value)*koopsomfactor_range(i).value
                 
             else:
                 koopsomfactor_range(i).formula = [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + '61,'+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + '61)']]
-                basis_koopsom(i).value = pensioenbedragen(i).value*koopsomfactor_range(i).value
+                basis_koopsom(i).value = float(pensioenbedragen(i).value)*koopsomfactor_range(i).value
             
             
             counter+= 1
@@ -325,49 +326,87 @@ def flexibilisaties_testen():
    pensioenleeftijd= invoer.range((10,5), (20,5))
    koopsomfactor= invoer.range((10,6), (20,6))
    basis_koopsom= invoer.range((10,7), (20,7))
-
+   
    koopsommen = basis_koopsom.value
-   regelingen= regeling_range.value   
+   regelingen= regeling_range.value  
    
    
    #loop voor rijen
-   for i in range(1,10):
-       regeling = (i-1)*8+1
-       soort = (i-1)*8+2
-       verhouding = (i-1)*8+3
-       duur = (i-1)*8+4
-       factor_OP = (i-1)*8+5
-       factor_PP = (i-1)*8+6
-       aanspraak_OP = (i-1)*8+7
-       aanspraak_PP = (i-1)*8+8
+   for i in range(1,5):
+       regeling = (i-1)*10+1
+       soort = (i-1)*10+2
+       verhouding = (i-1)*10+3
+       duur = (i-1)*10+4
+       factor_OP = (i-1)*10+5
+       factor_PP = (i-1)*10+6
+       aanspraak_OP = (i-1)*10+7
+       aanspraak_PP = (i-1)*10+8
+       
+       factor_deel1 = (i-1)*10+5
+       factor_deel2 = (i-1)*10+6
+       aanspraak_deel1 = (i-1)*10+7
+       aanspraak_deel2 = (i-1)*10+8
+       
+       
+       flex_vak = invoer.range((factor_OP+23, 2), (aanspraak_PP+23, 5))
+       flex_vak.clear_contents()
+       
        
        #loop voor kolommen
        for c in range(1,5):
            if flexibilisaties(regeling, c).value != None:
-               rij= regelingen.index(flexibilisaties(regeling, c).value) + 1
-               if flexibilisaties(soort, c).value == "vervroegen" or flexibilisaties(soort, c).value == "verlaten":
+               rij= regelingen.index(flexibilisaties(regeling, c).value)
+               print(rij)
+               if "vervroegen" in flexibilisaties(soort, c).value or "verlaten" in flexibilisaties(soort, c).value:
                    #Bij corresponderende pensioenregelingsrij de hoeveelheid vervroegen/verlaten optellen
-                   pensioenleeftijd(rij).value = pensioenleeftijd(rij).value + flexibilisaties(duur, c).value
                    pensioenleeftijd(rij+1).value = pensioenleeftijd(rij+1).value + flexibilisaties(duur, c).value
-                   flexibilisaties(factor_OP, c).value = koopsomfactor(rij).value
-                   flexibilisaties(factor_PP, c).value = koopsomfactor(rij+1).value
+                   pensioenleeftijd(rij+2).value = pensioenleeftijd(rij+2).value + flexibilisaties(duur, c).value
+                   flexibilisaties(factor_OP, c).value = koopsomfactor(rij+1).value
+                   flexibilisaties(factor_PP, c).value = koopsomfactor(rij+2).value
                    flexibilisaties(aanspraak_OP, c).value = float(koopsommen[rij]) / flexibilisaties(factor_OP, c).value
-                   
+                   flexibilisaties(aanspraak_PP, c).value = float(koopsommen[rij+1]) / flexibilisaties(factor_PP, c).value
                    print("vervroegen of verlaten")
                   
                   
                elif  "uitruilen" in flexibilisaties(soort, c).value:
                    uitruilen_naar = flexibilisaties(soort, c).value[-2:]
-                   verhouding = flexibilisaties(verhouding, c).value[-2:]
+                   verhouding_uitruilen = flexibilisaties(verhouding, c).value[-2:]
                    flexibilisaties(factor_OP, c).value = koopsomfactor(rij).value
                    print("Uitruilen")
                   
                elif "hoog" in flexibilisaties(soort, c).value or "laag" in flexibilisaties(soort, c).value:
-                   flexibilisaties(factor_OP, c).formula = koopsomfactor(rij).formula
-                   print("Hoogconstructie of laagconstructie") 
                    
+                       
+                   flex_duur = int(flexibilisaties(duur, c).value)
+                   x = koopsomfactor(rij+1).formula
+                   
+                   if x.index('61') != None:
+                       y = x.replace('61', str(flex_duur+1))
+                       
+                   
+                   flexibilisaties(factor_deel1, c).formula = y 
+                   
+                   if x.index('2') != None:
+                       z = x.replace('2', str(flex_duur+2))
+                       
+                   if ":" in str(flexibilisaties(verhouding, c).value):
+                       
+                       soort_HL = int(flexibilisaties(verhouding, c).value[-2:])/100
+                       flexibilisaties(factor_deel2, c).formula = y + '+' + z[1:] + "*" + str(soort_HL)
+                       flexibilisaties(aanspraak_deel1, c).value = koopsommen[rij]/flexibilisaties(factor_PP, c).value
+                       flexibilisaties(aanspraak_deel2, c).value = flexibilisaties(aanspraak_OP, c).value * soort_HL
+                       
+                   else:
+                       soort_HL = flexibilisaties(verhouding, c).value
+                       flexibilisaties(factor_deel2, c).formula = z
+                       flexibilisaties(aanspraak_deel1, c).value = (koopsommen[rij] + soort_HL*flexibilisaties(factor_deel2, c).value)/koopsomfactor(rij+1).value
+                       flexibilisaties(aanspraak_deel2, c).value = flexibilisaties(aanspraak_deel1, c).value - soort_HL
+                       
                else:
-                   print("AOW overbruggen")
+                   print("aow-gat overbruggen")
+                           
+                   
+
                    
        
        
