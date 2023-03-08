@@ -310,7 +310,7 @@ def AfbeeldingVerwijderen():
     #sheet.pictures[naam].delete()
 
 @xw.sub
-def AfbeeldingAanpassen():
+def afbeelding_aanpassen():
     """
     Functie die de gekozen afbeelding op de vergelijkings sheet als basis neemt voor nieuwe flexibilisaties
     """
