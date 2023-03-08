@@ -1779,6 +1779,29 @@
      <string>PF VLC 68</string>
     </property>
    </widget>
+   <widget class="QLabel" name="lbl_opslaanMelding">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>860</y>
+      <width>251</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 0, 4);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
    <zorder>frame_Aegon65</zorder>
    <zorder>frame_NN67</zorder>
    <zorder>frame_NN65</zorder>
@@ -1801,6 +1824,7 @@
    <zorder>lbl_NN67</zorder>
    <zorder>lbl_A67</zorder>
    <zorder>lbl_VLC</zorder>
+   <zorder>lbl_opslaanMelding</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
