@@ -159,9 +159,7 @@ def invoer_test_klikken():
     #Kolommen legen waar de berekeningen komen
     kolommen.clear_contents()
     Uitkomst_kolommen.clear_contents()
-    
-    
-    
+
     regeling_range = invoer.range((10,1), (20,1))
     pensioenbedragen = invoer.range((10,2), (20,2))
     sterftetafel_range = invoer.range((10,3), (20,3))
@@ -170,11 +168,8 @@ def invoer_test_klikken():
     koopsomfactor_range = invoer.range((10,6), (20,6))
     basis_koopsom = invoer.range((10,7), (20,7))
 
-    
     pensioenleeftijd=[]
     rente=[]
-
-    
     letters=[]
     for p in range(5):
         if len(letters) >= 26:
@@ -183,11 +178,9 @@ def invoer_test_klikken():
         else:
             for i in ascii_uppercase:
                 letters.append(i)  
-                
-                
+      
     for c in range(2,12):
         pensioenleeftijd_range(c).value= regeling_range(c).value[-2:]
-    
 
     counter=1
     for i in range(1,12):
@@ -201,9 +194,6 @@ def invoer_test_klikken():
             kolom_tqx_juli = (counter-1)*10+14
             kolom_dt = (counter-1)*10+15
             kolom_dt_juli = (counter-1)*10+16
-            
-            
-            
 
             rente.append(rentes(i).value)
             pensioenleeftijd.append(pensioenleeftijd_range(i).value)
@@ -231,24 +221,20 @@ def invoer_test_klikken():
             
             invoer.range((1, kolom_dt_juli)).value= "dt op 1 juli"
             invoer.range((2, kolom_dt_juli), (61, kolom_dt_juli)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (1+$D$' + str(i+9) + ')^-(' + letters[kolom_t-1] + '2+(month($B$4)-1)/12), "")']]
-            
-            
+
             if sterftetafel_range(i).value== "AG_2020":
                 invoer.range((1, kolom_tpx)).value= "tpx"
                 invoer.range((2, kolom_tpx)).value= 1
                 invoer.range((3, kolom_tpx), (61, kolom_tpx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (1-INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1, ' + letters[kolom_jaar-1] + '2-2018))*' + letters[kolom_tpx-1] + '2,"")']]
-                
-                
+
             else:
                 invoer.range((1, kolom_tpx)).value= "tpx"
                 invoer.range((2, kolom_tpx), (61, kolom_tpx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1,1) / INDEX(INDIRECT($C$' + str(i+9) + '),$' + letters[kolom_leeftijd-1] + '$2+1,1),"")']]
-    
-            
+
             if regeling_range(i).value== "ZL":
                 koopsomfactor_range(i).value= 0
                 basis_koopsom(i).value= pensioenbedragen(i).value
-                
-                
+
             elif "OP" in regeling_range(i).value:
                 koopsomfactor_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + '61)']]
                 basis_koopsom(i).value= float(pensioenbedragen(i).value)*koopsomfactor_range(i).value
@@ -256,8 +242,7 @@ def invoer_test_klikken():
             else:
                 koopsomfactor_range(i).formula = [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + '61,'+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + '61)']]
                 basis_koopsom(i).value = float(pensioenbedragen(i).value)*koopsomfactor_range(i).value
-            
-            
+
             counter+= 1
             
         else:
@@ -328,8 +313,7 @@ def flexibilisaties_testen():
    
    koopsommen = basis_koopsom.value
    regelingen= regeling_range.value  
-   
-   
+
    #loop voor rijen
    for i in range(1,5):
        regeling = (i-1)*10+1
@@ -345,12 +329,10 @@ def flexibilisaties_testen():
        factor_deel2 = (i-1)*10+6
        aanspraak_deel1 = (i-1)*10+7
        aanspraak_deel2 = (i-1)*10+8
-       
-       
+
        flex_vak = invoer.range((factor_OP+23, 2), (aanspraak_PP+23, 5))
        flex_vak.clear_contents()
-       
-       
+
        #loop voor kolommen
        for c in range(1,5):
            if flexibilisaties(regeling, c).value != None:
@@ -364,8 +346,9 @@ def flexibilisaties_testen():
                    flexibilisaties(aanspraak_OP, c).value = float(koopsommen[rij]) / flexibilisaties(factor_OP, c).value
                    flexibilisaties(aanspraak_PP, c).value = float(koopsommen[rij+1]) / flexibilisaties(factor_PP, c).value
                    
-                   
-                   
+                   OP_nieuw = flexibilisaties(aanspraak_OP, c).value
+                   PP_nieuw = flexibilisaties(aanspraak_PP, c).value
+
                elif "AOW" in flexibilisaties(soort, c).value:
                    flexibilisaties(factor_OP, c).value = "Berekeningen komen later"
                        
@@ -378,10 +361,16 @@ def flexibilisaties_testen():
                    
                    if uitruilen_naar == "PP":
                        flexibilisaties(aanspraak_OP, c).value = float(koopsommen[rij]) / (flexibilisaties(factor_OP, c).value + verhouding_uitruilen * flexibilisaties(factor_PP, c).value)
-                       flexibilisaties(aanspraak_PP, c).value = flexibilisaties(aanspraak_OP, c).value * verhouding_uitruilen
+                       flexibilisaties(aanspraak_PP, c).value = flexibilisaties(aanspraak_OP, c).value * verhouding_uitruilen + PP_nieuw
+                       
+                       OP_nieuw = flexibilisaties(aanspraak_OP, c).value
+                       PP_nieuw = flexibilisaties(aanspraak_PP, c).value
                    else:
-                       flexibilisaties(aanspraak_PP, c).value = float(koopsommen[rij]) / (flexibilisaties(factor_PP, c).value + verhouding_uitruilen * flexibilisaties(factor_OP, c).value)
-                       flexibilisaties(aanspraak_OP, c).value = flexibilisaties(aanspraak_PP, c).value * verhouding_uitruilen
+                       flexibilisaties(aanspraak_PP, c).value = float(koopsommen[rij]+1) / (flexibilisaties(factor_PP, c).value + verhouding_uitruilen * flexibilisaties(factor_OP, c).value)
+                       flexibilisaties(aanspraak_OP, c).value = flexibilisaties(aanspraak_PP, c).value * verhouding_uitruilen + OP_nieuw
+                       
+                       OP_nieuw = flexibilisaties(aanspraak_OP, c).value
+                       PP_nieuw = flexibilisaties(aanspraak_PP, c).value
                   
                else:
                    flex_duur = int(flexibilisaties(duur, c).value)
