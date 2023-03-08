@@ -288,6 +288,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
         super(Flexmenu, self).__init__()
         self.book = book
+        self.opslaanCount = 0 #Teller voor aantal opgeslagen flexibilisaties.
         
         # Setup van UI
         self.ui = Ui_MainWindow5()
@@ -516,6 +517,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.ui.sbHLMaand.setValue(0)
         
         if self.invoerCheck() == True:
+            self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
             self.flexkeuzesOpslaan() # Sla flex keuzes op
             self.samenvattingUpdate() # Update de samenvatting
         
@@ -889,5 +891,77 @@ class Flexmenu(QtWidgets.QMainWindow):
     def btnOpslaanClicked(self): 
         # Alle huidige flexibiliserignen opslaan in een Excel sheet
         # Huidig diagram opslaan en plaats in vergelijking sheet
-        self.close()
-        self._logger.info("Flexmenu scherm gesloten")
+        
+        if self.invoerCheck() == True:
+            flexID = [["Naam Aanpassingen",f"Aanpassing Nr {self.opslaanCount+1}"],
+                     ["AfbeeldingID",f"ID_{self.opslaanCount+1}"]]
+            
+            self.book.sheets["Flexopslag"].range((2,2+4*self.opslaanCount),(3,4+4*self.opslaanCount)).options(ndims = 2).value = flexID
+            
+            regelingCount = 0
+            
+            for flexibilisatie in self.deelnemerObject.flexibilisaties:
+                flexopslag = functions.flexOpslagList() # Het 2D veld waar flexibilisaties worden opgeslagen.
+                
+                # Pensioennaam invullen
+                flexopslag[0][1] = str(flexibilisatie.pensioen.pensioenNaam)
+                
+                # Pensioenleeftijd wijzigen J/N
+                if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
+                else: flexopslag[2][1] = "N"
+                
+                # Pensioenleeftijd: Jaar & Maand
+                flexopslag[3][1] = flexibilisatie.leeftijdJaar
+                flexopslag[3][2] = flexibilisatie.leeftijdMaand
+                
+                # OP/PP Uitruilen wijzigen J/N
+                if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "J"
+                else: flexopslag[5][1] = "N"
+                
+                # OP/PP uitruiling opslaan
+                if flexibilisatie.OP_PP_Methode == "Verhouding":
+                    flexopslag[6][1] = "Verh"
+                    flexopslag[7][1] = flexibilisatie.OP_PP_Verhouding_OP
+                    flexopslag[7][2] = flexibilisatie.OP_PP_Verhouding_PP
+                elif flexibilisatie.OP_PP_Methode == "Percentage":
+                    flexopslag[6][1] = "Perc"
+                    flexopslag[7][1] = flexibilisatie.OP_PP_Percentage
+                else:
+                    self._logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
+                
+                # Hoog/Laag constructie opslaan
+                if flexibilisatie.HL_Actief: flexopslag[9][1] = "J"
+                else: flexopslag[9][1] = "N"
+                
+                if flexibilisatie.HL_Volgorde == "Hoog-laag": flexopslag[10][1] = "Hoog/Laag"
+                elif flexibilisatie.HL_Volgorde == "Laag-hoog": flexopslag[10][1] = "Laag/Hoog"
+                
+                flexopslag[11][1] = flexibilisatie.HL_Jaar
+                flexopslag[11][2] = flexibilisatie.HL_Maand
+                
+                if flexibilisatie.HL_Methode == "Verhouding":
+                    flexopslag[12][1] = "Verh"
+                    flexopslag[13][1] = flexibilisatie.HL_Verhouding_Hoog
+                    flexopslag[13][2] = flexibilisatie.HL_Verhouding_Laag
+                elif flexibilisatie.HL_Methode == "Verschil":
+                    flexopslag[12][1] = "Verh"
+                    flexopslag[13][1] = flexibilisatie.HL_Verschil
+                elif flexibilisatie.HL_Methode == "Opvullen AOW":
+                    flexopslag[12][1] = "Opv"
+                
+                flexopslag[15][1] = "OP Onbekend"
+                flexopslag[15][2] = "PP Onbekend"
+                
+                flexopslag[17][1] = str(functions.zoekRGB(self.book,str(flexibilisatie.pensioen.pensioenNaam)))
+                
+                self.book.sheets["Flexopslag"].range((6+19*regelingCount,2+4*self.opslaanCount),(23+19*regelingCount,4+4*self.opslaanCount)).options(ndims = 2).value = flexopslag
+                
+                regelingCount += 1
+                
+            self.opslaanCount += 1
+            
+            #self.close()
+            self._logger.info("Flexibilisatie opgeslagen.")
+            
+        elif self.invoerCheck() == False:
+            self.ui.lbl_opslaanMelding.setText("Opslaan niet mogelijk bij foute invoer.")

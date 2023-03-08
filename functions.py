@@ -591,4 +591,58 @@ def checkVeldInvoer(methode,veld1,veld2,veld3):
 def tpxFormule(sterftetafel, rij, leeftijdKolomLetter, jaarKolom, tpxKolom):
     if sterftetafel == "AG_2020": return '=if({0}{1}<>"", (1-INDEX(INDIRECT("{2}"),{0}{3}+1,{4}{3}-2018))*{5}{3},"")'.format(leeftijdKolomLetter, rij + 3,  sterftetafel, rij + 2, jaarKolom, tpxKolom)
     else: return '=if({0}{1}<>"", INDEX(INDIRECT("{2}"),{0}{1}+1,1)/ INDEX(INDIRECT("{2}"),${0}$2+1,1),"")'.format(leeftijdKolomLetter, rij + 3, sterftetafel)
+
+def flexOpslagList(book=None,dV=0,dH=0):
+    """
+    Functie waar een lege 2D lijst wordt gecreëerd om flexibilisaties in op te slaan.
+    Deze lijst moet vervolgens in de Flexopslag sheet geplakt worden.
+    
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+    
+    Returns
+    -------
+    flexopslag : lsit
+        De 2D lijst waar waardes ingevuld kunnen worden.
+    
+    """
+    
+    
+    flexopslag = []
+    
+    for i in range(18):
+        flexopslag.append(["","",""])
+    
+    flexopslag[0][0] = "Pensioenfonds"
+    flexopslag[2][0] = "Wijzigen"
+    flexopslag[3][0] = "Pensioenleeftijd"
+    flexopslag[5][0] = "Uitruilen"
+    flexopslag[6][0] = "Methode"
+    flexopslag[7][0] = "Verschil/verhouding"
+    flexopslag[9][0] = "Hoog/Laag"
+    flexopslag[10][0] = "Volgorde"
+    flexopslag[11][0] = "Duur"
+    flexopslag[12][0] = "Methode"
+    flexopslag[13][0] = "Vers/Verh/Opv"
+    flexopslag[15][0] = "Jaarbedrag"
+    flexopslag[17][0] = "Kleur"
+    
+    #book.sheets["Flexopslag"].range((2+19*dV,2+4*dH),(19+19*dV,4+4*dH)).options(ndims = 2).value = flexopslag
+
+    return flexopslag
+
+def zoekRGB(book,regeling):
+    i = 1
+    rgb = "Geen rgb gevonden."
+    
+    while i < 11:
+        if str(book.sheets["Gegevens pensioencontracten"].range(i,2).value) == regeling:
+            rgb = str(book.sheets["Gegevens pensioencontracten"].range(i,10).value)
+        i += 1
+    
+    return rgb
+    
+    
     
