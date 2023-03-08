@@ -153,18 +153,22 @@ def invoer_test_klikken():
     book = xw.Book.caller()
     invoer = book.sheets["Tijdelijk invoerscherm"]
     
-    kolommen= invoer.range((1,8), (61,130))
+
+    #Berekeningskolommen leegmaken
+    kolommen = invoer.range((1,8), (80,130))
+    Uitkomst_kolommen = invoer.range((10,6), (20,6))
     #Kolommen legen waar de berekeningen komen
     kolommen.clear_contents()
+    Uitkomst_kolommen.clear_contents()
     
-    regeling_range= invoer.range((10,1), (18,1))
-    pensioenbedragen=invoer.range((10,2),(18,2))
-    sterftetafel_range = invoer.range((10,3),(18,3))
-    rentes= invoer.range((10,4),(18,4))
-    pensioenleeftijd_range= invoer.range((10,5),(18,5))
-    koopsomfactor_range= invoer.range((10,6),(18,6))
     
-    basis_koopsom= invoer.range((10,7),(18,7))
+    regeling_range = invoer.range((10,1), (20,1))
+    pensioenbedragen = invoer.range((10,2), (20,2))
+    sterftetafel_range = invoer.range((10,3), (20,3))
+    rentes = invoer.range((10,4), (20,4))
+    pensioenleeftijd_range = invoer.range((10,5), (20,5))
+    koopsomfactor_range = invoer.range((10,6), (20,6))
+    basis_koopsom = invoer.range((10,7), (20,7))
 
     
     pensioenleeftijd=[]
@@ -172,103 +176,105 @@ def invoer_test_klikken():
 
     
     letters=[]
-    for p in range(4):
-        if len(letters)>=26:
+    for p in range(5):
+        if len(letters) >= 26:
             for i in ascii_uppercase:
-                letters.append( letters[p-1] + i)
+                letters.append(letters[p-1] + i)
         else:
             for i in ascii_uppercase:
-                letters.append(i)   
+                letters.append(i)  
+                
+                
+    for c in range(2,12):
+        pensioenleeftijd_range(c).value= regeling_range(c).value[-2:]
     
 
     counter=1
-    for i in range(1,10):
+    for i in range(1,12):
 
-        if pensioenbedragen(i).value != None and pensioenbedragen(i).value != 0:
-            kolom_t= (counter-1)*10+9
-            kolom_jaar= (counter-1)*10+10
-            kolom_leeftijd= (counter-1)*10+11
-            kolom_tpx= (counter-1)*10+12
-            kolom_tqx= (counter-1)*10+13
-            kolom_tqx_juli= (counter-1)*10+14
-            kolom_dt= (counter-1)*10+15
-            kolom_dt_juli= (counter-1)*10+16
+        if pensioenbedragen(i).value != None:
+            kolom_t = (counter-1)*10+9
+            kolom_jaar = (counter-1)*10+10
+            kolom_leeftijd = (counter-1)*10+11
+            kolom_tpx = (counter-1)*10+12
+            kolom_tqx = (counter-1)*10+13
+            kolom_tqx_juli = (counter-1)*10+14
+            kolom_dt = (counter-1)*10+15
+            kolom_dt_juli = (counter-1)*10+16
+            
+            
             
             rente.append(rentes(i).value)
             pensioenleeftijd.append(pensioenleeftijd_range(i).value)
             
-            #'=if(' + letters[kolom_leeftijd-1] + '2+1<=119;
-            # invoer.range((1, kolom_t), (2, kolom_t)).options(ndims = 2).formula = [["t"], [0]]
-            # invoer.range((2, kolom_t)).formula = 0
-            blok1 = list()
-            blok1.append(["t", "Jaar", "Leeftijd", "tpx", "tqx", "tqx op 1 juli", "dt", "dt op 1 juli"])
-            blok1.append(["0", '=year(B4)+' + str(int(pensioenleeftijd[i-1])), '=$E' + str(i+9), 1, 0, '=if({0}3<>"", (((13 - month($B$4)) * {1}2) + ((month($B$4) - 1) * {1}3)) / 12, "")'.format(letters[kolom_leeftijd - 1], letters[kolom_tqx - 1]), '=if({0}2<>"", (1+$D${1})^-{2}2, "")'.format(letters[kolom_leeftijd-1], str(i+9), letters[kolom_t-1]),\
-                          '=if({0}3<>"", (1+$D${1})^-({2}2 + (month($B$4)-1)/12), "")'.format(letters[kolom_leeftijd-1], str(i + 9), letters[kolom_t-1])])
-            for rij in range(59): blok1.append(['=1+{}{}'.format(letters[kolom_t-1], str(rij+2)),\
-                                               '=1+{}{}'.format(letters[kolom_jaar-1], str(rij+2)),\
-                                                   '=if({0}{1}<119, 1+{0}{1},"")'.format(letters[kolom_leeftijd-1], str(rij+2)),\
-                                                       functions.tpxFormule(sterftetafel_range(i).value, rij, letters[kolom_leeftijd-1], letters[kolom_jaar-1], letters[kolom_tpx-1]),\
-                                                           '=if({0}{1}<>"", 1-{2}{1}, "")'.format(letters[kolom_leeftijd-1], str(rij+3), letters[kolom_tpx-1]),\
-                                                               '=if({0}{1}<>"", (((13 - month($B$4)) * {2}{3}) + ((month($B$4) - 1) * {2}{1})) / 12, "")'.format(letters[kolom_leeftijd - 1], str(rij + 4), letters[kolom_tqx - 1], str(rij + 3)),\
-                                                                   '=if({0}{1}<>"", (1+$D${2})^-{3}{1}, "")'.format(letters[kolom_leeftijd-1], str(rij+3), str(i+9), letters[kolom_t-1]),\
-                                                                       '=if({0}{1}<>"", (1+$D${2})^-({3}{4} + (month($B$4)-1)/12), "")'.format(letters[kolom_leeftijd-1], str(rij+4), str(i + 9), letters[kolom_t-1], str(rij+3))\
-                                                                           ])
-            # print([len(x) for x in blok1])
-            invoer.range((1, kolom_t), (61, kolom_t+7)).options(ndims = 2).formula = blok1
+
+            # blok1 = list()
+            # blok1.append(["t", "Jaar", "Leeftijd", "tpx", "tqx", "tqx op 1 juli", "dt", "dt op 1 juli"])
+            # blok1.append(["0", '=year(B4)+' + str(int(pensioenleeftijd[i-1])), '=$E' + str(i+9), 1, 0, '=if({0}3<>"", (((13 - month($B$4)) * {1}2) + ((month($B$4) - 1) * {1}3)) / 12, "")'.format(letters[kolom_leeftijd - 1], letters[kolom_tqx - 1]), '=if({0}2<>"", (1+$D${1})^-{2}2, "")'.format(letters[kolom_leeftijd-1], str(i+9), letters[kolom_t-1]),\
+            #               '=if({0}3<>"", (1+$D${1})^-({2}2 + (month($B$4)-1)/12), "")'.format(letters[kolom_leeftijd-1], str(i + 9), letters[kolom_t-1])])
+            # for rij in range(59): blok1.append(['=1+{}{}'.format(letters[kolom_t-1], str(rij+2)),\
+            #                                    '=1+{}{}'.format(letters[kolom_jaar-1], str(rij+2)),\
+            #                                        '=if({0}{1}<119, 1+{0}{1},"")'.format(letters[kolom_leeftijd-1], str(rij+2)),\
+            #                                            functions.tpxFormule(sterftetafel_range(i).value, rij, letters[kolom_leeftijd-1], letters[kolom_jaar-1], letters[kolom_tpx-1]),\
+            #                                                '=if({0}{1}<>"", 1-{2}{1}, "")'.format(letters[kolom_leeftijd-1], str(rij+3), letters[kolom_tpx-1]),\
+            #                                                    '=if({0}{1}<>"", (((13 - month($B$4)) * {2}{3}) + ((month($B$4) - 1) * {2}{1})) / 12, "")'.format(letters[kolom_leeftijd - 1], str(rij + 4), letters[kolom_tqx - 1], str(rij + 3)),\
+            #                                                        '=if({0}{1}<>"", (1+$D${2})^-{3}{1}, "")'.format(letters[kolom_leeftijd-1], str(rij+3), str(i+9), letters[kolom_t-1]),\
+            #                                                            '=if({0}{1}<>"", (1+$D${2})^-({3}{4} + (month($B$4)-1)/12), "")'.format(letters[kolom_leeftijd-1], str(rij+4), str(i + 9), letters[kolom_t-1], str(rij+3))\
+            #                                                                ])
+            # invoer.range((1, kolom_t), (61, kolom_t+7)).options(ndims = 2).formula = blok1
             
-            # blok2 = list()
-            # blok2.append([""])
-            # blok2.append([])
-            # for rij in range(59): blok2.append([
-            #                                         ])
-            # print(blok2)
-            # invoer.range((1, kolom_t+5), (61, kolom_t+6)).options(ndims = 2).formula = blok2
-            # invoer.range((1, kolom_jaar)).value= "Jaar"
-            # invoer.range((2, kolom_jaar)).formula= [['=year(B4)+' + str(int(pensioenleeftijd[i-1]))]]
-            # invoer.range((3, kolom_jaar), (61, kolom_jaar)).formula= [['=1+' + letters[kolom_jaar-1] + '2']]
+
+            invoer.range((1, kolom_t)).formula = [["t"]]
+            invoer.range((2, kolom_t)).formula = [["0"]]
+            invoer.range((3, kolom_t), (61, kolom_t)).formula = [['=1+' + letters[kolom_t-1] + '2']]
             
-            # invoer.range((1, kolom_leeftijd)).value= "Leeftijd"
-            # invoer.range((2, kolom_leeftijd)).formula= [['=$E' + str(i+9)]]
-            # invoer.range((3, kolom_leeftijd), (61, kolom_leeftijd)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<119, 1+' + letters[kolom_leeftijd-1] + '2,"")']]
+            invoer.range((1, kolom_jaar)).value = "Jaar"
+            invoer.range((2, kolom_jaar)).formula = [['=year(B4)+' + str(int(pensioenleeftijd[i-1]))]]
+            invoer.range((3, kolom_jaar), (61, kolom_jaar)).formula = [['=1+' + letters[kolom_jaar-1] + '2']]
             
-            # invoer.range((1, kolom_tqx)).value= "tqx"
-            # invoer.range((2, kolom_tqx), (61, kolom_tqx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", 1-' + letters[kolom_tpx-1] + '2, "")']]
+            invoer.range((1, kolom_leeftijd)).value= "Leeftijd"
+            invoer.range((2, kolom_leeftijd)).formula= [['=$E' + str(i+9)]]
+            invoer.range((3, kolom_leeftijd), (61, kolom_leeftijd)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<119, 1+' + letters[kolom_leeftijd-1] + '2,"")']]
             
-            # invoer.range((1, kolom_tqx_juli)).value= "tqx op 1 juli"
-            # invoer.range((2, kolom_tqx_juli), (60, kolom_tqx_juli)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (((13-month($B$4))*' + letters[kolom_tqx-1] + '2)+((month($B$4)-1)*' + letters[kolom_tqx-1] + '3))/12, "")']]
+            invoer.range((1, kolom_tqx)).value= "tqx"
+            invoer.range((2, kolom_tqx), (61, kolom_tqx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", 1-' + letters[kolom_tpx-1] + '2, "")']]
+
+            invoer.range((1, kolom_tqx_juli)).value= "tqx op 1 juli"
+            invoer.range((2, kolom_tqx_juli), (61, kolom_tqx_juli)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (((13-month($B$4))*' + letters[kolom_tqx-1] + '2)+((month($B$4)-1)*' + letters[kolom_tqx-1] + '3))/12, "")']]
+
             
-            # invoer.range((1, kolom_dt)).value= "dt"
-            # invoer.range((2, kolom_dt), (61, kolom_dt)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", (1+$D$' + str(i+9) + ')^-' + letters[kolom_t-1] + '2, "")']]
+            invoer.range((1, kolom_dt)).value= "dt"
+            invoer.range((2, kolom_dt), (61, kolom_dt)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", (1+$D$' + str(i+9) + ')^-' + letters[kolom_t-1] + '2, "")']]
             
-            # invoer.range((1, kolom_dt_juli)).value= "dt op 1 juli"
-            # invoer.range((2, kolom_dt_juli), (60, kolom_dt_juli)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (1+$D$' + str(i+9) + ')^-(' + letters[kolom_t-1] + '2+(month($B$4)-1)/12), "")']]
+            invoer.range((1, kolom_dt_juli)).value= "dt op 1 juli"
+            invoer.range((2, kolom_dt_juli), (61, kolom_dt_juli)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (1+$D$' + str(i+9) + ')^-(' + letters[kolom_t-1] + '2+(month($B$4)-1)/12), "")']]
+
             
             
-            # if sterftetafel_range(i).value== "AG_2020":
-            #     # invoer.range((1, kolom_tpx)).value= "tpx"
-            #     # invoer.range((2, kolom_tpx)).value= 1
-            #     print('=if(' + letters[kolom_leeftijd-1] + '3<>"", (1-INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1, ' + letters[kolom_jaar-1] + '2-2018))*' + letters[kolom_tpx-1] + '2,"")')
-            #     # invoer.range((3, kolom_tpx), (61, kolom_tpx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (1-INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1, ' + letters[kolom_jaar-1] + '2-2018))*' + letters[kolom_tpx-1] + '2,"")']]
+            if sterftetafel_range(i).value== "AG_2020":
+                invoer.range((1, kolom_tpx)).value= "tpx"
+                invoer.range((2, kolom_tpx)).value= 1
+                print('=if(' + letters[kolom_leeftijd-1] + '3<>"", (1-INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1, ' + letters[kolom_jaar-1] + '2-2018))*' + letters[kolom_tpx-1] + '2,"")')
+                invoer.range((3, kolom_tpx), (61, kolom_tpx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '3<>"", (1-INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1, ' + letters[kolom_jaar-1] + '2-2018))*' + letters[kolom_tpx-1] + '2,"")']]
                 
-                
-            # else:
-            #     # invoer.range((1, kolom_tpx)).value= "tpx"
-            #     print('=if(' + letters[kolom_leeftijd-1] + '2<>"", INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1,1)/ INDEX(INDIRECT($C$' + str(i+9) + '),$' + letters[kolom_leeftijd-1] + '$2+1,1),"")')
-            #     # invoer.range((2, kolom_tpx), (61, kolom_tpx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1,1)/ INDEX(INDIRECT($C$' + str(i+9) + '),$' + letters[kolom_leeftijd-1] + '$2+1,1),"")']]
+            else:
+                invoer.range((1, kolom_tpx)).value= "tpx"
+                invoer.range((2, kolom_tpx), (61, kolom_tpx)).formula= [['=if(' + letters[kolom_leeftijd-1] + '2<>"", INDEX(INDIRECT($C$' + str(i+9) + '),' + letters[kolom_leeftijd-1] + '2+1,1) / INDEX(INDIRECT($C$' + str(i+9) + '),$' + letters[kolom_leeftijd-1] + '$2+1,1),"")']]
+
     
             
-            # if regeling_range(i).value== "ZL":
-            #     koopsomfactor_range(i).value= 0
-            #     basis_koopsom(i).value= pensioenbedragen(i).value
+            if regeling_range(i).value== "ZL":
+                koopsomfactor_range(i).value= 0
+                basis_koopsom(i).value= pensioenbedragen(i).value
                 
-            # elif "OP" in regeling_range(i).value:
-            #     koopsomfactor_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + '61)']]
-            #     basis_koopsom(i).value= pensioenbedragen(i).value*koopsomfactor_range(i).value
+            elif "OP" in regeling_range(i).value:
+                koopsomfactor_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + '61)']]
+                basis_koopsom(i).value= float(pensioenbedragen(i).value)*koopsomfactor_range(i).value
                 
-            # else:
-            #     koopsomfactor_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + '61,'+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + '61)']]
-            #     basis_koopsom(i).value= pensioenbedragen(i).value*koopsomfactor_range(i).value
-            
+            else:
+                koopsomfactor_range(i).formula = [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + '61,'+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + '61)']]
+                basis_koopsom(i).value = float(pensioenbedragen(i).value)*koopsomfactor_range(i).value
+          
             
             counter+= 1
             
@@ -331,53 +337,118 @@ def flexibilisaties_testen():
    book = xw.Book.caller()
    invoer = book.sheets["Tijdelijk invoerscherm"] 
    
-   flexibilisaties= invoer.range((21,2), (55,6))
+   flexibilisaties= invoer.range((24,2), (55,6))
    
-   regeling_range= invoer.range((10,1), (18,1))
-   pensioenleeftijd= invoer.range((10,5), (18,5))
-   koopsomfactor_range= invoer.range((10,6), (18,6))
-   basis_koopsom= invoer.range((10,7), (18,7))
-
-   koopsommen= []
-   koopsommen= basis_koopsom.value
+   regeling_range= invoer.range((10,1), (20,1))
+   pensioenleeftijd= invoer.range((10,5), (20,5))
+   koopsomfactor= invoer.range((10,6), (20,6))
+   basis_koopsom= invoer.range((10,7), (20,7))
    
-   for i in range(1,10):
-       regeling= (i-1)*8+1
-       soort= (i-1)*8+2
-       hoeveelheid= (i-1)*8+3
-       factor= (i-1)*8+4
-       aanspraak_OP= (i-1)*8+5
-       aanspraak_PP= (i-1)*8+6
+   koopsommen = basis_koopsom.value
+   regelingen= regeling_range.value  
+   
+   
+   #loop voor rijen
+   for i in range(1,5):
+       regeling = (i-1)*10+1
+       soort = (i-1)*10+2
+       verhouding = (i-1)*10+3
+       duur = (i-1)*10+4
+       factor_OP = (i-1)*10+5
+       factor_PP = (i-1)*10+6
+       aanspraak_OP = (i-1)*10+7
+       aanspraak_PP = (i-1)*10+8
        
+       factor_deel1 = (i-1)*10+5
+       factor_deel2 = (i-1)*10+6
+       aanspraak_deel1 = (i-1)*10+7
+       aanspraak_deel2 = (i-1)*10+8
+       
+       
+       flex_vak = invoer.range((factor_OP+23, 2), (aanspraak_PP+23, 5))
+       flex_vak.clear_contents()
+       
+       
+       #loop voor kolommen
        for c in range(1,5):
-           if flexibilisaties(regeling, c).value!= None:
-               pass
-               
-               
-               
-               
-               
-               
-               
-           # if flexibilisaties(regeling).value[:-2] in invoer.range((11,1)).value and flexibilisaties(regeling).value[-2:] in invoer.range((11,1)).value:
-           #     print("test")
-           #     # if flexibilisaties(2).value== "vervroegen" or flexibilisaties(2).value== "verlaten":
-           #     #     #Bij corresponderende pensioenregelingsrij de hoeveelheid vervroegen/verlaten optellen
-           #     #     pensioenleeftijd(2).value= pensioenleeftijd(2).value+ flexibilisaties(3).value
+           if flexibilisaties(regeling, c).value != None:
+               rij= regelingen.index(flexibilisaties(regeling, c).value)
+               if "vervroegen" in flexibilisaties(soort, c).value or "verlaten" in flexibilisaties(soort, c).value:
+                   #Bij corresponderende pensioenregelingsrij de hoeveelheid vervroegen/verlaten optellen
+                   pensioenleeftijd(rij+1).value = pensioenleeftijd(rij+1).value + flexibilisaties(duur, c).value
+                   pensioenleeftijd(rij+2).value = pensioenleeftijd(rij+2).value + flexibilisaties(duur, c).value
+                   flexibilisaties(factor_OP, c).value = koopsomfactor(rij+1).value
+                   flexibilisaties(factor_PP, c).value = koopsomfactor(rij+2).value
+                   flexibilisaties(aanspraak_OP, c).value = float(koopsommen[rij]) / flexibilisaties(factor_OP, c).value
+                   flexibilisaties(aanspraak_PP, c).value = float(koopsommen[rij+1]) / flexibilisaties(factor_PP, c).value
                    
                    
                    
-           #     # elif  flexibilisaties(2).value== "uitruilen":
-           #     #     print("Uitruilen")
+               elif "AOW" in flexibilisaties(soort, c).value:
+                   flexibilisaties(factor_OP, c).value = "Berekeningen komen later"
+                       
+               
+               elif  "uitruilen" in flexibilisaties(soort, c).value:
+                   uitruilen_naar = flexibilisaties(soort, c).value[-2:]
+                   verhouding_uitruilen = int(flexibilisaties(verhouding, c).value[-2:])/100
+                   flexibilisaties(factor_OP, c).value = koopsomfactor(rij+1).value
+                   flexibilisaties(factor_PP, c).value = koopsomfactor(rij+2).value
                    
-           #     # elif flexibilisaties(2).value== "hoog" or flexibilisaties(2).value== "laag":
-           #     #      print("Hoogconstructie of laagconstructie") 
+                   if uitruilen_naar == "PP":
+                       flexibilisaties(aanspraak_OP, c).value = float(koopsommen[rij]) / (flexibilisaties(factor_OP, c).value + verhouding_uitruilen * flexibilisaties(factor_PP, c).value)
+                       flexibilisaties(aanspraak_PP, c).value = flexibilisaties(aanspraak_OP, c).value * verhouding_uitruilen
+                   else:
+                       flexibilisaties(aanspraak_PP, c).value = float(koopsommen[rij]) / (flexibilisaties(factor_PP, c).value + verhouding_uitruilen * flexibilisaties(factor_OP, c).value)
+                       flexibilisaties(aanspraak_OP, c).value = flexibilisaties(aanspraak_PP, c).value * verhouding_uitruilen
+                  
+               else:
+                   flex_duur = int(flexibilisaties(duur, c).value)
+                   x = koopsomfactor(rij+1).formula
+                   
+                   if x.index('61') != None:
+                       y = x.replace('61', str(flex_duur+1))
+
+                   
+                   
+                   if x.index('2') != None:
+                       z = x.replace('2', str(flex_duur+2))
+                       
+                   #Hoog-Laag constructie    
+                   if "hoog" in flexibilisaties(soort, c).value:
+                       flexibilisaties(factor_deel1, c).formula = y 
+                       if ":" in str(flexibilisaties(verhouding, c).value):
+                           soort_HL = int(flexibilisaties(verhouding, c).value[-2:])/100
+                           flexibilisaties(factor_deel2, c).formula = y + '+' + z[1:] + '*' + str(soort_HL)
+                           flexibilisaties(aanspraak_deel1, c).value = float(koopsommen[rij])/flexibilisaties(factor_deel2, c).value
+                           flexibilisaties(aanspraak_deel2, c).value = flexibilisaties(aanspraak_deel1, c).value * soort_HL
+                           
+                       else:
+                           soort_HL = flexibilisaties(verhouding, c).value
+                           flexibilisaties(factor_deel2, c).formula = z
+                           flexibilisaties(aanspraak_deel1, c).value = (float(koopsommen[rij]) + soort_HL*flexibilisaties(factor_deel2, c).value)/koopsomfactor(rij+1).value
+                           flexibilisaties(aanspraak_deel2, c).value = flexibilisaties(aanspraak_deel1, c).value - soort_HL
+                           
+                   #Laag-Hoog constructie        
+                   else:
+                       if ":" in str(flexibilisaties(verhouding, c).value):
+                           soort_HL = int(flexibilisaties(verhouding, c).value[:2])/100
+                           y = y + '*' + str(soort_HL)
+                           flexibilisaties(factor_deel1, c).formula = y 
+                           flexibilisaties(factor_deel2, c).formula = y + '+' + z[1:] 
+                           flexibilisaties(aanspraak_deel2, c).value = (float(koopsommen[rij])/flexibilisaties(factor_deel2, c).value)
+                           flexibilisaties(aanspraak_deel1, c).value = flexibilisaties(aanspraak_deel2, c).value * soort_HL
+                           
+                       else:
+                           flexibilisaties(factor_deel1, c).formula = y 
+                           soort_HL = flexibilisaties(verhouding, c).value
+                           flexibilisaties(factor_deel2, c).formula = z
+                           flexibilisaties(aanspraak_deel1, c).value = (float(koopsommen[rij]) - soort_HL * flexibilisaties(factor_deel2, c).value)/koopsomfactor(rij+1).value
+                           flexibilisaties(aanspraak_deel2, c).value = flexibilisaties(aanspraak_deel1, c).value + soort_HL
                     
-           #     # else:
-           #     #     print("AOW overbruggen")
+                           
                    
-           # else:
-           #     print("Het werkt niet")
+
+                   
        
        
        
