@@ -185,7 +185,6 @@ def invoer_test_klikken():
 
     counter=1
     for i in range(1,12):
-
         if pensioenbedragen(i).value != None:
             kolom_t = (counter-1)*10+9
             kolom_jaar = (counter-1)*10+10
@@ -262,11 +261,11 @@ def invoer_test_klikken():
                 basis_koopsom(i).value= pensioenbedragen(i).value
                 
             elif "OP" in regeling_range(i).value:
-                koopsomfactor_range(i).formula= [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + '61)']]
+                koopsomfactor_range(i).formula= [['=ROUND(SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_dt-1] + '2:' + letters[kolom_dt-1] + '61),3)']]
                 basis_koopsom(i).value= float(pensioenbedragen(i).value)*koopsomfactor_range(i).value
                 
             else:
-                koopsomfactor_range(i).formula = [['=SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + '61,'+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + '61)']]
+                koopsomfactor_range(i).formula = [['=ROUND(SUMPRODUCT(' + letters[kolom_tpx-1] + '2:' + letters[kolom_tpx-1] + '61,' + letters[kolom_tqx_juli-1] +'2:' + letters[kolom_tqx_juli-1] + '61,'+ letters[kolom_dt_juli-1] + '2:' + letters[kolom_dt_juli-1] + '61),3)']]
                 basis_koopsom(i).value = float(pensioenbedragen(i).value)*koopsomfactor_range(i).value
 
             counter+= 1
@@ -367,10 +366,10 @@ def flexibilisaties_testen():
                    #Bij corresponderende pensioenregelingsrij de hoeveelheid vervroegen/verlaten optellen
                    pensioenleeftijd(rij+1).value = pensioenleeftijd(rij+1).value + flexibilisaties(duur, c).value
                    pensioenleeftijd(rij+2).value = pensioenleeftijd(rij+2).value + flexibilisaties(duur, c).value
-                   flexibilisaties(factor_OP, c).value = koopsomfactor(rij+1).value
-                   flexibilisaties(factor_PP, c).value = koopsomfactor(rij+2).value
-                   flexibilisaties(aanspraak_OP, c).value = float(koopsommen[rij]) / flexibilisaties(factor_OP, c).value
-                   flexibilisaties(aanspraak_PP, c).value = float(koopsommen[rij+1]) / flexibilisaties(factor_PP, c).value
+                   flexibilisaties(factor_OP, c).formula = koopsomfactor(rij+1).formula
+                   flexibilisaties(factor_PP, c).formula = koopsomfactor(rij+2).formula
+                   flexibilisaties(aanspraak_OP, c).value = round(float(koopsommen[rij]) / flexibilisaties(factor_OP, c).value)
+                   flexibilisaties(aanspraak_PP, c).value = round(float(koopsommen[rij+1]) / flexibilisaties(factor_PP, c).value)
                    
                    OP_nieuw = flexibilisaties(aanspraak_OP, c).value
                    PP_nieuw = flexibilisaties(aanspraak_PP, c).value
@@ -381,23 +380,42 @@ def flexibilisaties_testen():
                
                elif  "uitruilen" in flexibilisaties(soort, c).value:
                    uitruilen_naar = flexibilisaties(soort, c).value[-2:]
-                   verhouding_uitruilen = int(flexibilisaties(verhouding, c).value[-2:])/100
-                   flexibilisaties(factor_OP, c).value = koopsomfactor(rij+1).value
-                   flexibilisaties(factor_PP, c).value = koopsomfactor(rij+2).value
+                   flexibilisaties(factor_OP, c).formula = koopsomfactor(rij+1).formula
+                   flexibilisaties(factor_PP, c).formula = koopsomfactor(rij+2).formula
                    
-                   if uitruilen_naar == "PP":
-                       flexibilisaties(aanspraak_OP, c).value = float(koopsommen[rij]) / (flexibilisaties(factor_OP, c).value + verhouding_uitruilen * flexibilisaties(factor_PP, c).value)
-                       flexibilisaties(aanspraak_PP, c).value = flexibilisaties(aanspraak_OP, c).value * verhouding_uitruilen + PP_nieuw
-                       
-                       OP_nieuw = flexibilisaties(aanspraak_OP, c).value
-                       PP_nieuw = flexibilisaties(aanspraak_PP, c).value
+                   if ":" in str(flexibilisaties(verhouding, c).value):
+                       verhouding_uitruilen = int(flexibilisaties(verhouding, c).value[-2:])/100
+                       if uitruilen_naar == "PP":
+                           flexibilisaties(aanspraak_OP, c).value = float(koopsommen[rij]) / (flexibilisaties(factor_OP, c).value + verhouding_uitruilen * flexibilisaties(factor_PP, c).value)
+                           flexibilisaties(aanspraak_PP, c).value = round(flexibilisaties(aanspraak_OP, c).value * verhouding_uitruilen + PP_nieuw)
+                           flexibilisaties(aanspraak_OP, c).value = round(flexibilisaties(aanspraak_OP, c).value)
+                           
+                           OP_nieuw = flexibilisaties(aanspraak_OP, c).value
+                           PP_nieuw = flexibilisaties(aanspraak_PP, c).value
+                       else:
+                           flexibilisaties(aanspraak_PP, c).value = float(koopsommen[rij+1]) / (flexibilisaties(factor_PP, c).value + verhouding_uitruilen * flexibilisaties(factor_OP, c).value)
+                           flexibilisaties(aanspraak_OP, c).value = round(flexibilisaties(aanspraak_PP, c).value * verhouding_uitruilen + OP_nieuw)
+                           flexibilisaties(aanspraak_PP, c).value = round(flexibilisaties(aanspraak_PP, c).value)
+                           
+                           OP_nieuw = flexibilisaties(aanspraak_OP, c).value
+                           PP_nieuw = flexibilisaties(aanspraak_PP, c).value
+                           
                    else:
-                       flexibilisaties(aanspraak_PP, c).value = float(koopsommen[rij]+1) / (flexibilisaties(factor_PP, c).value + verhouding_uitruilen * flexibilisaties(factor_OP, c).value)
-                       flexibilisaties(aanspraak_OP, c).value = flexibilisaties(aanspraak_PP, c).value * verhouding_uitruilen + OP_nieuw
-                       
-                       OP_nieuw = flexibilisaties(aanspraak_OP, c).value
-                       PP_nieuw = flexibilisaties(aanspraak_PP, c).value
-                  
+                       if uitruilen_naar == "PP":
+                           verschil_uitruilen = flexibilisaties(verhouding, c).value * OP_nieuw
+                           flexibilisaties(aanspraak_OP, c).value = round(OP_nieuw - verschil_uitruilen)
+                           flexibilisaties(aanspraak_PP, c).value = round(verschil_uitruilen * flexibilisaties(factor_OP, c).value / flexibilisaties(factor_PP, c).value + PP_nieuw)
+                           
+                           OP_nieuw = flexibilisaties(aanspraak_OP, c).value
+                           PP_nieuw = flexibilisaties(aanspraak_PP, c).value
+                       else:
+                           verschil_uitruilen = flexibilisaties(verhouding, c).value * PP_nieuw
+                           flexibilisaties(aanspraak_PP, c).value = round(PP_nieuw - verschil_uitruilen)
+                           flexibilisaties(aanspraak_OP, c).value = round(verschil_uitruilen * flexibilisaties(factor_PP, c).value / flexibilisaties(factor_OP, c).value + OP_nieuw)
+                           
+                           OP_nieuw = flexibilisaties(aanspraak_OP, c).value
+                           PP_nieuw = flexibilisaties(aanspraak_PP, c).value
+    
                else:
                    flex_duur = int(flexibilisaties(duur, c).value)
                    x = koopsomfactor(rij+1).formula
@@ -405,8 +423,6 @@ def flexibilisaties_testen():
                    if x.index('61') != None:
                        y = x.replace('61', str(flex_duur+1))
 
-                   
-                   
                    if x.index('2') != None:
                        z = x.replace('2', str(flex_duur+2))
                        
@@ -416,31 +432,37 @@ def flexibilisaties_testen():
                        if ":" in str(flexibilisaties(verhouding, c).value):
                            soort_HL = int(flexibilisaties(verhouding, c).value[-2:])/100
                            flexibilisaties(factor_deel2, c).formula = y + '+' + z[1:] + '*' + str(soort_HL)
-                           flexibilisaties(aanspraak_deel1, c).value = float(koopsommen[rij])/flexibilisaties(factor_deel2, c).value
-                           flexibilisaties(aanspraak_deel2, c).value = flexibilisaties(aanspraak_deel1, c).value * soort_HL
-                           
+                           flexibilisaties(aanspraak_deel1, c).value = (OP_nieuw * koopsomfactor(rij+1).value) / flexibilisaties(factor_deel2, c).value
+                           flexibilisaties(aanspraak_deel2, c).value = round(flexibilisaties(aanspraak_deel1, c).value * soort_HL)
+                           flexibilisaties(aanspraak_deel1, c).value = round(flexibilisaties(aanspraak_deel1, c).value)
+
                        else:
                            soort_HL = flexibilisaties(verhouding, c).value
                            flexibilisaties(factor_deel2, c).formula = z
-                           flexibilisaties(aanspraak_deel1, c).value = (float(koopsommen[rij]) + soort_HL*flexibilisaties(factor_deel2, c).value)/koopsomfactor(rij+1).value
-                           flexibilisaties(aanspraak_deel2, c).value = flexibilisaties(aanspraak_deel1, c).value - soort_HL
-                           
+                           flexibilisaties(aanspraak_deel1, c).value = ((OP_nieuw * koopsomfactor(rij+1).value) + soort_HL*flexibilisaties(factor_deel2, c).value)/koopsomfactor(rij+1).value
+                           flexibilisaties(aanspraak_deel2, c).value = round(flexibilisaties(aanspraak_deel1, c).value - soort_HL)
+                           flexibilisaties(aanspraak_deel1, c).value = round(flexibilisaties(aanspraak_deel1, c).value)
+
                    #Laag-Hoog constructie        
                    else:
                        if ":" in str(flexibilisaties(verhouding, c).value):
                            soort_HL = int(flexibilisaties(verhouding, c).value[:2])/100
+                           print(flexibilisaties(verhouding, c).value[:2])
                            y = y + '*' + str(soort_HL)
                            flexibilisaties(factor_deel1, c).formula = y 
                            flexibilisaties(factor_deel2, c).formula = y + '+' + z[1:] 
-                           flexibilisaties(aanspraak_deel2, c).value = (float(koopsommen[rij])/flexibilisaties(factor_deel2, c).value)
-                           flexibilisaties(aanspraak_deel1, c).value = flexibilisaties(aanspraak_deel2, c).value * soort_HL
+                           print(float(koopsommen[rij]))
+                           flexibilisaties(aanspraak_deel2, c).value = (OP_nieuw * koopsomfactor(rij+1).value) / flexibilisaties(factor_deel2, c).value
+                           flexibilisaties(aanspraak_deel1, c).value = round(flexibilisaties(aanspraak_deel2, c).value * soort_HL)
+                           flexibilisaties(aanspraak_deel2, c).value = round(flexibilisaties(aanspraak_deel2, c).value)
                            
                        else:
                            flexibilisaties(factor_deel1, c).formula = y 
                            soort_HL = flexibilisaties(verhouding, c).value
                            flexibilisaties(factor_deel2, c).formula = z
-                           flexibilisaties(aanspraak_deel1, c).value = (float(koopsommen[rij]) - soort_HL * flexibilisaties(factor_deel2, c).value)/koopsomfactor(rij+1).value
-                           flexibilisaties(aanspraak_deel2, c).value = flexibilisaties(aanspraak_deel1, c).value + soort_HL
+                           flexibilisaties(aanspraak_deel1, c).value = (OP_nieuw * koopsomfactor(rij+1).value - soort_HL * flexibilisaties(factor_deel2, c).value)/koopsomfactor(rij+1).value
+                           flexibilisaties(aanspraak_deel2, c).value = round(flexibilisaties(aanspraak_deel1, c).value + soort_HL)
+                           flexibilisaties(aanspraak_deel1, c).value = round(flexibilisaties(aanspraak_deel1, c).value)
                     
                            
                    
