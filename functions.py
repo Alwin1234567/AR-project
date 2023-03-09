@@ -300,7 +300,7 @@ def filterkolom(deelnemerlijst, zoekterm, attribuutnaam):
         gefilterde versie van het deelnemersbestand.
 
     """
-    if zoekterm == "" or zoekterm == "-" or zoekterm == datetime(1950, 1, 1): return deelnemerlijst
+    if zoekterm == "" or zoekterm == datetime(1950, 1, 1): return deelnemerlijst
     kleinDeelnemerlijst = list()
     if type(zoekterm) == str:
         for deelnemer in deelnemerlijst:
