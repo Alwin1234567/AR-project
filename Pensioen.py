@@ -46,6 +46,14 @@ class Pensioen():
         return self._pensioen.sterftetafel
     
     @property
+    def pensioenKleurZacht(self):
+        return self._pensioen.kleurZacht
+    
+    @property
+    def pensioenKleurHard(self):
+        return self._pensioen.kleurHard
+    
+    @property
     def ouderdomsPensioen(self):
         return self._OP
     

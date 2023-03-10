@@ -32,6 +32,8 @@ class Pensioenfonds():
         self._pensioenleefijd = gegevensSheet.range((gegevensRij, kolommen["pensioenleeftijdkolom"])).value
         self._rente = float(gegevensSheet.range((gegevensRij, kolommen["rentekolom"])).options(numbers = float).value)
         self._sterftetafel = gegevensSheet.range((gegevensRij, kolommen["sterftetafelkolom"])).value
+        self._kleurZacht = tuple([int(kleur) for kleur in gegevensSheet.range((gegevensRij, kolommen["Kleurzachtkolom"])).value.split(",")])
+        self._kleurHard = tuple([int(kleur) for kleur in gegevensSheet.range((gegevensRij, kolommen["Kleurhardkolom"])).value.split(",")])
         
         self._ouderdomsPensioen = OPenPP[0]
         self._partnerPensioen = OPenPP[1]
@@ -63,6 +65,14 @@ class Pensioenfonds():
     @property
     def sterftetafel(self):
         return self._sterftetafel
+    
+    @property
+    def kleurZacht(self):
+        return self._kleurZacht
+    
+    @property
+    def kleurHard(self):
+        return self._kleurHard
     
     @property
     def ouderdomsPensioen(self):

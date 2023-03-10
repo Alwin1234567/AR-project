@@ -86,6 +86,9 @@ class Flexibilisering:
     def leeftijdMaand(self, pLeeftijdMaand):
         self._pLeeftijdMaand = pLeeftijdMaand
     
+    @property
+    def leeftijdJaarMaand(self): return self._pLeeftijdJaar + self._pLeeftijdMaand / 12
+    
     # --- OP/PP uitruiling ---
     # >>> Actief
     @property

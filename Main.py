@@ -465,26 +465,4 @@ def flexibilisaties_testen():
                            flexibilisaties(aanspraak_deel1, c).value = round(flexibilisaties(aanspraak_deel1, c).value)
                     
                            
-                   
-
-                   
-       
-       
-       
-       
-       
-       
-       
-   
-
-   
-   
-   
-       
-       
-       
-       
-       
-       
-       
        

@@ -337,6 +337,9 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.sbMaand.setValue(0)
         self.invoerVerandering()
         self.wijzigVelden()
+        
+        # berekening sheet klaarmaken
+        functions.berekeningen_init(book.sheets["Berekeningen"], self.deelnemerObject, self._logger)
     
     def dropdownRegelingen(self):
         regelingenActief = list()

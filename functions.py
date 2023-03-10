@@ -4,6 +4,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 """
 
 import xlwings as xw
+from xlwings.utils import rgb_to_int
 from datetime import datetime, date
 from Deelnemer import Deelnemer
 from Pensioenfonds import Pensioenfonds
@@ -12,6 +13,7 @@ import logging
 import os
 from os.path import exists
 import sys
+from string import ascii_uppercase
 
 """
 Body
@@ -264,6 +266,8 @@ def getPensioeninformatie(book):
     kolommen["pensioenleeftijdkolom"] = 4
     kolommen["rentekolom"] = 5
     kolommen["sterftetafelkolom"] = 6
+    kolommen["Kleurzachtkolom"] = 10
+    kolommen["Kleurhardkolom"] = 11
     
     gegevens_pensioenenSheet = book.sheets["Gegevens pensioencontracten"]
     
@@ -644,5 +648,170 @@ def zoekRGB(book,regeling):
     
     return rgb
     
+def berekeningen_init(sheet, deelnemer, logger):
+    pensioeninfohoogte = 2
+    pensioeninfokolom = 1
+    pensioenblokkolom = 1
+
+    afstandtotblokken = 6
+    afstandtussenblokken = 2
+    blokgrootte = 17
     
+    afstandtotrekenkolom = 8
+    afstandtussenrekenblokken = 1
+    rekenblokgrootte = 63
+    rekenblokbreedte = 8
+    
+    aantalpensioenen = len(deelnemer.flexibilisaties)
+    
+    
+    # pensioen info
+    for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
+        pensioeninfo = list()
+        pensioeninfo.append(flexibilisatie.pensioen.pensioenVolNaam)
+        pensioeninfo.append("verwijzing/ formule")
+        pensioeninfo.append("verwijzing/ formule")
+        pensioeninfo.append(flexibilisatie.pensioen.pensioenleefijd)
+        inforange = sheet.range((pensioeninfohoogte + i, pensioeninfokolom),\
+                            (pensioeninfohoogte + i, pensioeninfokolom + len(pensioeninfo) - 1))
+        inforange.value = pensioeninfo
+        inforange.api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+    
+    # pensioen blok
+    for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
+        blokhoogte = pensioeninfohoogte + afstandtotblokken + aantalpensioenen + i * (blokgrootte + afstandtussenblokken)
+        rekenblokstart = afstandtotrekenkolom + i * (rekenblokbreedte + afstandtussenrekenblokken)
+        blok = list()
+        blok.append(["Naam", flexibilisatie.pensioen.pensioenVolNaam, "", ""])
+        if flexibilisatie.leeftijd_Actief: blok.append(["Start Pensioenjaar", flexibilisatie.leeftijdJaarMaand, "", ""])
+        else: blok.append(["Start Pensioenjaar", flexibilisatie.pensioen.pensioenleefijd, "", ""])
+        if flexibilisatie.OP_PP_Actief:
+            rij1 = list()
+            rij2 = list()
+            rij1.append("Uitruilen soort")
+            rij2.append("Uitruilen waarde")
+            if flexibilisatie.OP_PP_Methode == "Percentage":
+                rij1.append("{} {}".format(flexibilisatie.OP_PP_UitruilenVan, flexibilisatie.OP_PP_Methode))
+                rij2.append(flexibilisatie.OP_PP_Percentage)
+                rij2.append("")
+            else:
+                rij1.append(flexibilisatie.OP_PP_Methode)
+                rij2.append("1")
+                rij2.append(flexibilisatie.OP_PP_Verhouding_PP / flexibilisatie.OP_PP_Verhouding_OP)
+            rij1.append("")
+            rij1.append("")
+            rij2.append("")
+            blok.append(rij1)
+            blok.append(rij2)
+        else:
+            blok.append(["Uitruilen soort", "", "", ""])
+            blok.append(["Uitruilen waarde", "", "", ""])
+        
+        if flexibilisatie.HL_Actief:
+            blok.append(["Hoog Laag", flexibilisatie.HL_Methode, "", ""])
+            rij = list()
+            rij.append("Hoog Laag waarde")
+            rij.append(flexibilisatie.HL_Jaar)
+            if flexibilisatie.HL_Methode == "Verhouding":
+                if flexibilisatie.HL_Volgorde == "Hoog-laag": rij.append(flexibilisatie.HL_Verhouding_Laag / flexibilisatie.HL_Verhouding_Hoog)
+                else: rij.append(flexibilisatie.HL_Verhouding_Hoog / flexibilisatie.HL_Verhouding_Laag) 
+            else:
+                if flexibilisatie.HL_Volgorde == "Hoog-laag": rij.append(flexibilisatie.HL_Verschil)
+                else: rij.append(-1 * flexibilisatie.HL_Verschil) 
+            rij.append("")
+            blok.append(rij)
+        else:
+            blok.append(["Hoog Laag", "", "", ""])
+            blok.append(["Hoog Laag waarde", "", "", ""])    
+        
+        blok.append(["", "", "", ""])
+        
+        blok.append(["OP / PP", flexibilisatie.pensioen.ouderdomsPensioen, flexibilisatie.pensioen.partnerPensioen, "=B{0} * B{1} + C{0} * B{2}".format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 13)])
+        blok.append(["OP' / PP'", '=B{0} * B{1} / B{2}'.format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 12),\
+                     '=C{0} * B{1} / B{2}'.format(blokhoogte + 7, blokhoogte + 13, blokhoogte + 14), "formuletekst"])
+        blok.append(["OP'' / PP''", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - B{2}), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
+                     '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * B{2} * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8), "formuletekst"])
+        blok.append(["OP''H / PP''L", "formule", "formule", "formuletekst"])
+        
+        blok.append(["rode a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(D{2} - B{3} + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(D{2} - B{3} + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "", "formule"])
+        blok.append(["zwarte a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{3} - D{2} + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(B{3} - D{2} + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "", "formule"])
+        blok.append(["PP rode a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(D{3} - B{4} + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(D{3} - B{4} + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(D{3} - B{4} + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "", "formuletekst"])
+        blok.append(["groene a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{4} - D{3} + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(B{4} - D{3} + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(B{4} - D{3} + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "", "formuletekst"])
+        blok.append(["m|zwarte a", "formule", "", "formuletekst"])
+        blok.append(["zwarte a (m-1)|", "formule", "", "formuletekst"])
+        
+        if sum([len(rij) for rij in blok]) == len(blok) * 4:
+            blokruimte = sheet.range((blokhoogte, pensioenblokkolom),\
+                                     (blokhoogte + blokgrootte - 1, pensioenblokkolom + len(blok[0]) - 1)).options(ndims = 2)
+            # geldblok = sheet.range((blokhoogte + 7, pensioenblokkolom + 1),\
+            #                          (blokhoogte + 10, pensioenblokkolom + 2))
+            # geldblok.api.NumberFormat = "Currency"
+            blokruimte.formula = blok
+            blokruimte.api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+        else:
+            logger.warning("berekeningen pensioenblok niet allemaal gelijk")
+            logger.debug([len(rij) for rij in blok])
+        
+        # rekenblok header
+    for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
+        blokhoogte = pensioeninfohoogte + afstandtotblokken + aantalpensioenen + i * (blokgrootte + afstandtussenblokken)
+        rekenblokstart = afstandtotrekenkolom + i * (rekenblokbreedte + afstandtussenrekenblokken)
+        blok = list()
+        blok.append([flexibilisatie.pensioen.pensioenVolNaam] + [""] * 7)
+        blok.append(["t", "jaar", "Leeftijd", "tpx", "tqx", "tqx op 1 juli", "dt", "dt op 1 juli"])
+        rij = list()
+        rij.append("0")
+        rij.append("={} + {}3".format(deelnemer.geboortedatum.year, inttoletter(rekenblokstart + 2)))
+        rij.append("=min(D{},B{})".format(pensioeninfohoogte + i, blokhoogte + 1))
+        rij.append("1")
+        rij.append('=if({0}3<>"", 1-{0}3, "")'.format(inttoletter(rekenblokstart + 3)))
+        rij.append('=if({0}4<>"", (((13 - {2}) * {1}3) + (({2}) - 1) * {1}4) / 12, "")'.format(inttoletter(rekenblokstart + 2), inttoletter(rekenblokstart + 4), deelnemer.geboortedatum.month))
+        rij.append('=if({0}3<>"", (1+{1})^-{2}3, "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente / 100, inttoletter(rekenblokstart)))
+        rij.append('=if({0}4<>"", (1+{1})^-({2}3 + (7 - {3}) / 12), "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente / 100, inttoletter(rekenblokstart), deelnemer.geboortedatum.month))
+        blok.append(rij)
+        
+        if sum([len(rij) for rij in blok]) == len(blok) * 8:
+            blokruimte = sheet.range((1, afstandtotrekenkolom + i * (len(blok[0]) + afstandtussenrekenblokken )),\
+                                     (3, afstandtotrekenkolom + i * (len(blok[0]) + afstandtussenrekenblokken ) + 7))
+            mergeruimte = sheet.range((1, afstandtotrekenkolom + i * (len(blok[0]) + afstandtussenrekenblokken )),\
+                                     (1, afstandtotrekenkolom + i * (len(blok[0]) + afstandtussenrekenblokken ) + 7))
+            blokruimte.formula = blok
+            blokruimte.api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+            mergeruimte.merge()
+            mergeruimte.api.HorizontalAlignment = xw.constants.HAlign.xlHAlignCenter
+        else:
+            logger.warning("berekeningen rekenblok niet allemaal gelijk")
+            logger.debug([len(rij) for rij in blok])
+            
+    # rekenblok Body
+    for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
+        rekenblokstart = afstandtotrekenkolom + i * (len(blok[0]) + afstandtussenrekenblokken)
+        rij = list()
+        rij.append("={}3 + 1".format(inttoletter(rekenblokstart)))
+        rij.append("={}3 + 1".format(inttoletter(rekenblokstart + 1)))
+        rij.append('=if({0}3<119,{0}3 + 1,"")'.format(inttoletter(rekenblokstart + 2)))        
+        if flexibilisatie.pensioen.sterftetafel == "AG_2020": rij.append('=if({0}4<>"", (1-INDEX(INDIRECT("{1}"),{0}3+1,{2}3-2018))*{3}3,"")'.format(inttoletter(rekenblokstart + 2),  flexibilisatie.pensioen.sterftetafel, rekenblokstart + 1, rekenblokstart + 3))
+        else: rij.append('=if({0}4<>"", INDEX(INDIRECT("{1}"),{0}4+1,1)/ INDEX(INDIRECT("{1}"),${0}$3+1,1),"")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.sterftetafel))
+        rij.append('=if({0}4<>"", 1-{0}4, "")'.format(inttoletter(rekenblokstart + 3)))
+        rij.append('=if({0}5<>"", (((13 - {2}) * {1}4) + (({2}) - 1) * {1}5) / 12, "")'.format(inttoletter(rekenblokstart + 2), inttoletter(rekenblokstart + 4), deelnemer.geboortedatum.month))
+        rij.append('=if({0}4<>"", (1+{1})^-{2}4, "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente / 100, inttoletter(rekenblokstart)))
+        rij.append('=if({0}5<>"", (1+{1})^-({2}4 + (7 - {3}) / 12), "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente / 100, inttoletter(rekenblokstart), deelnemer.geboortedatum.month))
+        
+        blokruimte = sheet.range((4, afstandtotrekenkolom + i * (len(rij) + afstandtussenrekenblokken )),\
+                                 (max(4, rekenblokgrootte), afstandtotrekenkolom + i * (len(rij) + afstandtussenrekenblokken ) + 7))
+        blokruimte.formula = rij
+        blokruimte.api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+        
+
+def inttoletter(getal):
+    letter = ""
+    while True:
+        if getal > 26:
+            letter = "{}{}".format(ascii_uppercase[(getal%26) - 1], letter)
+            getal = (getal-getal%26)//26 - (1 - min(getal%26, 1))
+        else: return "{}{}".format(ascii_uppercase[(getal%26) - 1], letter)
+
+
+def berekeningen_update():
+    pass
     
