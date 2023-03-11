@@ -25,6 +25,7 @@ class Functiekeus(QtWidgets.QMainWindow):
         Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))
         super(Functiekeus, self).__init__()
         self.book = book
+        #self.book.app.display_alerts = False # Dit moet de OLE melding voorkomen
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle("Kies uw functie")
@@ -290,7 +291,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         super(Flexmenu, self).__init__()
         self.book = book
         self.opslaanCount = 0 #Teller voor aantal opgeslagen flexibilisaties.
-        self.opslaanList = []
+        self.opslaanList = list()
         self.zoekFlexibilisaties()
         
         # Setup van UI
@@ -340,7 +341,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.invoerVerandering()
         self.wijzigVelden()
         
-        # berekening sheet klaarmaken
+        # Berekening sheet klaarmaken
         functions.berekeningen_init(book.sheets["Berekeningen"], self.deelnemerObject, self._logger)
     
     def zoekFlexibilisaties(self):
@@ -917,7 +918,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
                      ["AfbeeldingID",f"{nieuwID}"]]
             self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).options(ndims = 2).value = flexID
-            self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).api.Interior.Color = rgb_to_int((150,150,150))
+            self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).color = (150,150,150)
             
             # Flexibilisatiekeuzes opslaan in Excel
             for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):

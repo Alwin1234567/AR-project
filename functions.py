@@ -643,7 +643,7 @@ def persoonOpslag(book, persoonObject):
     persopslag[7][1] = persoonObject.pt
     
     persopslag[8][0] = "Regeling"
-    persopslag[8][1] = str(persoonObject.achternaam)
+    persopslag[8][1] = str(persoonObject.regeling)
     
     persopslag[9][0] = "Rij nr"
     persopslag[9][1] = persoonObject.rijNr
