@@ -290,6 +290,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         super(Flexmenu, self).__init__()
         self.book = book
         self.opslaanCount = 0 #Teller voor aantal opgeslagen flexibilisaties.
+        self.opslaanList = []
+        self.zoekFlexibilisaties()
         
         # Setup van UI
         self.ui = Ui_MainWindow5()
@@ -340,6 +342,19 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # berekening sheet klaarmaken
         functions.berekeningen_init(book.sheets["Berekeningen"], self.deelnemerObject, self._logger)
+    
+    def zoekFlexibilisaties(self):
+        self.opslaanList = self.book.sheets["Flexopslag"].range("3:3")[1:500].value # Zoekt maximaal tot 500 anders wordt het langzaam
+        self.opslaanList = [int(value) for value in self.opslaanList if type(value) == float]
+
+    def zoekNieuwID(self):
+        if len(self.opslaanList) > 0:
+            for i in range(len(self.opslaanList)):
+                if (i+1) not in self.opslaanList:
+                    return (i+1)
+            return len(self.opslaanList)+1
+        else:
+            return 1
     
     def dropdownRegelingen(self):
         regelingenActief = list()
@@ -887,24 +902,28 @@ class Flexmenu(QtWidgets.QMainWindow):
         
     def btnOpslaanClicked(self): 
         # Alle huidige flexibiliserignen opslaan in een Excel sheet
-        # Huidig diagram opslaan en plaats in vergelijking sheet
+        # Huidig diagram opslaan en plaats in vergelijking sheet    
         
         if self.invoerCheck() == True:
+            nieuwID = self.zoekNieuwID()
+            offsetID = len(self.opslaanList)
+            
             # Persoonsgegevens opslaan als dit de eerste flexibilisatie is
-            if self.opslaanCount < 1:
+            if len(self.opslaanList) < 1:
                 functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
                 
             
             # ID van de flexibilisatie in Excel opslaan
-            flexID = [["Naam flexibilisatie",f"Flexibilisatie {self.opslaanCount+1}"],
-                     ["AfbeeldingID",f"{self.opslaanCount+1}"]]
-            self.book.sheets["Flexopslag"].range((2,4+4*self.opslaanCount),(3,5+4*self.opslaanCount)).options(ndims = 2).value = flexID
-            self.book.sheets["Flexopslag"].range((2,4+4*self.opslaanCount),(3,5+4*self.opslaanCount)).api.Interior.Color = rgb_to_int((150,150,150))
+            flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
+                     ["AfbeeldingID",f"{nieuwID}"]]
+            self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).options(ndims = 2).value = flexID
+            self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).api.Interior.Color = rgb_to_int((150,150,150))
             
             # Flexibilisatiekeuzes opslaan in Excel
             for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
-                functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,self.opslaanCount,regelingCount) 
+                functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,offsetID,regelingCount) 
                 
+            self.opslaanList.append(nieuwID)
             self.opslaanCount += 1
             
             #self.close()
