@@ -4,7 +4,6 @@ Hier komen alle libraries die in het programma gebruikt worden
 """
 
 import xlwings as xw
-from xlwings.utils import rgb_to_int
 from datetime import datetime, date
 from Deelnemer import Deelnemer
 from Pensioenfonds import Pensioenfonds
@@ -650,7 +649,7 @@ def persoonOpslag(book, persoonObject):
     persopslag[9][1] = persoonObject.rijNr
     
     book.range((6,1),(15,2)).options(ndims = 2).value = persopslag
-    book.range((6,1),(15,2)).api.Interior.Color = rgb_to_int((150,150,150))
+    book.range((6,1),(15,2)).color = (150,150,150)
 
 
 def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
@@ -765,7 +764,7 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     
     # Waardes in sheet plakken & celkleur instellen
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
-    book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+    book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
 
 
 def zoekRGB(book,regeling):
@@ -831,7 +830,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         inforange = sheet.range((pensioeninfohoogte + i, pensioeninfokolom),\
                             (pensioeninfohoogte + i, pensioeninfokolom + len(pensioeninfo) - 1))
         inforange.formula = pensioeninfo
-        inforange.api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+        inforange.color = flexibilisatie.pensioen.pensioenKleurHard
     
     # pensioen blok
     for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
@@ -910,7 +909,7 @@ def berekeningen_init(sheet, deelnemer, logger):
             #                          (blokhoogte + 10, pensioenblokkolom + 2))
             # geldblok.api.NumberFormat = "Currency"
             blokruimte.formula = blok
-            blokruimte.api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+            blokruimte.color = flexibilisatie.pensioen.pensioenKleurHard
         else:
             logger.warning("berekeningen pensioenblok niet allemaal gelijk")
             logger.debug([len(rij) for rij in blok])
@@ -939,7 +938,7 @@ def berekeningen_init(sheet, deelnemer, logger):
             mergeruimte = sheet.range((1, afstandtotrekenkolom + i * (len(blok[0]) + afstandtussenrekenblokken )),\
                                      (1, afstandtotrekenkolom + i * (len(blok[0]) + afstandtussenrekenblokken ) + 7))
             blokruimte.formula = blok
-            blokruimte.api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+            blokruimte.color = flexibilisatie.pensioen.pensioenKleurHard
             mergeruimte.merge()
             mergeruimte.api.HorizontalAlignment = xw.constants.HAlign.xlHAlignCenter
         else:
@@ -963,7 +962,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         blokruimte = sheet.range((4, afstandtotrekenkolom + i * (len(rij) + afstandtussenrekenblokken )),\
                                  (max(4, rekenblokgrootte), afstandtotrekenkolom + i * (len(rij) + afstandtussenrekenblokken ) + 7))
         blokruimte.formula = rij
-        blokruimte.api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+        blokruimte.color = flexibilisatie.pensioen.pensioenKleurHard
     logger.info("berekenscherm init afgerond")
 
 def inttoletter(getal):
