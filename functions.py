@@ -596,7 +596,64 @@ def tpxFormule(sterftetafel, rij, leeftijdKolomLetter, jaarKolom, tpxKolom):
     if sterftetafel == "AG_2020": return '=if({0}{1}<>"", (1-INDEX(INDIRECT("{2}"),{0}{3}+1,{4}{3}-2018))*{5}{3},"")'.format(leeftijdKolomLetter, rij + 3,  sterftetafel, rij + 2, jaarKolom, tpxKolom)
     else: return '=if({0}{1}<>"", INDEX(INDIRECT("{2}"),{0}{1}+1,1)/ INDEX(INDIRECT("{2}"),${0}$2+1,1),"")'.format(leeftijdKolomLetter, rij + 3, sterftetafel)
 
-def flexOpslagList(book=None,dV=0,dH=0):
+def persoonOpslag(book, persoonObject):
+    """
+    Functie die persoonsgegevens opslaat in de flexopslag sheet.
+    
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+    
+    persoonObject : Python-object
+        Object waaruit gegevens gehaald worden.
+    
+    Returns
+    -------
+    None : None
+        Het plakt alle gegevens in de Excel sheet.
+    """
+    
+    persopslag = []
+    
+    for i in range(10):
+        persopslag.append(["",""])
+    
+    persopslag[0][0] = "Voorletters"
+    persopslag[0][1] = str(persoonObject.voorletters)
+    
+    persopslag[1][0] = "Tussenvoegsels"
+    persopslag[1][1] = str(persoonObject.tussenvoegsels)
+    
+    persopslag[2][0] = "Achternaam"
+    persopslag[2][1] = str(persoonObject.achternaam)
+    
+    persopslag[3][0] = "Geboortedatum"
+    persopslag[3][1] = persoonObject.geboortedatum
+    
+    persopslag[4][0] = "Geslacht"
+    persopslag[4][1] = str(persoonObject.geslacht)
+    
+    persopslag[5][0] = "Burg. staat"
+    persopslag[5][1] = str(persoonObject.burgelijkeStaat)
+    
+    persopslag[6][0] = "FT loon"
+    persopslag[6][1] = persoonObject.ftLoon
+    
+    persopslag[7][0] = "PT%"
+    persopslag[7][1] = persoonObject.pt
+    
+    persopslag[8][0] = "Regeling"
+    persopslag[8][1] = str(persoonObject.achternaam)
+    
+    persopslag[9][0] = "Rij nr"
+    persopslag[9][1] = persoonObject.rijNr
+    
+    book.range((6,1),(15,2)).options(ndims = 2).value = persopslag
+    book.range((6,1),(15,2)).api.Interior.Color = rgb_to_int((150,150,150))
+
+
+def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     """
     Functie waar een lege 2D lijst wordt gecreëerd om flexibilisaties in op te slaan.
     Deze lijst moet vervolgens in de Flexopslag sheet geplakt worden.
@@ -606,36 +663,110 @@ def flexOpslagList(book=None,dV=0,dH=0):
     book : xlwings.Book
         Het excel bestand waarin het programma runned.
     
+    flexibilisatie: Python-object
+        Het regeling-specifieke object met flexibilisatiekeuzes
+    
+    countOpslaan : integer
+        Aantal eerder ogeslagen flexbilisaties (verplaatst deze flexibilisatie met 
+                                                een aantal stappen naar rechts in de sheet)
+    
+    countRegeling: integer
+        Hoeveelste regeling waarvoor flexibilisaties worden opgeslagen (verplaatst deze flexibilisatie met
+                                                                        een aantal stappen omlaag in de sheet)
+    
     Returns
     -------
-    flexopslag : lsit
-        De 2D lijst waar waardes ingevuld kunnen worden.
-    
+    None : None
+        Het plakt alle flex keuzes in de Excel sheet
     """
     
     
     flexopslag = []
     
-    for i in range(18):
+    for i in range(19):
         flexopslag.append(["","",""])
     
     flexopslag[0][0] = "Pensioenfonds"
+    
     flexopslag[2][0] = "Wijzigen"
     flexopslag[3][0] = "Pensioenleeftijd"
-    flexopslag[5][0] = "Uitruilen"
-    flexopslag[6][0] = "Methode"
-    flexopslag[7][0] = "Verschil/verhouding"
-    flexopslag[9][0] = "Hoog/Laag"
-    flexopslag[10][0] = "Volgorde"
-    flexopslag[11][0] = "Duur"
-    flexopslag[12][0] = "Methode"
-    flexopslag[13][0] = "Vers/Verh/Opv"
-    flexopslag[15][0] = "Jaarbedrag"
-    flexopslag[17][0] = "Kleur"
     
-    #book.sheets["Flexopslag"].range((2+19*dV,2+4*dH),(19+19*dV,4+4*dH)).options(ndims = 2).value = flexopslag
+    flexopslag[5][0] = "Uitruilen"
+    flexopslag[6][0] = "Volgorde"
+    flexopslag[7][0] = "Methode"
+    flexopslag[8][0] = "Verschil/verhouding"
+    
+    flexopslag[10][0] = "Hoog/Laag"
+    flexopslag[11][0] = "Volgorde"
+    flexopslag[12][0] = "Duur"
+    flexopslag[13][0] = "Methode"
+    flexopslag[14][0] = "Vers/Verh/Opv"
+    
+    flexopslag[16][0] = "Jaarbedrag"
+    
+    flexopslag[18][0] = "Kleur"
+    
+    # Pensioennaam invullen
+    flexopslag[0][1] = str(flexibilisatie.pensioen.pensioenNaam)
+    
+    # Pensioenleeftijd wijzigen J/N
+    if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
+    else: flexopslag[2][1] = "N"
+    
+    # Pensioenleeftijd: Jaar & Maand
+    flexopslag[3][1] = flexibilisatie.leeftijdJaar
+    flexopslag[3][2] = flexibilisatie.leeftijdMaand
+    
+    # OP/PP Uitruilen wijzigen J/N
+    if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "J"
+    else: flexopslag[5][1] = "N"
+    
+    # OP/PP uitruiling opslaan
+    if flexibilisatie.OP_PP_UitruilenVan == "OP naar PP": flexopslag[6][1] = "OP/PP"
+    elif flexibilisatie.OP_PP_UitruilenVan == "PP naar OP": flexopslag[6][1] = "PP/OP"
+    
+    if flexibilisatie.OP_PP_Methode == "Verhouding":
+        flexopslag[7][1] = "Verh"
+        flexopslag[8][1] = flexibilisatie.OP_PP_Verhouding_OP
+        flexopslag[8][2] = flexibilisatie.OP_PP_Verhouding_PP
+    elif flexibilisatie.OP_PP_Methode == "Percentage":
+        flexopslag[7][1] = "Perc"
+        flexopslag[8][1] = flexibilisatie.OP_PP_Percentage
+    else:
+        logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
+    
+    # Hoog/Laag constructie opslaan
+    if flexibilisatie.HL_Actief: flexopslag[9][1] = "J"
+    else: flexopslag[10][1] = "N"
+    
+    if flexibilisatie.HL_Volgorde == "Hoog-laag": flexopslag[11][1] = "Hoog/Laag"
+    elif flexibilisatie.HL_Volgorde == "Laag-hoog": flexopslag[11][1] = "Laag/Hoog"
+    
+    flexopslag[12][1] = flexibilisatie.HL_Jaar
+    
+    if flexibilisatie.HL_Methode == "Verhouding":
+        flexopslag[13][1] = "Verh"
+        flexopslag[14][1] = flexibilisatie.HL_Verhouding_Hoog
+        flexopslag[15][2] = flexibilisatie.HL_Verhouding_Laag
+    elif flexibilisatie.HL_Methode == "Verschil":
+        flexopslag[13][1] = "Verh"
+        flexopslag[14][1] = flexibilisatie.HL_Verschil
+    elif flexibilisatie.HL_Methode == "Opvullen AOW":
+        flexopslag[13][1] = "Opv"
+    else:
+        logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
+    
+    # Nieuwe OP en PP opslaan
+    flexopslag[16][1] = "OP Onbekend"
+    flexopslag[16][2] = "PP Onbekend"
+    
+    # RGB opslaan
+    flexopslag[18][1] = str(flexibilisatie.pensioen.pensioenKleurHard)
+    
+    # Waardes in sheet plakken & celkleur instellen
+    book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
+    book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
 
-    return flexopslag
 
 def zoekRGB(book,regeling):
     i = 1

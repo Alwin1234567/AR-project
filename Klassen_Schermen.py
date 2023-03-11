@@ -12,6 +12,7 @@ import functions
 from datetime import datetime
 from functions import pensioensdatum, isfloat, ToevoegenDeelnemer, gegevenscontrole #deze zouden ook moeten inladen met de import functions hierboven, maar dat werkt niet
 from decimal import getcontext, Decimal
+from xlwings.utils import rgb_to_int
 
 """
 Body
@@ -328,7 +329,6 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.txtHLVerhoudingLaag.textEdited.connect(self.invoerVerandering)
         self.ui.txtHLVerschil.textEdited.connect(self.invoerVerandering)
         self.ui.sbHLJaar.valueChanged.connect(self.invoerVerandering)
-        self.ui.sbHLMaand.valueChanged.connect(self.invoerVerandering)
 
         # Aanpassing: Regeling
         self.ui.cbRegeling.activated.connect(self.wijzigVelden)
@@ -390,7 +390,6 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.txtHLVerhoudingLaag.blockSignals(actief)
         self.ui.txtHLVerschil.blockSignals(actief)
         self.ui.sbHLJaar.blockSignals(actief)
-        self.ui.sbHLMaand.blockSignals(actief)
     
     def invoerCheck(self):
         """
@@ -497,7 +496,6 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.ui.txtHLVerhoudingLaag.setText(str(self.regelingCode.HL_Verhouding_Laag))
             self.ui.txtHLVerschil.setText(str(self.regelingCode.HL_Verschil))
             self.ui.sbHLJaar.setValue(int(self.regelingCode.HL_Jaar))
-            self.ui.sbHLMaand.setValue(int(self.regelingCode.HL_Maand))
             
         except Exception as e:
             self._logger.exception("Probleem bij het wijzigen van hoog/laag velden.")
@@ -515,10 +513,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         #  > Is alles wat ingevoerd wel correct? (dus geen letters waar cijfers horen enzo)
         #  > Is alles ingevoerd waar invoer moet staan?
         # Als beide eisen voldoen, kunnen de volgende functies doorgevoerd worden
-        
-        if self.ui.sbHLJaar.value() == 10:
-            self.ui.sbHLMaand.setValue(0)
-        
+      
         if self.invoerCheck() == True:
             self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
             self.flexkeuzesOpslaan() # Sla flex keuzes op
@@ -584,7 +579,6 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.regelingCode.HL_Volgorde = str(self.ui.cbHLVolgorde.currentText()) 
             self.regelingCode.HL_Methode = str(self.ui.cbHLMethode.currentText()) 
             self.regelingCode.HL_Jaar = int(self.ui.sbHLJaar.value()) 
-            self.regelingCode.HL_Maand = int(self.ui.sbHLMaand.value())
             
             if str(self.ui.cbHLMethode.currentText()) == "Verhouding":
                 self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
@@ -896,70 +890,20 @@ class Flexmenu(QtWidgets.QMainWindow):
         # Huidig diagram opslaan en plaats in vergelijking sheet
         
         if self.invoerCheck() == True:
-            flexID = [["Naam Aanpassingen",f"Aanpassing Nr {self.opslaanCount+1}"],
-                     ["AfbeeldingID",f"ID_{self.opslaanCount+1}"]]
+            # Persoonsgegevens opslaan als dit de eerste flexibilisatie is
+            if self.opslaanCount < 1:
+                functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
+                
             
-            self.book.sheets["Flexopslag"].range((2,2+4*self.opslaanCount),(3,4+4*self.opslaanCount)).options(ndims = 2).value = flexID
+            # ID van de flexibilisatie in Excel opslaan
+            flexID = [["Naam flexibilisatie",f"Flexibilisatie {self.opslaanCount+1}"],
+                     ["AfbeeldingID",f"{self.opslaanCount+1}"]]
+            self.book.sheets["Flexopslag"].range((2,4+4*self.opslaanCount),(3,5+4*self.opslaanCount)).options(ndims = 2).value = flexID
+            self.book.sheets["Flexopslag"].range((2,4+4*self.opslaanCount),(3,5+4*self.opslaanCount)).api.Interior.Color = rgb_to_int((150,150,150))
             
-            regelingCount = 0
-            
-            for flexibilisatie in self.deelnemerObject.flexibilisaties:
-                flexopslag = functions.flexOpslagList() # Het 2D veld waar flexibilisaties worden opgeslagen.
-                
-                # Pensioennaam invullen
-                flexopslag[0][1] = str(flexibilisatie.pensioen.pensioenNaam)
-                
-                # Pensioenleeftijd wijzigen J/N
-                if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
-                else: flexopslag[2][1] = "N"
-                
-                # Pensioenleeftijd: Jaar & Maand
-                flexopslag[3][1] = flexibilisatie.leeftijdJaar
-                flexopslag[3][2] = flexibilisatie.leeftijdMaand
-                
-                # OP/PP Uitruilen wijzigen J/N
-                if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "J"
-                else: flexopslag[5][1] = "N"
-                
-                # OP/PP uitruiling opslaan
-                if flexibilisatie.OP_PP_Methode == "Verhouding":
-                    flexopslag[6][1] = "Verh"
-                    flexopslag[7][1] = flexibilisatie.OP_PP_Verhouding_OP
-                    flexopslag[7][2] = flexibilisatie.OP_PP_Verhouding_PP
-                elif flexibilisatie.OP_PP_Methode == "Percentage":
-                    flexopslag[6][1] = "Perc"
-                    flexopslag[7][1] = flexibilisatie.OP_PP_Percentage
-                else:
-                    self._logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
-                
-                # Hoog/Laag constructie opslaan
-                if flexibilisatie.HL_Actief: flexopslag[9][1] = "J"
-                else: flexopslag[9][1] = "N"
-                
-                if flexibilisatie.HL_Volgorde == "Hoog-laag": flexopslag[10][1] = "Hoog/Laag"
-                elif flexibilisatie.HL_Volgorde == "Laag-hoog": flexopslag[10][1] = "Laag/Hoog"
-                
-                flexopslag[11][1] = flexibilisatie.HL_Jaar
-                flexopslag[11][2] = flexibilisatie.HL_Maand
-                
-                if flexibilisatie.HL_Methode == "Verhouding":
-                    flexopslag[12][1] = "Verh"
-                    flexopslag[13][1] = flexibilisatie.HL_Verhouding_Hoog
-                    flexopslag[13][2] = flexibilisatie.HL_Verhouding_Laag
-                elif flexibilisatie.HL_Methode == "Verschil":
-                    flexopslag[12][1] = "Verh"
-                    flexopslag[13][1] = flexibilisatie.HL_Verschil
-                elif flexibilisatie.HL_Methode == "Opvullen AOW":
-                    flexopslag[12][1] = "Opv"
-                
-                flexopslag[15][1] = "OP Onbekend"
-                flexopslag[15][2] = "PP Onbekend"
-                
-                flexopslag[17][1] = str(functions.zoekRGB(self.book,str(flexibilisatie.pensioen.pensioenNaam)))
-                
-                self.book.sheets["Flexopslag"].range((6+19*regelingCount,2+4*self.opslaanCount),(23+19*regelingCount,4+4*self.opslaanCount)).options(ndims = 2).value = flexopslag
-                
-                regelingCount += 1
+            # Flexibilisatiekeuzes opslaan in Excel
+            for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
+                functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,self.opslaanCount,regelingCount) 
                 
             self.opslaanCount += 1
             

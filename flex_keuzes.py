@@ -210,16 +210,6 @@ class Flexibilisering:
     def HL_Jaar(self, HL_Jaar):
         self._HL_Jaar = HL_Jaar
     
-    # >>> Aantal maanden eerste periode
-    @property
-    def HL_Maand(self):
-        return self._HL_Maand
-    
-    @HL_Maand.setter
-    def HL_Maand(self, HL_Maand):
-        self._HL_Maand = HL_Maand
-        
-        
     @property
     def pensioen(self): return self._pensioen
         
