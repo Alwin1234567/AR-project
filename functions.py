@@ -686,15 +686,20 @@ def berekeningen_init(sheet, deelnemer, logger):
     sheet.clear()
     
     # pensioen info
+    infotitel = ["Regeling", "OP_H", "OP_L", "PP", "Pensioenleeftijd"]
+    sheet.range((max(pensioeninfohoogte - 1, 1), pensioeninfokolom),\
+                (max(pensioeninfohoogte - 1, 1), pensioeninfokolom + 3)).value = infotitel
     for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
+        blokhoogte = pensioeninfohoogte + afstandtotblokken + aantalpensioenen + i * (blokgrootte + afstandtussenblokken)
         pensioeninfo = list()
         pensioeninfo.append(flexibilisatie.pensioen.pensioenVolNaam)
-        pensioeninfo.append("verwijzing/ formule")
-        pensioeninfo.append("verwijzing/ formule")
+        pensioeninfo.append('=B{}'.format(blokhoogte + 10))
+        pensioeninfo.append('=IF(B{0} = "", "", B{1})'.format(blokhoogte + 4, blokhoogte + 10))
+        pensioeninfo.append('=C{}'.format(blokhoogte + 9))
         pensioeninfo.append(flexibilisatie.pensioen.pensioenleefijd)
         inforange = sheet.range((pensioeninfohoogte + i, pensioeninfokolom),\
                             (pensioeninfohoogte + i, pensioeninfokolom + len(pensioeninfo) - 1))
-        inforange.value = pensioeninfo
+        inforange.formula = pensioeninfo
         inforange.api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
     
     # pensioen blok
@@ -749,17 +754,23 @@ def berekeningen_init(sheet, deelnemer, logger):
         blok.append(["OP / PP", flexibilisatie.pensioen.ouderdomsPensioen, flexibilisatie.pensioen.partnerPensioen, "=B{0} * B{1} + C{0} * B{2}".format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 13)])
         blok.append(["OP' / PP'", '=B{0} * B{1} / B{2}'.format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 12),\
                      '=C{0} * B{1} / B{2}'.format(blokhoogte + 7, blokhoogte + 13, blokhoogte + 14), "formuletekst"])
-        blok.append(["OP'' / PP''", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - B{2}), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
-                     '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * B{2} * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8), "formuletekst"])
+        blok.append(["OP'' / PP''", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(E{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - B{2}), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
+                     '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * E{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * B{2} * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8), "formuletekst"])
         blok.append(["OP''H / OP''L", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "HL", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 2), B{2} + IF(C{0} = "HL", C{1} * B{4}, C{1} * B{5}) / B{3}))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16),\
                      '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding", ROUND(C{1} * (B{2} * B{3}) / IF(C{0} = "HL", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 2), B{6} - C{1}))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16, blokhoogte + 10), "formuletekst"])
         
-        blok.append(["rode a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(D{2} - B{3} + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(D{2} - B{3} + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "", "formule"])
-        blok.append(["zwarte a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{3} - D{2} + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(B{3} - D{2} + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "", "formule"])
-        blok.append(["PP rode a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(D{3} - B{4} + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(D{3} - B{4} + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(D{3} - B{4} + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "", "formuletekst"])
-        blok.append(["groene a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{4} - D{3} + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(B{4} - D{3} + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(B{4} - D{3} + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "", "formuletekst"])
-        blok.append(["m|zwarte a", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{3} - D{2} + 3, 3) + B{6}):{0}{4}, INDIRECT("{1}"& MAX(B{3} - D{2} + 3,, 3) + B{6}):{1}{4}), 3))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte, blokhoogte + 4, blokhoogte + 5), "", "formuletekst"])
-        blok.append(["zwarte a (m-1)|", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{3} - D{2} + 3, 3)):INDIRECT("{0}"&MAX(B{3} - D{2} + 2, 2) + B{4}), INDIRECT("{1}"& MAX(B{3} - D{2} + 3, 3)):INDIRECT("{1}"&MAX(B{3} - D{2} + 2, 2) + B{4})), 3))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4), "", "formuletekst"])
+        blok.append(["rode a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(E{2} - B{3} + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(E{2} - B{3} + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "",\
+                     '=CONCAT("=SUMPRODUCT( {0}", MAX(E{2} - B{3} + 3, 3), ":{0}{4}, {1}", MAX(E{2} - B{3} + 3, 3), ":{1}{4})")'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte)])
+        blok.append(["zwarte a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{3} - E{2} + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(B{3} - E{2} + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "",\
+                     '=CONCAT("=SUMPRODUCT( {0}", MAX(B{3} - E{2} + 3, 3), ":{0}{4}, {1}", MAX(B{3} - E{2} + 3, 3), ":{1}{4})")'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte)])
+        blok.append(["PP rode a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(E{3} - B{4} + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(E{3} - B{4} + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(E{3} - B{4} + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "",\
+                     '=CONCAT("=SUMPRODUCT( {0}", MAX(E{3} - B{4} + 3, 3), ":{0}{5}, {1}", MAX(E{3} - B{4} + 3, 3), ":{1}{5}, {2}", MAX(E{3} - B{4} + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte)])
+        blok.append(["groene a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{4} - E{3} + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(B{4} - E{3} + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(B{4} - E{3} + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "",\
+                     '=CONCAT("=SUMPRODUCT( {0}", MAX(B{4} - E{3} + 3, 3), ":{0}{5}, {1}", MAX(B{4} - E{3} + 3, 3), ":{1}{5}, {2}", MAX(B{4} - E{3} + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte)])
+        blok.append(["m|zwarte a", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{3} - E{2} + 3, 3) + B{6}):{0}{4}, INDIRECT("{1}"& MAX(B{3} - E{2} + 3, 3) + B{6}):{1}{4}), 3))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte, blokhoogte + 4, blokhoogte + 5), "",\
+                     '=IF(B{5} = "", "", CONCAT("=SUMPRODUCT({0}", MAX(B{3} - E{2} + 3, 3) + B{6}, ":{0}{4}, {1}", MAX(B{3} - E{2} + 3, 3) + B{6}, ":{1}{4})"))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte, blokhoogte + 4, blokhoogte + 5)])
+        blok.append(["zwarte a (m-1)|", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(B{3} - E{2} + 3, 3)):INDIRECT("{0}"&MAX(B{3} - E{2} + 2, 2) + B{4}), INDIRECT("{1}"& MAX(B{3} - E{2} + 3, 3)):INDIRECT("{1}"&MAX(B{3} - E{2} + 2, 2) + B{4})), 3))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4), "",\
+                     '=IF(B{5} = "", "",CONCAT("=SUMPRODUCT({0}", MAX(B{3} - E{2} + 3, 3), ":{0}", MAX(B{3} - E{2} + 2, 2) + B{4}, ", {1}", MAX(B{3} - E{2} + 3, 3),":{1}", MAX(B{3} - E{2} + 2, 2) + B{4},")"))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4)])
         
         if sum([len(rij) for rij in blok]) == len(blok) * 4:
             blokruimte = sheet.range((blokhoogte, pensioenblokkolom),\
@@ -783,7 +794,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         rij = list()
         rij.append("0")
         rij.append("={} + {}3".format(deelnemer.geboortedatum.year, inttoletter(rekenblokstart + 2)))
-        rij.append("=min(D{},B{})".format(pensioeninfohoogte + i, blokhoogte + 1))
+        rij.append("=min(E{},B{})".format(pensioeninfohoogte + i, blokhoogte + 1))
         rij.append("1")
         rij.append('=if({0}3<>"", 1-{0}3, "")'.format(inttoletter(rekenblokstart + 3)))
         rij.append('=if({0}4<>"", (((13 - {2}) * {1}3) + (({2}) - 1) * {1}4) / 12, "")'.format(inttoletter(rekenblokstart + 2), inttoletter(rekenblokstart + 4), deelnemer.geboortedatum.month))
