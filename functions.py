@@ -644,13 +644,13 @@ def persoonOpslag(book, persoonObject):
     persopslag[7][1] = persoonObject.pt
     
     persopslag[8][0] = "Regeling"
-    persopslag[8][1] = str(persoonObject.achternaam)
+    persopslag[8][1] = str(persoonObject.regeling)
     
     persopslag[9][0] = "Rij nr"
     persopslag[9][1] = persoonObject.rijNr
     
     book.range((6,1),(15,2)).options(ndims = 2).value = persopslag
-    book.range((6,1),(15,2)).api.Interior.Color = rgb_to_int((150,150,150))
+    book.range((6,1),(15,2)).color = (150,150,150)
 
 
 def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
@@ -765,7 +765,7 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     
     # Waardes in sheet plakken & celkleur instellen
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
-    book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).api.Interior.Color = rgb_to_int(flexibilisatie.pensioen.pensioenKleurHard)
+    book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
 
 
 def zoekRGB(book,regeling):
