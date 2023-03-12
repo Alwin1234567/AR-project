@@ -840,54 +840,54 @@ def berekeningen_init(sheet, deelnemer, logger):
         blok.append(["Naam", flexibilisatie.pensioen.pensioenVolNaam, "", ""])
         if flexibilisatie.leeftijd_Actief: blok.append(["Start Pensioenjaar", flexibilisatie.leeftijdJaarMaand, "", ""])
         else: blok.append(["Start Pensioenjaar", flexibilisatie.pensioen.pensioenleefijd, "", ""])
-        if flexibilisatie.OP_PP_Actief:
-            rij1 = list()
-            rij2 = list()
-            rij1.append("Uitruilen soort")
-            rij2.append("Uitruilen waarde")
-            if flexibilisatie.OP_PP_Methode == "Percentage":
-                rij1.append("{} {}".format(flexibilisatie.OP_PP_UitruilenVan, flexibilisatie.OP_PP_Methode))
-                rij2.append(flexibilisatie.OP_PP_Percentage)
-                rij2.append("")
-            else:
-                rij1.append(flexibilisatie.OP_PP_Methode)
-                rij2.append("1")
-                rij2.append(flexibilisatie.OP_PP_Verhouding_PP / flexibilisatie.OP_PP_Verhouding_OP)
-            rij1.append("")
-            rij1.append("")
-            rij2.append("")
-            blok.append(rij1)
-            blok.append(rij2)
-        else:
-            blok.append(["Uitruilen soort", "", "", ""])
-            blok.append(["Uitruilen waarde", "", "", ""])
+        # if flexibilisatie.OP_PP_Actief:
+        #     rij1 = list()
+        #     rij2 = list()
+        #     rij1.append("Uitruilen soort")
+        #     rij2.append("Uitruilen waarde")
+        #     if flexibilisatie.OP_PP_Methode == "Percentage":
+        #         rij1.append("{} {}".format(flexibilisatie.OP_PP_UitruilenVan, flexibilisatie.OP_PP_Methode))
+        #         rij2.append(flexibilisatie.OP_PP_Percentage)
+        #         rij2.append("")
+        #     else:
+        #         rij1.append(flexibilisatie.OP_PP_Methode)
+        #         rij2.append("1")
+        #         rij2.append(flexibilisatie.OP_PP_Verhouding_PP / flexibilisatie.OP_PP_Verhouding_OP)
+        #     rij1.append("")
+        #     rij1.append("")
+        #     rij2.append("")
+        #     blok.append(rij1)
+        #     blok.append(rij2)
+        # else:
+        blok.append(["Uitruilen soort", "", "", ""])
+        blok.append(["Uitruilen waarde", "", "", '=IF(B{0} = "OP naar PP Percentage", (0.7 * B{1}  - C{1})  / ((0.7 + B{2} / B{3}) * B{1}), "")'.format(blokhoogte + 2, blokhoogte + 8, blokhoogte + 12, blokhoogte + 14)])
         
-        if flexibilisatie.HL_Actief:
-            blok.append(["Hoog Laag", flexibilisatie.HL_Methode, "", ""])
-            rij = list()
-            rij.append("Hoog Laag waarde")
-            rij.append(flexibilisatie.HL_Jaar)
-            if flexibilisatie.HL_Methode == "Verhouding":
-                if flexibilisatie.HL_Volgorde == "Hoog-laag": rij.append(flexibilisatie.HL_Verhouding_Laag / flexibilisatie.HL_Verhouding_Hoog)
-                else: rij.append(flexibilisatie.HL_Verhouding_Hoog / flexibilisatie.HL_Verhouding_Laag) 
-            else:
-                if flexibilisatie.HL_Volgorde == "Hoog-laag": rij.append(flexibilisatie.HL_Verschil)
-                else: rij.append(-1 * flexibilisatie.HL_Verschil) 
-            rij.append("")
-            blok.append(rij)
-        else:
-            blok.append(["Hoog Laag", "", "", ""])
-            blok.append(["Hoog Laag waarde", "", "", ""])    
+        # if flexibilisatie.HL_Actief:
+        #     blok.append(["Hoog Laag", flexibilisatie.HL_Methode, "", ""])
+        #     rij = list()
+        #     rij.append("Hoog Laag waarde")
+        #     rij.append(flexibilisatie.HL_Jaar)
+        #     if flexibilisatie.HL_Methode == "Verhouding":
+        #         if flexibilisatie.HL_Volgorde == "Hoog-laag": rij.append(flexibilisatie.HL_Verhouding_Laag / flexibilisatie.HL_Verhouding_Hoog)
+        #         else: rij.append(flexibilisatie.HL_Verhouding_Hoog / flexibilisatie.HL_Verhouding_Laag) 
+        #     else:
+        #         if flexibilisatie.HL_Volgorde == "Hoog-laag": rij.append(flexibilisatie.HL_Verschil)
+        #         else: rij.append(-1 * flexibilisatie.HL_Verschil) 
+        #     rij.append("")
+        #     blok.append(rij)
+        # else:
+        blok.append(["Hoog Laag", "", "", ""])
+        blok.append(["Hoog Laag waarde", "", "", '=IF(B{0} = "Verschil", IF(C{0} = "HL", (B{1} * B{2}) / (4 * B{2} - B{3}), (B{1} * B{2}) / (4 * B{2} - B{4})), "")'.format(blokhoogte + 4, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16)])    
         
         blok.append(["", "", "", ""])
         
         blok.append(["OP / PP", flexibilisatie.pensioen.ouderdomsPensioen, flexibilisatie.pensioen.partnerPensioen, "=B{0} * B{1} + C{0} * B{2}".format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 13)])
         blok.append(["OP' / PP'", '=B{0} * B{1} / B{2}'.format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 12),\
                      '=C{0} * B{1} / B{2}'.format(blokhoogte + 7, blokhoogte + 13, blokhoogte + 14), "formuletekst"])
-        blok.append(["OP'' / PP''", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - B{2}), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
-                     '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * B{2} * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8), "formuletekst"])
-        blok.append(["OP''H / OP''L", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "HL", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{2} + IF(C{0} = "HL", C{1} * B{4}, C{1} * B{5}) / B{3}, 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16),\
-                     '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding", ROUND(C{1} * (B{2} * B{3}) / IF(C{0} = "HL", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), B{6} - C{1}))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16, blokhoogte + 10), "formuletekst"])
+        blok.append(["OP'' / PP''", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - MIN(B{2}, D{2})), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
+                     '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * MIN(B{2}, D{2}) * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8), "formuletekst"])
+        blok.append(["OP''H / OP''L", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "HL", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{2} + IF(C{0} = "HL", MIN(C{1}, D{1}) * B{4}, MIN(C{1}, D{1}) * B{5}) / B{3}, 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16),\
+                     '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding", ROUND(C{1} * (B{2} * B{3}) / IF(C{0} = "HL", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), B{6} - MIN(C{1}, D{1})))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16, blokhoogte + 10), "formuletekst"])
         
         blok.append(["rode a", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(E{2} - B{3} + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(E{2} - B{3} + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte), "",\
                      '=CONCAT("=SUMPRODUCT( {0}", MAX(E{2} - B{3} + 3, 3), ":{0}{4}, {1}", MAX(E{2} - B{3} + 3, 3), ":{1}{4})")'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), pensioeninfohoogte + i, blokhoogte + 1, rekenblokgrootte)])
