@@ -357,6 +357,32 @@ def isfloat(string):
     return resultaat
 
 
+def DeelnemerVinden(book, persoonsgegevens):
+    """
+    functie die een deelnemer kan vinden in het deelnemersbestand
+
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+    persoonsgegevens : list(persoonsgegevens)
+        bevat [achternaam, tussenvoegsel, voorletters, geboortedatum, geslacht] mogelijk met meer erachteraan
+
+    Returns
+    -------
+    deelnemerlijst : list(Deelnemer)
+        gefilterde versie van het deelnemersbestand met de deelnemer met exact dezelfde persoonsgegevens
+
+    """
+    deelnemerlijst = getDeelnemersbestand(book)
+    attributen = ["achternaam", "tussenvoegsels", "voorletters", "geboortedatum", "geslacht"]
+    #persoonsgegevens[3] = datetime(persoonsgegevens[3]).strftime("%d-%m-%Y")
+    for i in [0,1,2,3,4]:
+        deelnemerlijst = filterkolom(deelnemerlijst, persoonsgegevens[i], attributen[i])
+
+    return deelnemerlijst
+
+
 def ToevoegenDeelnemer(gegevens):
     """
     Functie die een deelnemer toevoegt onderaan het deelnemersbestand
@@ -364,7 +390,7 @@ def ToevoegenDeelnemer(gegevens):
     output : deelnemer toegevoegd aan excel-bestand
     """
     
-    book = xw.Book.caller() #xw.Book("Main.xlsm")
+    book = xw.Book.caller()
     deelnemersbestand = book.sheets["deelnemersbestand"]
     
     #check wat eerstvolgende lege regel is
@@ -406,7 +432,7 @@ def Mbox(title, text, style):
     """
     returnValue = ctypes.windll.user32.MessageBoxW(0, text, title, style)
     if returnValue == 0:
-        raise Exception('Oops')
+        raise Exception('fout in messagebox')
     #controleren op welke knop gedrukt is
     elif returnValue == 1: #OK
         return "OK Clicked"

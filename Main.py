@@ -12,6 +12,7 @@ import Klassen_Schermen
 from logging import getLogger
 from xlwings.constants import DVType
 
+
 """
 Body
 Hier komen alle functies
@@ -358,8 +359,7 @@ def afbeelding_aanpassen():
     
     #voorlopig hier: drop down op vergelijkingssheet updaten
     vergelijken_keuzes()
-        
-            
+                  
 @xw.sub
 def flexibilisaties_testen():
    book = xw.Book.caller()

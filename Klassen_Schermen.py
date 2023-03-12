@@ -10,7 +10,6 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 import matplotlib.pyplot as plt
 import functions
 from datetime import datetime
-from functions import pensioensdatum, isfloat, ToevoegenDeelnemer, gegevenscontrole #deze zouden ook moeten inladen met de import functions hierboven, maar dat werkt niet
 from decimal import getcontext, Decimal
 from xlwings.utils import rgb_to_int
 
@@ -187,15 +186,17 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         
         if self.ui.txtVoorletters.text() == "" or self.ui.txtAchternaam.text() == "":
             foutmeldingGegevens = foutmeldingGegevens + "Uw naam is niet ingevuld. "
-        if isfloat(self.ui.txtFulltimeLoon.text()) == False or isfloat(self.ui.txtParttimePercentage.text()) == False or float(self.ui.txtParttimePercentage.text().replace(",", ".")) > 100:
-            if len(foutmeldingGegevens) > 0: #De naam is ook niet goed ingevoerd
-                foutmeldingGegevens = "Uw naam en werkinformatie zijn niet (goed) ingevuld. "
-            else: 
-                foutmeldingGegevens = "Uw werkinformatie is niet (goed) ingevuld. "
+        if self.ui.cbHuidigeRegeling.currentText() != "Inactief":
+            if functions.isfloat(self.ui.txtFulltimeLoon.text()) == False or functions.isfloat(self.ui.txtParttimePercentage.text()) == False or float(self.ui.txtParttimePercentage.text().replace(",", ".")) > 100:
+                if len(foutmeldingGegevens) > 0: #De naam is ook niet goed ingevoerd
+                    foutmeldingGegevens = "Uw naam en werkinformatie zijn niet (goed) ingevuld. "
+                else: 
+                    foutmeldingGegevens = "Uw werkinformatie is niet (goed) ingevuld. "
+                
         #controleer of de deelnemer al de pensioenleeftijd heeft behaald
-        if self.ui.sbJaar.text() < str(pensioensdatum())[3:7]:
+        if self.ui.sbJaar.text() < str(functions.pensioensdatum())[3:7]:
             foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
-        elif self.ui.sbJaar.text() == str(pensioensdatum())[3:7] and int(self.ui.sbMaand.text()) < int(str(pensioensdatum())[0:2]):
+        elif self.ui.sbJaar.text() == str(functions.pensioensdatum())[3:7] and int(self.ui.sbMaand.text()) < int(str(functions.pensioensdatum())[0:2]):
             foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
         
         #controleer pensioengegevens
@@ -211,16 +212,28 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
             if i[0].isChecked() == True:    #het pensioen is aangevinkt
                 AantalPensioenen += 1       #houdt het aantal aangevinkte pensioenen bij
                 for x in i[1:-1]:
-                    if isfloat(x.text()) == True:   #Er is een getal-waarde ingevuld
+                    if functions.isfloat(x.text()) == True:   #Er is een getal-waarde ingevuld
                         Pensioensgegevens[tellerPensioenen] = float(x.text().replace(".", "").replace(",", "."))
                     else:
                         FouteRegelingen.append(i[-1])   #regeling aan foutmelding toevoegen
                     tellerPensioenen += 1
             else:
                 for x in i[1:-1]:
-                    if isfloat(x.text()) == True:   #wel een getal-waarde ingevuld, maar pensioen niet aangevinkt
+                    if functions.isfloat(x.text()) == True:   #wel een getal-waarde ingevuld, maar pensioen niet aangevinkt
                         FouteRegelingen.append(i[-1])
                 tellerPensioenen += len(i)-2        #tellerPensioenen ophogen met aantal pensioenopties OP of OP+PP
+        
+        #controleren of OP:PP verhouding kleiner is dan 100:70
+        verhoudingFout = ""
+        PPRegelingen = ["NN65", "NN67", "VLC"]  #pensioenen met PP
+        for i in range(4,10,2):
+            #kijken of pensioen ingevuld is.
+            if Pensioensgegevens[i] != "":
+                verhouding = (Pensioensgegevens[i+1])/(Pensioensgegevens[i])
+                if verhouding > 0.7:
+                    #als verhouding groter dan 100:70, pensioen toevoegen aan foutmelding
+                    verhoudingFout = verhoudingFout + ", " + PPRegelingen[int(i/2 - 2)]
+        
         #foutmelding pensioensgegevens genereren
         if AantalPensioenen == 0 and len(FouteRegelingen) == 0: #foutmelding als er geen regeling aangegeven is
             foutmeldingPensioen = "U heeft nog geen opgebouwd pensioen aangegeven"
@@ -228,48 +241,69 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
             foutmeldingPensioen = "De volgende regelingen zijn niet (goed) ingevoerd: " + FouteRegelingen[0]
             for i in FouteRegelingen[1:]:
                 foutmeldingPensioen = foutmeldingPensioen + ", " + i        
-           
+        if len(verhoudingFout) > 0:
+            foutmeldingPensioen = foutmeldingPensioen + " De verhouding OP:PP mag niet groter zijn dan 100:70:" + verhoudingFout[1:]
+        
+        
         #gegevens invullen of foutmelding geven
         if foutmeldingGegevens == "" and foutmeldingPensioen == "":
-            geboortedatum = self.ui.sbMaand.text() + "-" + self.ui.sbDag.text() + "-" + self.ui.sbJaar.text() #dit geefft in excel een dag/maand/jaar-notatie
+            geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text()))
             achternaam = self.ui.txtAchternaam.text()[0].upper() + self.ui.txtAchternaam.text()[1:]
             #voorletters met hoofdletters en punten ertussen
             voorletters = ""
             for i in self.ui.txtVoorletters.text().replace(".", "").upper():
                 voorletters += i + "."
-            #fulltime loon en parttime percentage als float
-            fulltimeLoon = float(self.ui.txtFulltimeLoon.text().replace(".", "").replace(",", "."))
-            getcontext().prec = 7
-            ptPercentage = Decimal(self.ui.txtParttimePercentage.text().replace(",", "."))
+            if self.ui.cbHuidigeRegeling.currentText() != "Inactief":
+                #fulltime loon en parttime percentage als float
+                fulltimeLoon = float(self.ui.txtFulltimeLoon.text().replace(".", "").replace(",", "."))
+                getcontext().prec = 7
+                ptPercentage = Decimal(self.ui.txtParttimePercentage.text().replace(",", "."))
+            else:
+                fulltimeLoon = ""
+                ptPercentage = ""
             #lijst met deelnemersgegevens [achternaam, tussenvoegsel, voorletters, geboortedatum, geslacht, burg.staat, ftloon, pt%]
             Deelnemersgegevens = [achternaam, self.ui.txtTussenvoegsel.text(), voorletters, geboortedatum, self.ui.cbGeslacht.currentText(), 
                                   self.ui.cbBurgerlijkeStaat.currentText(), fulltimeLoon, ptPercentage]
+                        
+            #controleren of deelnemer al bestaat in deelnemersbestand
+            deelnemerDubbel = functions.DeelnemerVinden(self.book, Deelnemersgegevens)
+            
+            #geboortedatum in goede notatie voor invoer in excel
+            geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text())).strftime("%m-%d-%Y")
+            Deelnemersgegevens[3] = geboortedatum
             #lijst met alle gegevens
             gegevens = Deelnemersgegevens + Pensioensgegevens
             
-            #deelnemer zijn gegevens laten controleren
-            self._logger.info("Ingevulde gegevens worden getoont voor controle")
-            controle = gegevenscontrole(gegevens)
-            if controle == "correct":
-                #window sluiten
-                self.close()
-                self._logger.info("Deelnemer toevoegen scherm gesloten")
+            if len(deelnemerDubbel) == 0:       #deelnemer is nog niet bekend in deelnemersbestand
+                #deelnemer zijn gegevens laten controleren
+                self._logger.info("Ingevulde gegevens worden getoont voor controle")
+                controle = functions.gegevenscontrole(gegevens)
+                if controle == "correct":
+                    #window sluiten
+                    self.close()
+                    self._logger.info("Deelnemer toevoegen scherm gesloten")
+                    
+                    #het parttime percentage delen door 100, zodat het in excel als % komt
+                    if gegevens[7] != "": 
+                        gegevens[7] = float(gegevens[7])/100
+                    try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
+                        functions.ToevoegenDeelnemer(gegevens)
+                        self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
+                    except Exception as e:
+                        self._logger.exception("Er is iets fout gegaan bij het toevoegen van een deelnemer aan het deelnemersbestand")
+                    
+                    #deelnemerselectie openen
+                    self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
+                    self._windowdeelnemer.show()
+                elif controle == "fout":
+                    self._logger.info("Deelnemer wil zijn ingevulde gegevens aanpassen. Deelnemer toevoegen scherm blijft open")
+                    #als niet op "ja" wordt geklikt, wordt de messagebox gesloten en het invoerveld weer getoont
+            else:
+                #melding dat deelnemer al bekend is in deelnemersbestand
+                titel = "Deelnemer al bekend"
+                tekst = "De deelnemer die u wil toevoegen is al bekend in het deelnemersbestand.\n U kunt contact opnemen met de beheerder om de gegevens van deze deelnemer aan te passen."
+                functions.Mbox(titel, tekst, 0)    #messagebox met alleen OK knop
                 
-                #het parttime percentage delen door 100, zodat het in excel als % komt
-                gegevens[7] = float(gegevens[7])/100
-                try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
-                    ToevoegenDeelnemer(gegevens)
-                    self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
-                except Exception as e:
-                    self._logger.exception("Er is iets fout gegaan bij het toevoegen van een deelnemer aan het deelnemersbestand")
-                
-                #deelnemerselectie openen
-                self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
-                self._windowdeelnemer.show()
-            elif controle == "fout":
-                self._logger.info("Deelnemer wil zijn ingevulde gegevens aanpassen. Deelnemer toevoegen scherm blijft open")
-                #als niet op "ja" wordt geklikt, wordt de messagebox gesloten en het invoerveld weer getoont
-            
         else: 
             self._logger.info("Niet alle deelnemersgegevens zijn goed ingevuld. De deelnemer moet zijn gegevens aanpassen")
             #foutmelding tonen
