@@ -291,16 +291,16 @@ def vergelijken_keuzes():
     book = xw.Book.caller()
     invoer = book.sheets["Flexopslag"]
     uitvoer = book.sheets["Vergelijken"]
-    #string maken waarin de opgeslagen pensioenen worden bijgehouden
-    pensioenopties = ""
+    #list maken waarin de opgeslagen pensioenen worden bijgehouden
+    pensioenlist = []
     celKolom = 5 
-    #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenopties
+    #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenlist
     while str(invoer.cells(2,celKolom).value) != "None":
         naam = str(invoer.cells(2,celKolom).value)
-        pensioenopties = pensioenopties + "," + naam
+        pensioenlist.append(naam)
         celKolom += 4
-    #eerste komma van pensioenopties verwijderen
-    pensioenopties = pensioenopties[1:]
+    #lijst omzetten naar string, gescheiden door komma
+    pensioenopties = ','.join(pensioenlist)
     #cel met de drop down datavalisatie
     keuzeCel = "B6"
     #verwijder bestaande datavalidatie uit cel
@@ -308,7 +308,7 @@ def vergelijken_keuzes():
     #voeg nieuwe datavalidatie toe aan cel
     uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
     #maak keuzeveld leeg
-    uitvoer[keuzeCel].value = ""
+    uitvoer[keuzeCel].value = pensioenlist[0]
     
             
 @xw.sub
@@ -341,7 +341,7 @@ def AfbeeldingVerwijderen():
     sheet.cells(11, "M").value = gekozenAfbeelding
     
     #gekozen afbeelding verwijderen
-    #sheet.pictures[naam].delete()
+    sheet.pictures[naam].delete()
 
 @xw.sub
 def afbeelding_aanpassen():
@@ -354,8 +354,13 @@ def afbeelding_aanpassen():
     sheet = book.sheets["Vergelijken"]
     #gekozen afbeelding inlezen
     gekozenAfbeelding = sheet.cells(6,"B").value
+    
     #naam van gekozen afbeelding op sheet printen
     sheet.cells(14, "M").value = gekozenAfbeelding  
+    
+    
+    #gegevens van gekozen afbeelding inladen
+    functions.UitlezenFlexopslag(book, gekozenAfbeelding)
     
     #voorlopig hier: drop down op vergelijkingssheet updaten
     vergelijken_keuzes()
