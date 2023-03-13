@@ -377,6 +377,12 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # Berekening sheet klaarmaken
         functions.berekeningen_init(book.sheets["Berekeningen"], self.deelnemerObject, self._logger)
+        functions.leesOPPP(book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties)
+        
+        # Afbeelding genereren
+        functions.maak_afbeelding(self.deelnemerObject.flexibilisaties, self.ui.wdt_pltAfbeelding.canvas.ax)
+        self.ui.wdt_pltAfbeelding.canvas.draw()
+        
     
     def zoekFlexibilisaties(self):
         self.opslaanList = self.book.sheets["Flexopslag"].range("3:3")[1:500].value # Zoekt maximaal tot 500 anders wordt het langzaam
@@ -564,10 +570,19 @@ class Flexmenu(QtWidgets.QMainWindow):
         #  > Is alles ingevoerd waar invoer moet staan?
         # Als beide eisen voldoen, kunnen de volgende functies doorgevoerd worden
       
-        if self.invoerCheck() == True:
+        if self.invoerCheck():
             self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
             self.flexkeuzesOpslaan() # Sla flex keuzes op
             self.samenvattingUpdate() # Update de samenvatting
+            functions.test_afbeelding(self.book, self.ui.wdt_pltAfbeelding.canvas.ax)
+            # print(type(afbeelding), type(self.ui.wdt_pltAfbeelding.canvas.fig))
+            # self.ui.wdt_pltAfbeelding.canvas.print_figure(afbeelding)
+            # print(afbeelding.ax)
+            # x=range(0, 10)
+            # y=range(0, 20, 2)
+            # self.ui.wdt_pltAfbeelding.canvas.ax.plot(x,y)
+            # self.ui.wdt_pltAfbeelding.canvas.fig.figimage()
+            self.ui.wdt_pltAfbeelding.canvas.draw()
         
     def flexkeuzesOpslaan(self):
         """

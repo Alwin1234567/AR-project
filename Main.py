@@ -85,54 +85,54 @@ def vergelijken_afbeelding_generatie():
     #berekent de hoogte van elke staaf
     hoogtes = [[0 for i in range(len(randen)-1)]]
     ywaardes = set()
-    ywaardes.add(0)
+    # ywaardes.add(0)
     
-    for blok in range(blokaantal):
-        startjaar = float(invoer.range((beginrij + OPbeginjaar + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
-        toezegging = float(invoer.range((beginrij + OPjaarbedrag + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
-        laaghoogverhouding = float(invoer.range((beginrij + OPverhouding + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
-        alternatiefjaar = float(invoer.range((beginrij + OPhooglaaggrens + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
+    # for blok in range(blokaantal):
+    #     startjaar = float(invoer.range((beginrij + OPbeginjaar + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
+    #     toezegging = float(invoer.range((beginrij + OPjaarbedrag + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
+    #     laaghoogverhouding = float(invoer.range((beginrij + OPverhouding + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
+    #     alternatiefjaar = float(invoer.range((beginrij + OPhooglaaggrens + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
         
-        hoogtes.append(list())
+    #     hoogtes.append(list())
 
-        for i, leeftijd in enumerate(randen[:-1]):
-            if leeftijd >= alternatiefjaar:
-                bedrag = float(hoogtes[blok][i] + toezegging * laaghoogverhouding)
-                hoogtes[blok+1].append(bedrag)
-                ywaardes.add(bedrag)
-            elif leeftijd >= startjaar:
-                bedrag = float(hoogtes[blok][i] + toezegging)
-                hoogtes[blok+1].append(bedrag)
-                ywaardes.add(bedrag)
-            else: hoogtes[blok+1].append(hoogtes[blok][i])
-    ywaardes = list(ywaardes)
-    ywaardes.sort()
+    #     for i, leeftijd in enumerate(randen[:-1]):
+    #         if leeftijd >= alternatiefjaar:
+    #             bedrag = float(hoogtes[blok][i] + toezegging * laaghoogverhouding)
+    #             hoogtes[blok+1].append(bedrag)
+    #             ywaardes.add(bedrag)
+    #         elif leeftijd >= startjaar:
+    #             bedrag = float(hoogtes[blok][i] + toezegging)
+    #             hoogtes[blok+1].append(bedrag)
+    #             ywaardes.add(bedrag)
+    #         else: hoogtes[blok+1].append(hoogtes[blok][i])
+    # ywaardes = list(ywaardes)
+    # ywaardes.sort()
 
-    #bereken PP
-    PPtotaal = 0
-    for blok in range(PPblokaantal):
-        PPtotaal += float(invoer.range((beginrij + PPjaarbedrag + blok * PPblokaantal, PPbeginkolom)).options(numbers = float).value)
+    # #bereken PP
+    # PPtotaal = 0
+    # for blok in range(PPblokaantal):
+    #     PPtotaal += float(invoer.range((beginrij + PPjaarbedrag + blok * PPblokaantal, PPbeginkolom)).options(numbers = float).value)
         
 
 
-    #maak de afbeeling
-    afbeelding = plt.figure()
-    for i in range(len(hoogtes) - 1):
-        plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
+    # #maak de afbeeling
+    # afbeelding = plt.figure()
+    # for i in range(len(hoogtes) - 1):
+    #     plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
     
-    plt.xticks(randen[:-1], [functions.getaltotijd(rand) for rand in randen[:-1]])
-    plt.setp(plt.gca().get_xticklabels(), rotation=30, horizontalalignment='right')
-    plt.yticks(ywaardes, [functions.getaltogeld(ywaarde) for ywaarde in ywaardes])
+    # plt.xticks(randen[:-1], [functions.getaltotijd(rand) for rand in randen[:-1]])
+    # plt.setp(plt.gca().get_xticklabels(), rotation=30, horizontalalignment='right')
+    # plt.yticks(ywaardes, [functions.getaltogeld(ywaarde) for ywaarde in ywaardes])
 
-    handles, labels = plt.gca().get_legend_handles_labels()
-    order = range(blokaantal-1, -1, -1)
-    plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order]) 
+    # handles, labels = plt.gca().get_legend_handles_labels()
+    # order = range(blokaantal-1, -1, -1)
+    # plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order]) 
     
-    plt.gca().set_title("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
-    plt.suptitle(invoer.range(titel).value, fontweight='bold')
+    # plt.gca().set_title("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
+    # plt.suptitle(invoer.range(titel).value, fontweight='bold')
     
     
-    uitvoer.pictures.add(afbeelding, top = uitvoer.range((3,3)).top, left = uitvoer.range((3,3)).left, height = 300, name = "testnaam")
+    # uitvoer.pictures.add(afbeelding, top = uitvoer.range((3,3)).top, left = uitvoer.range((3,3)).left, height = 300, name = "testnaam")
     
     
 @xw.sub

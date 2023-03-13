@@ -52,6 +52,12 @@ class Flexibilisering:
         self._HL_Jaar = 5
         self._HL_Maand = 0
         
+        # OP en PP waardes
+        self._OP_Hoog = self._pensioen.ouderdomsPensioen
+        self._OP_Laag = self._pensioen.ouderdomsPensioen
+        self._PP = self._pensioen.partnerPensioen
+        
+        
         
     @property
     def naam(self):
@@ -212,6 +218,26 @@ class Flexibilisering:
     
     @property
     def pensioen(self): return self._pensioen
-        
-        
-        
+    
+    # --- OP/PP waardes ---
+    
+    # >>> ouderdomsensioen hoog 
+    @property
+    def ouderdomsPensioenHoog(self): return self._OP_Hoog
+    
+    @ouderdomsPensioenHoog.setter
+    def ouderdomsPensioenHoog(self, OP_Hoog): self._OP_Hoog = OP_Hoog
+    
+    # >>> ouderdomsensioen laag
+    @property
+    def ouderdomsPensioenLaag(self): return self._OP_Laag
+    
+    @ouderdomsPensioenLaag.setter
+    def ouderdomsPensioenLaag(self, OP_Laag): self._OP_Laag = OP_Laag
+    
+    # >>> partnerpensioen
+    @property
+    def partnerPensioen(self): return self._PP
+    
+    @partnerPensioen.setter
+    def partnerPensioen(self, PP): self._PP = PP

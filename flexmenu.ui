@@ -74,25 +74,6 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="lbl_diagram">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>120</y>
-      <width>521</width>
-      <height>341</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap>pensioenVoorbeeld.jpg</pixmap>
-    </property>
-    <property name="scaledContents">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QGroupBox" name="groupBox_pLeeftijd">
     <property name="geometry">
      <rect>
@@ -1755,6 +1736,16 @@
      <string/>
     </property>
    </widget>
+   <widget class="MplWidget" name="wdt_pltAfbeelding" native="true">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>120</y>
+      <width>521</width>
+      <height>341</height>
+     </rect>
+    </property>
+   </widget>
    <zorder>frame_Aegon65</zorder>
    <zorder>frame_NN67</zorder>
    <zorder>frame_NN65</zorder>
@@ -1763,7 +1754,6 @@
    <zorder>cbRegeling</zorder>
    <zorder>lbl_keuze</zorder>
    <zorder>lbl_logo</zorder>
-   <zorder>lbl_diagram</zorder>
    <zorder>groupBox_pLeeftijd</zorder>
    <zorder>groupBox_OP_PP</zorder>
    <zorder>frame_ZL</zorder>
@@ -1778,6 +1768,7 @@
    <zorder>lbl_A67</zorder>
    <zorder>lbl_VLC</zorder>
    <zorder>lbl_opslaanMelding</zorder>
+   <zorder>wdt_pltAfbeelding</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -1791,6 +1782,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MplWidget</class>
+   <extends>QWidget</extends>
+   <header>mplwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>cbRegeling</tabstop>
   <tabstop>CheckLeeftijdWijzigen</tabstop>

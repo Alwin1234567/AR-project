@@ -55,7 +55,7 @@ class Pensioenfonds():
         return self._naam
     
     @property
-    def pensioenleefijd(self):
+    def pensioenleeftijd(self):
         return self._pensioenleefijd
     
     @property

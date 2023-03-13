@@ -34,8 +34,8 @@ class Pensioen():
         return self._pensioen.pensioenNaam
     
     @property
-    def pensioenleefijd(self):
-        return self._pensioen.pensioenleefijd
+    def pensioenleeftijd(self):
+        return self._pensioen.pensioenleeftijd
     
     @property
     def rente(self):
