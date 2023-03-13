@@ -1188,10 +1188,10 @@ def maak_afbeelding(flexibilisaties, ax):
     allejaren = set()
     for flexibilisatie in flexibilisaties:
         allejaren.add(flexibilisatie.pensioen.pensioenleeftijd)
-        if flexibilisatie.leeftijd_Actief: flexibilisatie.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12)
+        if flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12)
         if flexibilisatie.HL_Actief: 
-            if flexibilisatie.leeftijd_Actief: flexibilisatie.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12 + flexibilisatie.HL_Jaar)
-            else: flexibilisatie.add(flexibilisatie.pensioen.pensioenleeftijd + flexibilisatie.HL_Jaar)
+            if flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12 + flexibilisatie.HL_Jaar)
+            else: allejaren.add(flexibilisatie.pensioen.pensioenleeftijd + flexibilisatie.HL_Jaar)
     # geeft de breedte aan van alle hoogtes
     randen = list(allejaren)
     randen.sort()
@@ -1244,6 +1244,7 @@ def maak_afbeelding(flexibilisaties, ax):
     for flexibilisatie in flexibilisaties: PPtotaal += flexibilisatie.partnerPensioen
     
     # maak de afbeeling
+    ax.clear()
     for i in range(len(hoogtes) - 1):
         ax.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
     

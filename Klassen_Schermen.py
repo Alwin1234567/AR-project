@@ -380,9 +380,10 @@ class Flexmenu(QtWidgets.QMainWindow):
         functions.leesOPPP(book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties)
         
         # Afbeelding genereren
-        functions.maak_afbeelding(self.deelnemerObject.flexibilisaties, self.ui.wdt_pltAfbeelding.canvas.ax)
-        self.ui.wdt_pltAfbeelding.canvas.draw()
-        
+        try:
+            functions.maak_afbeelding(self.deelnemerObject.flexibilisaties, self.ui.wdt_pltAfbeelding.canvas.ax)
+            self.ui.wdt_pltAfbeelding.canvas.draw()
+        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
     
     def zoekFlexibilisaties(self):
         self.opslaanList = self.book.sheets["Flexopslag"].range("3:3")[1:500].value # Zoekt maximaal tot 500 anders wordt het langzaam
@@ -573,16 +574,14 @@ class Flexmenu(QtWidgets.QMainWindow):
         if self.invoerCheck():
             self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
             self.flexkeuzesOpslaan() # Sla flex keuzes op
+            self.berekeningenDoorvoeren()
+            functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
             self.samenvattingUpdate() # Update de samenvatting
-            functions.test_afbeelding(self.book, self.ui.wdt_pltAfbeelding.canvas.ax)
-            # print(type(afbeelding), type(self.ui.wdt_pltAfbeelding.canvas.fig))
-            # self.ui.wdt_pltAfbeelding.canvas.print_figure(afbeelding)
-            # print(afbeelding.ax)
-            # x=range(0, 10)
-            # y=range(0, 20, 2)
-            # self.ui.wdt_pltAfbeelding.canvas.ax.plot(x,y)
-            # self.ui.wdt_pltAfbeelding.canvas.fig.figimage()
-            self.ui.wdt_pltAfbeelding.canvas.draw()
+            try: # probeer een nieuwe afbeelding te maken
+                functions.maak_afbeelding(self.deelnemerObject.flexibilisaties, self.ui.wdt_pltAfbeelding.canvas.ax)
+                self.ui.wdt_pltAfbeelding.canvas.draw()
+            except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+
         
     def flexkeuzesOpslaan(self):
         """
@@ -938,6 +937,37 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.ui.lbl_VLC_pLeeftijd.setText("Leeftijd n.v.t.")
             self.ui.lbl_VLC_OP_PP.setText("OP/PP uitruiling n.v.t.")
             self.ui.lbl_VLC_hlConstructie.setText("H/L constructie n.v.t.")
+    
+    def berekeningenDoorvoeren(self):
+        instellingen = functions.berekeningen_instellingen()
+        for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
+            blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(self.deelnemerObject.flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
+            blok = list()
+            if flexibilisatie.leeftijd_Actief: blok.append([flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12, ""])
+            else: blok.append([flexibilisatie.pensioen.pensioenleeftijd, ""])
+            if flexibilisatie.OP_PP_Actief:
+                if flexibilisatie.OP_PP_Methode == "Verhouding":
+                    blok.append([flexibilisatie.OP_PP_Methode, ""])
+                    blok.append(["1", str(min(flexibilisatie.OP_PP_Verhouding_PP / flexibilisatie.OP_PP_Verhouding_OP, 0.7))])
+                else:
+                    blok.append(["{} {}".format(flexibilisatie.OP_PP_UitruilenVan, flexibilisatie.OP_PP_Methode), ""])
+                    blok.append([flexibilisatie.OP_PP_Percentage, ""])
+            else:
+                blok.append(["", ""])
+                blok.append(["", ""])
+            if flexibilisatie.HL_Actief:
+                blok.append([flexibilisatie.HL_Methode, flexibilisatie.HL_Volgorde])
+                if flexibilisatie.HL_Methode == "Verhouding": blok.append([flexibilisatie.HL_Jaar, max(min(flexibilisatie.HL_Verhouding_Hoog / flexibilisatie.HL_Verhouding_Laag, 4/3), 1)])
+                else: blok.append([flexibilisatie.HL_Jaar, max(flexibilisatie.HL_Verschil, 0)])
+            else:
+                blok.append(["", ""])
+                blok.append(["", ""])
+            
+            updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 1, 2),\
+                                                                 (blokhoogte + 5, 3))
+            try: updaterange.value = blok
+            except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
+                
     
     def btnAndereDeelnemerClicked(self):
         self.close()
