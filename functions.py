@@ -13,6 +13,7 @@ import os
 from os.path import exists
 import sys
 from string import ascii_uppercase
+from xlwings.constants import DVType
 
 """
 Body
@@ -1069,4 +1070,39 @@ def inttoletter(getal):
 
 def berekeningen_update():
     pass
+
+
+
+def vergelijken_keuzes():
+    """
+    functie die de drop down list in de vergelijkingssheet vult met de namen van de opgeslagen afbeeldingen
+
+    Returns
+    -------
+    drop down list gevuld met namen uit de flexopslag
+
+    """
+    
+    #sheets en book opslaan in variabelen
+    book = xw.Book.caller()
+    invoer = book.sheets["Flexopslag"]
+    uitvoer = book.sheets["Vergelijken"]
+    #list maken waarin de opgeslagen pensioenen worden bijgehouden
+    pensioenlist = []
+    celKolom = 5 
+    #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenlist
+    while str(invoer.cells(2,celKolom).value) != "None":
+        naam = str(invoer.cells(2,celKolom).value)
+        pensioenlist.append(naam)
+        celKolom += 4
+    #lijst omzetten naar string, gescheiden door komma
+    pensioenopties = ','.join(pensioenlist)
+    #cel met de drop down datavalisatie
+    keuzeCel = "B6"
+    #verwijder bestaande datavalidatie uit cel
+    uitvoer[keuzeCel].api.Validation.Delete()
+    #voeg nieuwe datavalidatie toe aan cel
+    uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
+    #maak keuzeveld leeg
+    uitvoer[keuzeCel].value = pensioenlist[0]
     

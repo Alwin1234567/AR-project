@@ -935,6 +935,10 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.close()
         self._logger.info("Flexmenu scherm gesloten")
         
+        #drop down op vergelijkingssheet updaten
+        functions.vergelijken_keuzes()
+        self._logger.info("drop down op vergelijkingssheet geüpdate")
+        
     def btnOpslaanClicked(self): 
         # Alle huidige flexibiliserignen opslaan in een Excel sheet
         # Huidig diagram opslaan en plaats in vergelijking sheet    
