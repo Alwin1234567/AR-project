@@ -1259,9 +1259,6 @@ def maak_afbeelding(flexibilisaties, ax):
     ax.set_xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
     ax.set_title("naam", fontweight='bold')
 
-def berekeningen_update():
-    pass
-
 
 
 def vergelijken_keuzes():

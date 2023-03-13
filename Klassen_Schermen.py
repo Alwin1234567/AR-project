@@ -710,14 +710,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             self.ui.lbl_ZL.setText("ZL")
             
-            if (self.regelingCode.leeftijd_Actief == False
-                and self.regelingCode.OP_PP_Actief == False
-                and self.regelingCode.HL_Actief == False):
-                self.ui.lbl_ZL_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-                self.ui.lbl_ZL_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            else:
-                self.ui.lbl_ZL_OP.setText("€—")
-                self.ui.lbl_ZL_PP.setText("€—")
+            # if (self.regelingCode.leeftijd_Actief == False
+            #     and self.regelingCode.OP_PP_Actief == False
+            #     and self.regelingCode.HL_Actief == False):
+            #     self.ui.lbl_ZL_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+            #     self.ui.lbl_ZL_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            # else:
+            #     self.ui.lbl_ZL_OP.setText("€—")
+            #     self.ui.lbl_ZL_PP.setText("€—")
+            self.update_samenvatting(self.ui.lbl_ZL_OP, self.ui.lbl_ZL_PP)
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_ZL_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -749,14 +750,16 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             self.ui.lbl_A65.setText("Aegon 65")
             
-            if (self.regelingCode.leeftijd_Actief == False
-                and self.regelingCode.OP_PP_Actief == False
-                and self.regelingCode.HL_Actief == False):
-                self.ui.lbl_A65_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-                self.ui.lbl_A65_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            else:
-                self.ui.lbl_A65_OP.setText("€—")
-                self.ui.lbl_A65_PP.setText("€—")
+            # if (self.regelingCode.leeftijd_Actief == False
+            #     and self.regelingCode.OP_PP_Actief == False
+            #     and self.regelingCode.HL_Actief == False):
+            #     self.ui.lbl_A65_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+            #     self.ui.lbl_A65_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            # else:
+            #     self.ui.lbl_A65_OP.setText("€"+f"{self.regelingCode.ouderdomsPensioenHoog:,}".replace(',','.')+",-")
+            #     self.ui.lbl_A65_PP.setText("€"+f"{self.regelingCode.partnerPensioen:,}".replace(',','.')+",-")
+            
+            self.update_samenvatting(self.ui.lbl_A65_OP, self.ui.lbl_A65_PP)
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_A65_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -788,14 +791,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             self.ui.lbl_A67.setText("Aegon 67")
             
-            if (self.regelingCode.leeftijd_Actief == False
-                and self.regelingCode.OP_PP_Actief == False
-                and self.regelingCode.HL_Actief == False):
-                self.ui.lbl_A67_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-                self.ui.lbl_A67_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            else:
-                self.ui.lbl_A67_OP.setText("€—")
-                self.ui.lbl_A67_PP.setText("€—")
+            # if (self.regelingCode.leeftijd_Actief == False
+            #     and self.regelingCode.OP_PP_Actief == False
+            #     and self.regelingCode.HL_Actief == False):
+            #     self.ui.lbl_A67_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+            #     self.ui.lbl_A67_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            # else:
+            #     self.ui.lbl_A67_OP.setText("€—")
+            #     self.ui.lbl_A67_PP.setText("€—")
+            self.update_samenvatting(self.ui.lbl_A67_OP, self.ui.lbl_A67_PP)
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_A67_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -827,14 +831,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             self.ui.lbl_NN65.setText("NN 65")
             
-            if (self.regelingCode.leeftijd_Actief == False
-                and self.regelingCode.OP_PP_Actief == False
-                and self.regelingCode.HL_Actief == False):
-                self.ui.lbl_NN65_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-                self.ui.lbl_NN65_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            else:
-                self.ui.lbl_NN65_OP.setText("€—")
-                self.ui.lbl_NN65_PP.setText("€—")
+            # if (self.regelingCode.leeftijd_Actief == False
+            #     and self.regelingCode.OP_PP_Actief == False
+            #     and self.regelingCode.HL_Actief == False):
+            #     self.ui.lbl_NN65_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+            #     self.ui.lbl_NN65_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            # else:
+            #     self.ui.lbl_NN65_OP.setText("€—")
+            #     self.ui.lbl_NN65_PP.setText("€—")
+            self.update_samenvatting(self.ui.lbl_NN65_OP, self.ui.lbl_NN65_PP)
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_NN65_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -866,14 +871,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             self.ui.lbl_NN67.setText("NN 67")
             
-            if (self.regelingCode.leeftijd_Actief == False
-                and self.regelingCode.OP_PP_Actief == False
-                and self.regelingCode.HL_Actief == False):
-                self.ui.lbl_NN67_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-                self.ui.lbl_NN67_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            else:
-                self.ui.lbl_NN67_OP.setText("€—")
-                self.ui.lbl_NN67_PP.setText("€—")
+            # if (self.regelingCode.leeftijd_Actief == False
+            #     and self.regelingCode.OP_PP_Actief == False
+            #     and self.regelingCode.HL_Actief == False):
+            #     self.ui.lbl_NN67_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+            #     self.ui.lbl_NN67_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            # else:
+            #     self.ui.lbl_NN67_OP.setText("€—")
+            #     self.ui.lbl_NN67_PP.setText("€—")
+            self.update_samenvatting(self.ui.lbl_NN67_OP, self.ui.lbl_NN67_PP)
             
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_NN67_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -905,14 +911,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             self.ui.lbl_VLC.setText("PF VLC 68")
             
-            if (self.regelingCode.leeftijd_Actief == False
-                and self.regelingCode.OP_PP_Actief == False
-                and self.regelingCode.HL_Actief == False):
-                self.ui.lbl_VLC_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-                self.ui.lbl_VLC_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            else:
-                self.ui.lbl_VLC_OP.setText("€—")
-                self.ui.lbl_VLC_PP.setText("€—")
+            # if (self.regelingCode.leeftijd_Actief == False
+            #     and self.regelingCode.OP_PP_Actief == False
+            #     and self.regelingCode.HL_Actief == False):
+            #     self.ui.lbl_VLC_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
+            #     self.ui.lbl_VLC_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
+            # else:
+            #     self.ui.lbl_VLC_OP.setText("€—")
+            #     self.ui.lbl_VLC_PP.setText("€—")
+            self.update_samenvatting(self.ui.lbl_VLC_OP, self.ui.lbl_VLC_PP)
         
             if self.regelingCode.leeftijd_Actief == True:
                 self.ui.lbl_VLC_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
@@ -937,6 +944,12 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.ui.lbl_VLC_pLeeftijd.setText("Leeftijd n.v.t.")
             self.ui.lbl_VLC_OP_PP.setText("OP/PP uitruiling n.v.t.")
             self.ui.lbl_VLC_hlConstructie.setText("H/L constructie n.v.t.")
+    
+    def update_samenvatting(self, lblOP, lblPP):
+        if self.regelingscode.HL_Actief: lblOP.setText("€{},-/{},-".format(self.regelingCode.ouderdomsPensioenHoog, self.regelingCode.ouderdomsPensioenLaag).replace(',','.'))
+        else: lblOP.setText("€{},-".format(self.regelingCode.ouderdomsPensioenHoog).replace(',','.'))
+        lblPP.setText("€{},-".format(self.regelingCode.partnerPensioen))
+        
     
     def berekeningenDoorvoeren(self):
         instellingen = functions.berekeningen_instellingen()
