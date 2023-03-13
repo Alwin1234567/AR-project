@@ -860,6 +860,43 @@ def UitlezenFlexopslag(book, naamFlex):
     
     return flexgegevens
 
+def flexopslagNaamNaarID(book, naamFlex):
+    """
+    functie om in de flexopslag de flexibilisatie met de naam "naamFlex" te vinden
+    en hiervan de ID uit te lezen
+
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+    naamFlex : string
+        naam van de flexibilisatie die gezocht moet worden.
+
+    Returns
+    -------
+    ID : string
+        ID van de afbeelding van de flexibilisatie met naam "naamFlex"
+
+    """
+    #sheet definiëren
+    flexopslag = book.sheets["Flexopslag"]
+    
+    #startkolom voor het zoeken van flexibilisatie
+    zoekKolom = 5
+    #alle blokken langsgaan op zoek naar flexibilisatie met naam naamFlex
+    while str(flexopslag.cells(2,zoekKolom).value) != "None":
+        naam = str(flexopslag.cells(2,zoekKolom).value)
+        if naam == naamFlex:
+            flexKolom = zoekKolom
+            break   #stop met while loop na vinden van juiste kolom
+        zoekKolom += 4
+    
+    ID = flexopslag.cells(3,flexKolom).value
+    if isInteger(ID) == True:
+        ID = int(ID)
+    else:
+        ID = str(ID)
+    return ID
 
 def zoekRGB(book,regeling):
     i = 1

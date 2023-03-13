@@ -305,8 +305,11 @@ def AfbeeldingVerwijderen():
     #naam van gekozen afbeelding op sheet printen
     sheet.cells(11, "M").value = gekozenAfbeelding
     
+    #ID van de gekozen afbeelding opzoeken
+    ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+    
     #gekozen afbeelding verwijderen
-    sheet.pictures[naam].delete()
+    sheet.pictures[ID].delete()
 
 @xw.sub
 def afbeelding_aanpassen():

@@ -937,6 +937,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         #drop down op vergelijkingssheet updaten
         functions.vergelijken_keuzes()
+        #open Vergelijken sheet
+        self.book.sheets["Vergelijken"].activate()
         self._logger.info("drop down op vergelijkingssheet geüpdate")
         
     def btnOpslaanClicked(self): 
