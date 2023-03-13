@@ -4,6 +4,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 """
 
 import xlwings as xw
+from xlwings.constants import DVType
 from datetime import datetime, date
 from Deelnemer import Deelnemer
 from Pensioenfonds import Pensioenfonds
@@ -13,7 +14,6 @@ import os
 from os.path import exists
 import sys
 from string import ascii_uppercase
-import matplotlib.pyplot as plt
 
 """
 Body
@@ -793,6 +793,110 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
 
+def UitlezenFlexopslag(book, naamFlex):
+    """
+    functie om in de flexopslag de flexibilisatie met de naam "naamFlex" te vinden
+    en deze gegevens op te halen
+
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+    naamFlex : string
+        naam van de flexibilisatie die gezocht moet worden.
+
+    Returns
+    -------
+    flexgegevens : list(pensioen)
+        lijst met de pensioenen (ook list).
+        pensioen is lijst met de fexibilisatiegegevens
+
+    """
+    #sheet definiëren
+    flexopslag = book.sheets["Flexopslag"]
+    
+    #startkolom voor het zoeken van flexibilisatie
+    zoekKolom = 5
+    #alle blokken langsgaan op zoek naar flexibilisatie met naam naamFlex
+    while str(flexopslag.cells(2,zoekKolom).value) != "None":
+        naam = str(flexopslag.cells(2,zoekKolom).value)
+        if naam == naamFlex:
+            flexKolom = zoekKolom
+            break   #stop met while loop na vinden van juiste kolom
+        zoekKolom += 4
+    
+    #opzoeken hoeveel pensioenen deze deelnemer heeft
+    aantalPensioenen = blokkentellen(5, flexKolom, 20, flexopslag)
+    
+    flexgegevens = []
+    rij = 0
+    while rij < aantalPensioenen*20:
+        #lijst met gegevens van 1 pensioen aanmaken
+        #pensioen = [pensioenfonds, wijzigen, leeftijd-jaar, leeftijd-maand, uitruilen, volgorde, methode, verhouding/percentage,
+        #hoog/laag, volgorde, duur, methode, vers/verh/opvullen, OP, PP, kleur]
+        pensioen = []
+        pensioen.append(str(flexopslag.cells(rij+5 ,flexKolom).value))       #pensioenfonds
+        pensioen.append(str(flexopslag.cells(rij+7 ,flexKolom).value))       #wijzigen J/N
+        pensioen.append(str(flexopslag.cells(rij+8 ,flexKolom).value))       #pensioenleeftijd-jaar
+        pensioen.append(str(flexopslag.cells(rij+8 ,flexKolom + 1).value))   #pensioenleeftijd-maand
+        pensioen.append(str(flexopslag.cells(rij+10,flexKolom).value))       #uitruilen
+        pensioen.append(str(flexopslag.cells(rij+11,flexKolom).value))       #volgorde PP/OP OP/PP
+        pensioen.append(str(flexopslag.cells(rij+12,flexKolom).value))       #methode Verh/Perc
+        pensioen.append(str(flexopslag.cells(rij+13,flexKolom).value))       #verhouding/percentage 
+        pensioen.append(str(flexopslag.cells(rij+13,flexKolom+1).value))     #verhouding/percentage (leeg bij percentage)
+        pensioen.append(str(flexopslag.cells(rij+15,flexKolom).value))       #hoog/laag J/N
+        pensioen.append(str(flexopslag.cells(rij+16,flexKolom).value))       #volgorde Hoog/Laag Laag/Hoog
+        pensioen.append(str(flexopslag.cells(rij+17,flexKolom).value))       #duur
+        pensioen.append(str(flexopslag.cells(rij+18,flexKolom).value))       #methode Vers/Verh/Opv
+        pensioen.append(str(flexopslag.cells(rij+19,flexKolom).value))       #Vers/Verh/Opv
+        pensioen.append(str(flexopslag.cells(rij+19,flexKolom+1).value))     #Vers/Verh/Opv (leeg bij vers en opv)
+        pensioen.append(str(flexopslag.cells(rij+21,flexKolom).value))       #OP
+        pensioen.append(str(flexopslag.cells(rij+21,flexKolom+1).value))     #PP
+        pensioen.append(str(flexopslag.cells(rij+23,flexKolom).value))       #kleur (rgb)
+        #pensioensgegevens toevoegen aan lijst met totale flexibilisatiegegevens
+        flexgegevens.append(pensioen)
+        #rij ophogen met 20 -> naar volgende blok
+        rij += 20
+    
+    return flexgegevens
+
+def flexopslagNaamNaarID(book, naamFlex):
+    """
+    functie om in de flexopslag de flexibilisatie met de naam "naamFlex" te vinden
+    en hiervan de ID uit te lezen
+
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+    naamFlex : string
+        naam van de flexibilisatie die gezocht moet worden.
+
+    Returns
+    -------
+    ID : string
+        ID van de afbeelding van de flexibilisatie met naam "naamFlex"
+
+    """
+    #sheet definiëren
+    flexopslag = book.sheets["Flexopslag"]
+    
+    #startkolom voor het zoeken van flexibilisatie
+    zoekKolom = 5
+    #alle blokken langsgaan op zoek naar flexibilisatie met naam naamFlex
+    while str(flexopslag.cells(2,zoekKolom).value) != "None":
+        naam = str(flexopslag.cells(2,zoekKolom).value)
+        if naam == naamFlex:
+            flexKolom = zoekKolom
+            break   #stop met while loop na vinden van juiste kolom
+        zoekKolom += 4
+    
+    ID = flexopslag.cells(3,flexKolom).value
+    if isInteger(ID) == True:
+        ID = int(ID)
+    else:
+        ID = str(ID)
+    return ID
 
 def zoekRGB(book,regeling):
     i = 1
@@ -1156,4 +1260,39 @@ def maak_afbeelding(flexibilisaties, ax):
 
 def berekeningen_update():
     pass
+
+
+
+def vergelijken_keuzes():
+    """
+    functie die de drop down list in de vergelijkingssheet vult met de namen van de opgeslagen afbeeldingen
+
+    Returns
+    -------
+    drop down list gevuld met namen uit de flexopslag
+
+    """
+    
+    #sheets en book opslaan in variabelen
+    book = xw.Book.caller()
+    invoer = book.sheets["Flexopslag"]
+    uitvoer = book.sheets["Vergelijken"]
+    #list maken waarin de opgeslagen pensioenen worden bijgehouden
+    pensioenlist = []
+    celKolom = 5 
+    #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenlist
+    while str(invoer.cells(2,celKolom).value) != "None":
+        naam = str(invoer.cells(2,celKolom).value)
+        pensioenlist.append(naam)
+        celKolom += 4
+    #lijst omzetten naar string, gescheiden door komma
+    pensioenopties = ','.join(pensioenlist)
+    #cel met de drop down datavalisatie
+    keuzeCel = "B6"
+    #verwijder bestaande datavalidatie uit cel
+    uitvoer[keuzeCel].api.Validation.Delete()
+    #voeg nieuwe datavalidatie toe aan cel
+    uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
+    #maak keuzeveld leeg
+    uitvoer[keuzeCel].value = pensioenlist[0]
     

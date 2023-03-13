@@ -10,7 +10,6 @@ from string import ascii_uppercase
 import functions
 import Klassen_Schermen
 from logging import getLogger
-from xlwings.constants import DVType
 
 
 """
@@ -276,41 +275,7 @@ def invoer_test_klikken():
             rente.append(0)
             pensioenleeftijd.append(0)
 
-@xw.sub 
-def vergelijken_keuzes():
-    """
-    functie die de drop down list in de vergelijkingssheet vult met de namen van de opgeslagen afbeeldingen
-
-    Returns
-    -------
-    drop down list gevuld met namen uit de flexopslag
-
-    """
-    
-    #sheets en book opslaan in variabelen
-    book = xw.Book.caller()
-    invoer = book.sheets["Flexopslag"]
-    uitvoer = book.sheets["Vergelijken"]
-    #string maken waarin de opgeslagen pensioenen worden bijgehouden
-    pensioenopties = ""
-    celKolom = 5 
-    #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenopties
-    while str(invoer.cells(2,celKolom).value) != "None":
-        naam = str(invoer.cells(2,celKolom).value)
-        pensioenopties = pensioenopties + "," + naam
-        celKolom += 4
-    #eerste komma van pensioenopties verwijderen
-    pensioenopties = pensioenopties[1:]
-    #cel met de drop down datavalisatie
-    keuzeCel = "B6"
-    #verwijder bestaande datavalidatie uit cel
-    uitvoer[keuzeCel].api.Validation.Delete()
-    #voeg nieuwe datavalidatie toe aan cel
-    uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
-    #maak keuzeveld leeg
-    uitvoer[keuzeCel].value = ""
-    
-            
+        
 @xw.sub
 def AfbeeldingKiezen():
     """
@@ -340,8 +305,11 @@ def AfbeeldingVerwijderen():
     #naam van gekozen afbeelding op sheet printen
     sheet.cells(11, "M").value = gekozenAfbeelding
     
+    #ID van de gekozen afbeelding opzoeken
+    ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+    
     #gekozen afbeelding verwijderen
-    #sheet.pictures[naam].delete()
+    sheet.pictures[ID].delete()
 
 @xw.sub
 def afbeelding_aanpassen():
@@ -354,11 +322,23 @@ def afbeelding_aanpassen():
     sheet = book.sheets["Vergelijken"]
     #gekozen afbeelding inlezen
     gekozenAfbeelding = sheet.cells(6,"B").value
+    
     #naam van gekozen afbeelding op sheet printen
     sheet.cells(14, "M").value = gekozenAfbeelding  
     
-    #voorlopig hier: drop down op vergelijkingssheet updaten
-    vergelijken_keuzes()
+    #gegevens van gekozen afbeelding inladen
+    functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+    
+    #scherm flexmenu openen
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+    app = 0
+    app = QtWidgets.QApplication(sys.argv)
+    window = Klassen_Schermen.Functiekeus(xw.Book.caller(), logger)
+    window.show()
+    app.exec_()
+    
+    
+    
                   
 @xw.sub
 def flexibilisaties_testen():
