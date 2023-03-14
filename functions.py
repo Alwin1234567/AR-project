@@ -272,12 +272,12 @@ def getPensioeninformatie(book):
     gegevens_pensioenenSheet = book.sheets["Gegevens pensioencontracten"]
     
     pensioenen = dict()
-    # pensioenen["ZL"] = ((9, None), 3)
-    pensioenen["Aegon65"] = ((10, None), 4)
-    pensioenen["Aegon67"] = ((11, None), 5)
-    pensioenen["NN65"] = ((12, 13), 6)
-    pensioenen["NN67"] = ((14, 15), 7)
-    pensioenen["PF_VLC68"] = ((16, 17), 8)
+    # pensioenen["ZL"] = ((9, None), 4)
+    pensioenen["Aegon65"] = ((10, None), 5)
+    pensioenen["Aegon67"] = ((11, None), 6)
+    pensioenen["NN65"] = ((12, 13), 7)
+    pensioenen["NN67"] = ((14, 15), 8)
+    pensioenen["PF_VLC68"] = ((16, 17), 9)
     
     pensioeninformatie = list()
     for pensioen in pensioenen.values():
