@@ -218,7 +218,7 @@ def regelingCodeNaam(code):
     
     return naam
 
-def getDeelnemersbestand(book):
+def getDeelnemersbestand(book, rij = 0):
     """
     functie die het deelnemersbestand inleest uit excel en dit terug geeft.
 
@@ -235,15 +235,20 @@ def getDeelnemersbestand(book):
     """
     deelnemersbestand = book.sheets["deelnemersbestand"].range((1,1)).expand("down").expand("right").value
     
-    deelnemersbestand[0].append("rijNr")
+    deelnemersbestand[0].append("rijNr")    #kolom rijnummer toevoegen 
     for i in range(len(deelnemersbestand) - 1):
-        deelnemersbestand[i+1].append(i + 2)
-    pensioeninformatie = getPensioeninformatie(book)
+        deelnemersbestand[i+1].append(i + 2)    #rijnummer per deelnemer toevoegen
+    pensioeninformatie = getPensioeninformatie(book) 
     deelnemerlijst = list()
     for deelnemer in deelnemersbestand[1:]:
         informatie = [deelnemersbestand[0], deelnemer]
         deelnemerlijst.append(Deelnemer(informatie, pensioeninformatie))
-    return deelnemerlijst
+    
+    
+    if rij == 0: 
+        return deelnemerlijst
+    elif rij != 0:  #er is een rijnummer meegegeven
+        return deelnemerlijst[rij-2]
 
 
 def getPensioeninformatie(book):
