@@ -946,7 +946,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.ui.lbl_VLC_hlConstructie.setText("H/L constructie n.v.t.")
     
     def update_samenvatting(self, lblOP, lblPP):
-        if self.regelingscode.HL_Actief: lblOP.setText("€{},-/{},-".format(self.regelingCode.ouderdomsPensioenHoog, self.regelingCode.ouderdomsPensioenLaag).replace(',','.'))
+        if self.regelingCode.HL_Actief: lblOP.setText("€{},-/{},-".format(self.regelingCode.ouderdomsPensioenHoog, self.regelingCode.ouderdomsPensioenLaag).replace(',','.'))
         else: lblOP.setText("€{},-".format(self.regelingCode.ouderdomsPensioenHoog).replace(',','.'))
         lblPP.setText("€{},-".format(self.regelingCode.partnerPensioen))
         
@@ -970,7 +970,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 blok.append(["", ""])
             if flexibilisatie.HL_Actief:
                 blok.append([flexibilisatie.HL_Methode, flexibilisatie.HL_Volgorde])
-                if flexibilisatie.HL_Methode == "Verhouding": blok.append([flexibilisatie.HL_Jaar, max(min(flexibilisatie.HL_Verhouding_Hoog / flexibilisatie.HL_Verhouding_Laag, 4/3), 1)])
+                if flexibilisatie.HL_Methode == "Verhouding": blok.append([flexibilisatie.HL_Jaar, min(max(flexibilisatie.HL_Verhouding_Laag / flexibilisatie.HL_Verhouding_Hoog, 3/4), 1)])
                 else: blok.append([flexibilisatie.HL_Jaar, max(flexibilisatie.HL_Verschil, 0)])
             else:
                 blok.append(["", ""])
