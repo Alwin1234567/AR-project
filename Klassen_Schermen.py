@@ -946,7 +946,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.ui.lbl_VLC_hlConstructie.setText("H/L constructie n.v.t.")
     
     def update_samenvatting(self, lblOP, lblPP):
-        if self.regelingscode.HL_Actief: lblOP.setText("€{},-/{},-".format(self.regelingCode.ouderdomsPensioenHoog, self.regelingCode.ouderdomsPensioenLaag).replace(',','.'))
+        if self.regelingCode.HL_Actief: lblOP.setText("€{},-/{},-".format(self.regelingCode.ouderdomsPensioenHoog, self.regelingCode.ouderdomsPensioenLaag).replace(',','.'))
         else: lblOP.setText("€{},-".format(self.regelingCode.ouderdomsPensioenHoog).replace(',','.'))
         lblPP.setText("€{},-".format(self.regelingCode.partnerPensioen))
         
