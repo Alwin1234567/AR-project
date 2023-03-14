@@ -327,13 +327,37 @@ def afbeelding_aanpassen():
     sheet.cells(14, "M").value = gekozenAfbeelding  
     
     #gegevens van gekozen afbeelding inladen
-    functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+    opslag = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+    #rijnummer deelnemer zoeken
+    rijNr = 4
+    
+    #deelnemerobject inladen
+    deelnemer = functions.getDeelnemersbestand(book, rijNr)
+    deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
+    
+    
+    pensioennamen = []  #lijst met pensioennamen
+    for i in opslag:
+        pensioennamen.append(i[0])
+    
+    for i,p in enumerate(pensioennamen):
+        for flexibilisatie in deelnemer.flexibilisaties:
+            if flexibilisatie.pensioen.pensioenNaam == p:
+                #met properties flexibilisaties opslaan in objecten flexibilisatie
+                pensioengegevens = opslag[i]
+                if pensioengegevens[1] == "J":
+                    flexibilisatie.leeftijd_Actief = True
+                elif pensioengegevens[1] == "N":
+                    flexibilisatie.leeftijd_Actief = False
+                flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
+                
+    
     
     #scherm flexmenu openen
     logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
     app = 0
     app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.Functiekeus(xw.Book.caller(), logger)
+    window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
     window.show()
     app.exec_()
     
