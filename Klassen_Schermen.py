@@ -965,7 +965,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                     blok.append(["1", str(min(flexibilisatie.OP_PP_Verhouding_PP / flexibilisatie.OP_PP_Verhouding_OP, 0.7))])
                 else:
                     blok.append(["{} {}".format(flexibilisatie.OP_PP_UitruilenVan, flexibilisatie.OP_PP_Methode), ""])
-                    blok.append([flexibilisatie.OP_PP_Percentage, ""])
+                    blok.append([flexibilisatie.OP_PP_Percentage / 100, ""])
             else:
                 blok.append(["", ""])
                 blok.append(["", ""])
