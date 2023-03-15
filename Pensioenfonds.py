@@ -38,8 +38,9 @@ class Pensioenfonds():
         self._opmerking = gegevensSheet.range((gegevensRij, kolommen["opmerking"])).value
         self._kleurZacht = tuple([int(kleur) for kleur in gegevensSheet.range((gegevensRij, kolommen["kleurzachtkolom"])).value.split(",")])
         self._kleurHard = tuple([int(kleur) for kleur in gegevensSheet.range((gegevensRij, kolommen["kleurhardkolom"])).value.split(",")])
-        
-        if self._soortRegeling == "AOW": self.setvars(0, 0, 0, int(self._opmerking.split("; ")[0]), int(self._opmerking.split("; ")[1]))
+        if type(self._opmerking) == str: reduced = self._opmerking.replace(",", ".").split("; ")
+        else: reduced = str()
+        if self._soortRegeling == "AOW": self.setvars(0, 0, 0, float(reduced[0]), float(reduced[1]))
         elif self._soortRegeling == "DC": self.setvars(0, 0, OPenPP[0], 0, 0)
         else: self.setvars(OPenPP[0], OPenPP[1], 0, 0, 0)
             

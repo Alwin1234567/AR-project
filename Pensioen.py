@@ -30,8 +30,10 @@ class Pensioen():
         return self._pensioen.pensioenVolNaam
     
     @property
-    def pensioenNaam(self):
-        return self._pensioen.pensioenNaam
+    def pensioenNaam(self): return self._pensioen.pensioenNaam
+    
+    @property
+    def pensioenSoortRegeling(self): return self._pensioen.soortRegeling
     
     @property
     def pensioenleeftijd(self):
