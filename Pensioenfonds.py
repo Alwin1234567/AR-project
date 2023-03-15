@@ -29,14 +29,26 @@ class Pensioenfonds():
         self._volNaam = ""
         self.volledigeNaam()
         
+        self._soortRegeling = gegevensSheet.range((gegevensRij, kolommen["soortRegeling"])).value
         self._pensioenleefijd = gegevensSheet.range((gegevensRij, kolommen["pensioenleeftijdkolom"])).value
         self._rente = float(gegevensSheet.range((gegevensRij, kolommen["rentekolom"])).options(numbers = float).value)
         self._sterftetafel = gegevensSheet.range((gegevensRij, kolommen["sterftetafelkolom"])).value
-        self._kleurZacht = tuple([int(kleur) for kleur in gegevensSheet.range((gegevensRij, kolommen["Kleurzachtkolom"])).value.split(",")])
-        self._kleurHard = tuple([int(kleur) for kleur in gegevensSheet.range((gegevensRij, kolommen["Kleurhardkolom"])).value.split(",")])
+        self._opbouwpercentage = gegevensSheet.range((gegevensRij, kolommen["opbouwpercentage"])).value
+        self._franchise = gegevensSheet.range((gegevensRij, kolommen["franchise"])).options(numbers = int).value
+        self._opmerking = gegevensSheet.range((gegevensRij, kolommen["opmerking"])).value
+        self._kleurZacht = tuple([int(kleur) for kleur in gegevensSheet.range((gegevensRij, kolommen["kleurzachtkolom"])).value.split(",")])
+        self._kleurHard = tuple([int(kleur) for kleur in gegevensSheet.range((gegevensRij, kolommen["kleurhardkolom"])).value.split(",")])
         
-        self._ouderdomsPensioen = OPenPP[0]
-        self._partnerPensioen = OPenPP[1]
+        if self._soortRegeling == "AOW": self.setvars(0, 0, 0, int(self._opmerking.split("; ")[0]), int(self._opmerking.split("; ")[1]))
+        elif self._soortRegeling == "DC": self.setvars(0, 0, OPenPP[0], 0, 0)
+        else: self.setvars(OPenPP[0], OPenPP[1], 0, 0, 0)
+            
+    def setvars(self, OP, PP, koopsom, alleenstaand, samenwonend):
+        self._ouderdomsPensioen = OP
+        self._partnerPensioen = PP
+        self._koopsom = koopsom
+        self._alleenstaandAOW = alleenstaand
+        self._samenwondendAOW = samenwonend
     
     def volledigeNaam(self):
         if self._naam == "ZL": self._volNaam = "ZwitserLeven"
@@ -45,41 +57,52 @@ class Pensioenfonds():
         elif self._naam == "NN OP65": self._volNaam = "Nationale Nederlanden 65"
         elif self._naam == "NN OP67": self._volNaam = "Nationale Nederlanden 67"
         elif self._naam == "PF VLC OP68": self._volNaam = "Pensioenfonds VLC 68"
+        elif self._naam == "AOW": self._volnaam = "AOW"
             
     @property
-    def pensioenVolNaam(self):
-        return self._volNaam
+    def pensioenVolNaam(self): return self._volNaam
     
     @property
-    def pensioenNaam(self):
-        return self._naam
+    def pensioenNaam(self): return self._naam
     
     @property
-    def pensioenleeftijd(self):
-        return self._pensioenleefijd
+    def soortRegeling(self): return self._soortRegeling
     
     @property
-    def rente(self):
-        return self._rente
+    def pensioenleeftijd(self): return self._pensioenleefijd
     
     @property
-    def sterftetafel(self):
-        return self._sterftetafel
+    def rente(self): return self._rente
     
     @property
-    def kleurZacht(self):
-        return self._kleurZacht
+    def sterftetafel(self): return self._sterftetafel
     
     @property
-    def kleurHard(self):
-        return self._kleurHard
+    def opbouwpercentage(self): return self._opbouwpercentage
     
     @property
-    def ouderdomsPensioen(self):
-        return self._ouderdomsPensioen
+    def franchise(self): return self._franchise
     
     @property
-    def partnerPensioen(self):
-        return self._partnerPensioen
+    def opmerking(self): return self._opmerking
     
+    @property
+    def kleurZacht(self): return self._kleurZacht
     
+    @property
+    def kleurHard(self): return self._kleurHard
+    
+    @property
+    def ouderdomsPensioen(self): return self._ouderdomsPensioen
+    
+    @property
+    def partnerPensioen(self): return self._partnerPensioen
+    
+    @property
+    def koopsom(self): return self._koopsom
+    
+    @property
+    def alleenstaandAOW(self): return self._alleenstaandAOW
+    
+    @property
+    def samenwondendAOW(self): return self._samenwondendAOW

@@ -268,16 +268,21 @@ def getPensioeninformatie(book):
     """    
     kolommen = dict()
     kolommen["naamkolom"] = 2
+    kolommen["soortRegeling"] = 3
     kolommen["pensioenleeftijdkolom"] = 4
     kolommen["rentekolom"] = 5
     kolommen["sterftetafelkolom"] = 6
-    kolommen["Kleurzachtkolom"] = 10
-    kolommen["Kleurhardkolom"] = 11
+    kolommen["opbouwpercentage"] = 7
+    kolommen["franchise"] = 8
+    kolommen["opmerking"] = 9
+    kolommen["kleurzachtkolom"] = 10
+    kolommen["kleurhardkolom"] = 11
     
     gegevens_pensioenenSheet = book.sheets["Gegevens pensioencontracten"]
     
     pensioenen = dict()
-    # pensioenen["ZL"] = ((9, None), 4)
+    pensioenen["AOW"] = ((None, None), 3)
+    pensioenen["ZL"] = ((9, None), 4)
     pensioenen["Aegon65"] = ((10, None), 5)
     pensioenen["Aegon67"] = ((11, None), 6)
     pensioenen["NN65"] = ((12, 13), 7)
@@ -559,59 +564,44 @@ def setup_logger(name):
     logger.info("Setup logger is done")
     return logger
 
-def isInteger(veldInput):
-    try:
-        veldInput = int(veldInput)
-        return True
-    except:
-        return False
+# def isInteger(veldInput):
+#     try:
+#         veldInput = int(veldInput)
+#         return True
+#     except:
+#         return False
         
 def checkVeldInvoer(methode,veld1,veld2,veld3):
     intProblem = False
     emptyProblem = False
     
     if str(methode) == "Percentage" or str(methode) == "Verschil":
-        if str(veld1) == "":
-            emptyProblem = True
-        elif isInteger(veld1) == False:
-            intProblem = True
+        if str(veld1) == "": emptyProblem = True
+        elif type(veld1) != int: intProblem = True
         
-        if str(veld2) == "":
-            pass
-        elif isInteger(veld2) == False:
-            intProblem = True
+        if str(veld2) == "": pass
+        elif type(veld2) != int: intProblem = True
             
-        if str(veld3) == "":
-            pass
-        elif isInteger(veld3) == False:
-            intProblem = True  
+        if str(veld3) == "": pass
+        elif type(veld3) != int: intProblem = True  
         
         
     elif str(methode) == "Verhouding":
-        if str(veld1) == "":
-            pass
-        elif isInteger(veld1) == False:
-            intProblem = True
+        if str(veld1) == "": pass
+        elif type(veld1) != int: intProblem = True
         
-        if str(veld2) == "":
-            emptyProblem = True
-        elif isInteger(veld2) == False:
-            intProblem = True
+        if str(veld2) == "": emptyProblem = True
+        elif type(veld2) != int: intProblem = True
             
-        if str(veld3) == "":
-            emptyProblem = True
-        elif isInteger(veld3) == False:
-            intProblem = True       
+        if str(veld3) == "": emptyProblem = True
+        elif type(veld3) != int: intProblem = True       
     
     elif str(methode) == "Opvullen AOW":
-        if isInteger(veld1) == False:
-            intProblem = True
+        if type(veld1) != int: intProblem = True
 
-        if isInteger(veld2) == False:
-            intProblem = True
+        if type(veld2) == int: intProblem = True
 
-        if isInteger(veld3) == False:
-            intProblem = True   
+        if type(veld3) == int: intProblem = True   
 
 
     if intProblem == True and emptyProblem == True:
@@ -623,9 +613,9 @@ def checkVeldInvoer(methode,veld1,veld2,veld3):
     else:
         return ["",True]
     
-def tpxFormule(sterftetafel, rij, leeftijdKolomLetter, jaarKolom, tpxKolom):
-    if sterftetafel == "AG_2020": return '=if({0}{1}<>"", (1-INDEX(INDIRECT("{2}"),{0}{3}+1,{4}{3}-2018))*{5}{3},"")'.format(leeftijdKolomLetter, rij + 3,  sterftetafel, rij + 2, jaarKolom, tpxKolom)
-    else: return '=if({0}{1}<>"", INDEX(INDIRECT("{2}"),{0}{1}+1,1)/ INDEX(INDIRECT("{2}"),${0}$2+1,1),"")'.format(leeftijdKolomLetter, rij + 3, sterftetafel)
+# def tpxFormule(sterftetafel, rij, leeftijdKolomLetter, jaarKolom, tpxKolom):
+#     if sterftetafel == "AG_2020": return '=if({0}{1}<>"", (1-INDEX(INDIRECT("{2}"),{0}{3}+1,{4}{3}-2018))*{5}{3},"")'.format(leeftijdKolomLetter, rij + 3,  sterftetafel, rij + 2, jaarKolom, tpxKolom)
+#     else: return '=if({0}{1}<>"", INDEX(INDIRECT("{2}"),{0}{1}+1,1)/ INDEX(INDIRECT("{2}"),${0}$2+1,1),"")'.format(leeftijdKolomLetter, rij + 3, sterftetafel)
 
 def persoonOpslag(book, persoonObject):
     """
@@ -897,10 +887,8 @@ def flexopslagNaamNaarID(book, naamFlex):
         zoekKolom += 4
     
     ID = flexopslag.cells(3,flexKolom).value
-    if isInteger(ID) == True:
-        ID = int(ID)
-    else:
-        ID = str(ID)
+    if type(ID) == int: ID = int(ID)
+    else: ID = str(ID)
     return ID
 
 def zoekRGB(book,regeling):
