@@ -564,12 +564,12 @@ def setup_logger(name):
     logger.info("Setup logger is done")
     return logger
 
-# def isInteger(veldInput):
-#     try:
-#         veldInput = int(veldInput)
-#         return True
-#     except:
-#         return False
+def isNotInteger(veldInput):
+    try:
+        veldInput = int(veldInput)
+        return False
+    except ValueError:
+        return True
         
 def checkVeldInvoer(methode,veld1,veld2,veld3):
     intProblem = False
@@ -577,32 +577,30 @@ def checkVeldInvoer(methode,veld1,veld2,veld3):
     
     if str(methode) == "Percentage" or str(methode) == "Verschil":
         if str(veld1) == "": emptyProblem = True
-        elif type(veld1) != int: intProblem = True
+        elif isNotInteger(veld1): intProblem = True
         
         if str(veld2) == "": pass
-        elif type(veld2) != int: intProblem = True
+        elif isNotInteger(veld2): intProblem = True
             
         if str(veld3) == "": pass
-        elif type(veld3) != int: intProblem = True  
-        
+        elif isNotInteger(veld3): intProblem = True  
         
     elif str(methode) == "Verhouding":
         if str(veld1) == "": pass
-        elif type(veld1) != int: intProblem = True
+        elif isNotInteger(veld1): intProblem = True
         
         if str(veld2) == "": emptyProblem = True
-        elif type(veld2) != int: intProblem = True
+        elif isNotInteger(veld2): intProblem = True
             
         if str(veld3) == "": emptyProblem = True
-        elif type(veld3) != int: intProblem = True       
+        elif isNotInteger(veld3): intProblem = True     
     
     elif str(methode) == "Opvullen AOW":
-        if type(veld1) != int: intProblem = True
+        if isNotInteger(veld1): intProblem = True
 
-        if type(veld2) == int: intProblem = True
+        if isNotInteger(veld2): intProblem = True
 
-        if type(veld3) == int: intProblem = True   
-
+        if isNotInteger(veld3): intProblem = True   
 
     if intProblem == True and emptyProblem == True:
         return ["Er is foute invoer en missende invoer.",False]

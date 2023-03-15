@@ -12,6 +12,7 @@ import functions
 from datetime import datetime
 from decimal import getcontext, Decimal
 from xlwings.utils import rgb_to_int
+from Pensioenfonds import Pensioenfonds
 
 """
 Body
@@ -327,6 +328,9 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.opslaanCount = 0 #Teller voor aantal opgeslagen flexibilisaties.
         self.opslaanList = list()
         self.zoekFlexibilisaties()
+        self.AOWjaar = 60 # Deze wordt aangepast met functie self.getAOWleeftijd()
+        self.AOWmaand = 0 # Deze wordt aangepast met functie self.getAOWleeftijd()
+        self.getAOWleeftijd()
         
         # Setup van UI
         self.ui = Ui_MainWindow5()
@@ -349,6 +353,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.CheckLeeftijdWijzigen.stateChanged.connect(self.invoerVerandering)
         self.ui.sbJaar.valueChanged.connect(self.invoerVerandering)
         self.ui.sbMaand.valueChanged.connect(self.invoerVerandering)
+        self.ui.btnAOWleeftijd.clicked.connect(self.AOWbutton)
         
         # Aanpassing: OP/PP
         self.ui.CheckUitruilen.stateChanged.connect(self.invoerVerandering)
@@ -388,29 +393,29 @@ class Flexmenu(QtWidgets.QMainWindow):
     
     def zoekFlexibilisaties(self):
         self.opslaanList = self.book.sheets["Flexopslag"].range("3:3")[1:500].value # Zoekt maximaal tot 500 anders wordt het langzaam
-        self.opslaanList = [int(value) for value in self.opslaanList if type(value) == float]
+        self.opslaanList = [int(value) for value in self.opslaanList if type(value) == float] # Flex IDs worden uit Excel opgehaald als type Float, moet opgeslagen worden als type int
 
     def zoekNieuwID(self):
-        if len(self.opslaanList) > 0:
+        if len(self.opslaanList) > 0: # Als de lijst niet leeg is, zijn er al ID's opgeslagen en moet de eerstvolgende "lege" ID gevonden worden
             for i in range(len(self.opslaanList)):
-                if (i+1) not in self.opslaanList:
+                if (i+1) not in self.opslaanList: # Als getal niet in lijst staat, is dit het nieuwe ID
                     return (i+1)
             return len(self.opslaanList)+1
         else:
-            return 1
+            return 1 # Als lijst leeg is, zijn er nog geen ID's opgeslagen. De eerste moet ID waarde 1 krijgen.
     
     def dropdownRegelingen(self):
-        regelingenActief = list()
-        regelingenActiefKort = list()
+        regelingenActief = list() # Lijst met lange namen van regelingen
+        regelingenActiefKort = list() # Lijst met verkorte namen van regelingen
         
         for regeling in self.deelnemerObject.pensioenen:
-            if regeling.ouderdomsPensioen != None:
+            if regeling.ouderdomsPensioen != None: # Check of deelnemer wel gespaard heeft bij een regeling
                 if regeling.ouderdomsPensioen > 0:
-                    regelingenActief.append(regeling.pensioenVolNaam)
-                    regelingenActiefKort.append(regeling.pensioenNaam)
+                    regelingenActief.append(regeling.pensioenVolNaam) # Lange regeling naam opslaan
+                    regelingenActiefKort.append(regeling.pensioenNaam) # Korte regeling naam opslaan
 
-        self.ui.cbRegeling.addItems(regelingenActief)
-        self._regelingenActiefKort = regelingenActiefKort
+        self.ui.cbRegeling.addItems(regelingenActief) # Dropdown krijgt lijst met lange namen van regelingen
+        self._regelingenActiefKort = regelingenActiefKort # Wordt apart een lijst met korte namen van regelingen opgeslagen
     
     def blokkeerSignalen(self, actief):
         """
@@ -423,7 +428,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         """
         
         if actief == True:
-            self._logger.info("Veld signalen worden geblokkerd.")
+            self._logger.info("Veld signalen worden geblokkeerd.")
         elif actief == False:
             self._logger.info("Veld signalen worden geactiveerd.")
         
@@ -466,6 +471,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         Als alles klopt, returnt deze functie True.
         """
         
+        # Check of invoer klopt van OP/PP blok
         melding_OP, OK_OP = functions.checkVeldInvoer(self.ui.cbUMethode.currentText(),
                                   self.ui.txtUPercentage.text(),
                                   self.ui.txtUVerhoudingOP.text(),
@@ -473,6 +479,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         self.ui.lblFoutmeldingUitruilen.setText(melding_OP)
         
+        # Check of invoer klopt van Hoog/Laag blok
         melding_HL, OK_HL = functions.checkVeldInvoer(self.ui.cbHLMethode.currentText(),
                                                       self.ui.txtHLVerschil.text(),
                                                       self.ui.txtHLVerhoudingHoog.text(),
@@ -481,9 +488,9 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.lblFoutmeldingHoogLaag.setText(melding_HL)
 
         if (OK_OP == True and OK_HL == True):
-            return True
+            return True # De check geeft aan dat alles goed ingevoerd is.
         else:
-            return False
+            return False # De check geeft aan dat er foute invoer is.
 
     def wijzigVelden(self):
         """
@@ -497,6 +504,7 @@ class Flexmenu(QtWidgets.QMainWindow):
 
         self._logger.info("Veldwijziging geïnitialiseerd.")
         
+        # Zoek flexibilisatie-object die hoort bij huidig geselecteerde regeling in flexmenu dropdown.
         for flexibilisatie in self.deelnemerObject.flexibilisaties:
             if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
                 self.regelingCode = flexibilisatie
@@ -583,7 +591,35 @@ class Flexmenu(QtWidgets.QMainWindow):
                 self.ui.wdt_pltAfbeelding.canvas.draw()
             except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
 
+    def getAOWleeftijd(self):
+        """
+        Deze functie zorgt ervoor dat er niet elke keer bij het klikken op de AOW knop opnieuw de 
+        AOW leeftijd ingeladen moet worden, dit vergt namelijk veel tijd. In de __init__ wordt deze
+        functie opgeroepen zodat het maar 1 keer opgeslagen hoeft te worden.
+        """
         
+        functions.getPensioeninformatie(self.book)
+
+        for pensioenV in functions.getPensioeninformatie(self.book):
+            if pensioenV.pensioenNaam == "AOW":
+                self.AOWjaar = int(pensioenV.pensioenleeftijd)
+                self.AOWmaand = int(round((pensioenV.pensioenleeftijd-self.AOWjaar)*12))
+        
+    def AOWbutton(self):
+
+        self.blokkeerSignalen(True)
+        self._logger.info("AOW-leeftijd button in flexmenu geklikt.")
+
+        try:
+            self.ui.sbJaar.setValue(self.AOWjaar)
+            self.ui.sbMaand.setValue(self.AOWmaand)
+        except Exception as e:
+            self._logger.exception("Probleem bij het wijzigen van leeftijdvelden naar AOW-leeftijd.")
+
+        self.blokkeerSignalen(False)
+        self.invoerVerandering()
+
+
     def flexkeuzesOpslaan(self):
         """
         Deze functie slaat huidig ingevulde flex opties op in het flexibiliseringsobject.
@@ -593,7 +629,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         self._logger.info("Flexkeuze opslaan geïnitialiseerd.")
 
-        # Selecteer huidige regeling-object voor flex keuzes
+        # Zoek flexibilisatie-object die hoort bij huidig geselecteerde regeling in flexmenu dropdown.
         for flexibilisatie in self.deelnemerObject.flexibilisaties:
             if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
                 self.regelingCode = flexibilisatie
