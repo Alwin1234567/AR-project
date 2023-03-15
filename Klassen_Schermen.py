@@ -372,7 +372,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # Laatste UI update
         self.ui.sbMaand.setValue(0)
-        self.invoerVerandering()
+        #self.invoerVerandering()
+        self.samenvattingUpdate()
         self.wijzigVelden()
         
         # Berekening sheet klaarmaken

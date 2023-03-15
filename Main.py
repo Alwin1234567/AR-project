@@ -320,24 +320,118 @@ def afbeelding_aanpassen():
     #sheets en book opslaan in variabelen
     book = xw.Book.caller()
     sheet = book.sheets["Vergelijken"]
+    flexopslag = book.sheets["Flexopslag"]
     #gekozen afbeelding inlezen
-    gekozenAfbeelding = sheet.cells(6,"B").value
-    
-    #naam van gekozen afbeelding op sheet printen
-    sheet.cells(14, "M").value = gekozenAfbeelding  
+    gekozenAfbeelding = sheet.cells(6,"B").value 
     
     #gegevens van gekozen afbeelding inladen
-    functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+    opslag = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+    #rijnummer deelnemer zoeken
+    rijNr = int(float(flexopslag.cells(15,"B").value))
+    
+    #deelnemerobject inladen
+    deelnemer = functions.getDeelnemersbestand(book, rijNr)
+    deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
+    
+    #lijst met pensioennamen van de deelnemer 
+    pensioennamen = []  
+    for i in opslag:
+        pensioennamen.append(i[0])
+    
+    #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegne aan flexibiliseringsobject van het deelnemersobject
+    for i,p in enumerate(pensioennamen):
+        for flexibilisatie in deelnemer.flexibilisaties:
+            #als het flexibilisatieobject bij het pensioen uit de lijst pensioennamen hoort
+            if flexibilisatie.pensioen.pensioenNaam == p:
+                #met properties flexibilisaties opslaan in objecten flexibilisatie
+                pensioengegevens = opslag[i]
+                #leeftijd aanpassen
+                if pensioengegevens[1] == "J":
+                    flexibilisatie.leeftijd_Actief = True
+                elif pensioengegevens[1] == "N":
+                    flexibilisatie.leeftijd_Actief = False
+                flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
+                flexibilisatie.leeftijdMaand = int(float(pensioengegevens[3]))
+                
+                #uitruilen
+                if pensioengegevens[4] == "J":
+                    flexibilisatie.OP_PP_Actief = True
+                elif pensioengegevens[4] == "N":
+                    flexibilisatie.OP_PP_Actief = False
+                    #volgorde
+                if pensioengegevens[5] == "OP/PP": flexibilisatie.OP_PP_UitruilenVan = "OP naar PP"
+                elif pensioengegevens[5] == "PP/OP": flexibilisatie.OP_PP_UitruilenVan = "PP naar OP"
+                    #methode
+                if pensioengegevens[6] == "Verh":
+                    flexibilisatie.OP_PP_Methode = "Verhouding"
+                    flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
+                    flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
+                elif pensioengegevens[6] == "Perc":
+                    flexibilisatie.OP_PP_Methode = "Percentage"
+                    flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
+                
+                flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[6]
+                
+                
+                flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
+                
+                #hoog-laag-constructie
+                if pensioengegevens[9] == "J":
+                    flexibilisatie.HL_Actief = True
+                elif pensioengegevens[9] == "N":
+                    flexibilisatie.HL_Actief = False
+                    #volgorde
+                if pensioengegevens[10] == "Hoog/Laag": flexibilisatie.HL_Volgorde = "Hoog-laag"
+                elif pensioengegevens[10] == "Laag/Hoog": flexibilisatie.HL_Volgorde = "Laag-hoog"
+                    #duur
+                flexibilisatie.HL_Jaar = int(float(pensioengegevens[11]))
+                    #methode
+                if pensioengegevens[12] == "Verh":
+                    flexibilisatie.HL_Methode = "Verhouding"
+                    flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
+                    flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
+                elif pensioengegevens[12] == "Verh":
+                    flexibilisatie.HL_Methode = "Verschil"
+                    flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))
+                elif pensioengegevens[12] == "Opv":
+                    flexibilisatie.HL_Methode = "Opvullen AOW"
+                
+    
     
     #scherm flexmenu openen
     logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
     app = 0
     app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.Functiekeus(xw.Book.caller(), logger)
+    window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
+    window.invoerVerandering()
     window.show()
     app.exec_()
     
+@xw.sub
+def NieuweFlexibilisatie():
+    """
+    Functie die het flexmenu scherm opnieuw opent voor de juiste deelnemer
+    """
     
+    #sheet en book opslaan in variabelen
+    book = xw.Book.caller()
+    flexopslag = book.sheets["Flexopslag"]
+    
+    #rijnummer deelnemer zoeken
+    rijNr = int(float(flexopslag.cells(15,"B").value))
+    #deelnemerobject inladen
+    deelnemer = functions.getDeelnemersbestand(book, rijNr)
+    deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
+    
+    #scherm flexmenu openen
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+    app = 0
+    app = QtWidgets.QApplication(sys.argv)
+    window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
+    window.invoerVerandering()
+    window.show()
+    app.exec_()
+        
     
                   
 @xw.sub
