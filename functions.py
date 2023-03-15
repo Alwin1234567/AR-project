@@ -950,7 +950,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         inforange = sheet.range((instellingen["pensioeninfohoogte"] + i, instellingen["pensioeninfokolom"]),\
                             (instellingen["pensioeninfohoogte"] + i, instellingen["pensioeninfokolom"] + len(pensioeninfo) - 1))
         inforange.formula = pensioeninfo
-        inforange.color = flexibilisatie.pensioen.pensioenKleurHard
+        inforange.color = flexibilisatie.pensioen.pensioenKleurZacht
     
     # pensioen blok
     for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
@@ -1029,7 +1029,7 @@ def berekeningen_init(sheet, deelnemer, logger):
             #                          (blokhoogte + 10, instellingen["pensioenblokkolom"] + 2))
             # geldblok.api.NumberFormat = "Currency"
             blokruimte.formula = blok
-            blokruimte.color = flexibilisatie.pensioen.pensioenKleurHard
+            blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
         else:
             logger.warning("berekeningen pensioenblok niet allemaal gelijk")
             logger.debug([len(rij) for rij in blok])
@@ -1058,7 +1058,7 @@ def berekeningen_init(sheet, deelnemer, logger):
             mergeruimte = sheet.range((1, instellingen["afstandtotrekenkolom"] + i * (len(blok[0]) + instellingen["afstandtussenrekenblokken"] )),\
                                      (1, instellingen["afstandtotrekenkolom"] + i * (len(blok[0]) + instellingen["afstandtussenrekenblokken"] ) + 7))
             blokruimte.formula = blok
-            blokruimte.color = flexibilisatie.pensioen.pensioenKleurHard
+            blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
             mergeruimte.merge()
             mergeruimte.api.HorizontalAlignment = xw.constants.HAlign.xlHAlignCenter
         else:
@@ -1082,7 +1082,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         blokruimte = sheet.range((4, instellingen["afstandtotrekenkolom"] + i * (len(rij) + instellingen["afstandtussenrekenblokken"] )),\
                                  (max(4, instellingen["rekenblokgrootte"]), instellingen["afstandtotrekenkolom"] + i * (len(rij) + instellingen["afstandtussenrekenblokken"] ) + 7))
         blokruimte.formula = rij
-        blokruimte.color = flexibilisatie.pensioen.pensioenKleurHard
+        blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
     logger.info("berekenscherm init afgerond")
 
 def inttoletter(getal):
