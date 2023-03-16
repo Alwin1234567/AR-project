@@ -729,49 +729,43 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[0][1] = str(flexibilisatie.pensioen.pensioenNaam)
     
     # Pensioenleeftijd wijzigen J/N
-    if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
-    else: flexopslag[2][1] = "N"
+    if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "Ja"
+    else: flexopslag[2][1] = "Nee"
     
     # Pensioenleeftijd: Jaar & Maand
     flexopslag[3][1] = flexibilisatie.leeftijdJaar
     flexopslag[3][2] = flexibilisatie.leeftijdMaand
     
     # OP/PP Uitruilen wijzigen J/N
-    if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "J"
-    else: flexopslag[5][1] = "N"
+    if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "Ja"
+    else: flexopslag[5][1] = "Nee"
     
     # OP/PP uitruiling opslaan
-    if flexibilisatie.OP_PP_UitruilenVan == "OP naar PP": flexopslag[6][1] = "OP/PP"
-    elif flexibilisatie.OP_PP_UitruilenVan == "PP naar OP": flexopslag[6][1] = "PP/OP"
-    
+    flexopslag[6][1] = flexibilisatie.OP_PP_UitruilenVan
+    #methode opslaan
+    flexopslag[7][1] = flexibilisatie.OP_PP_Methode
     if flexibilisatie.OP_PP_Methode == "Verhouding":
-        flexopslag[7][1] = "Verh"
         flexopslag[8][1] = flexibilisatie.OP_PP_Verhouding_OP
         flexopslag[8][2] = flexibilisatie.OP_PP_Verhouding_PP
     elif flexibilisatie.OP_PP_Methode == "Percentage":
-        flexopslag[7][1] = "Perc"
         flexopslag[8][1] = flexibilisatie.OP_PP_Percentage
     else:
         logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
     
     # Hoog/Laag constructie opslaan
-    if flexibilisatie.HL_Actief: flexopslag[9][1] = "J"
-    else: flexopslag[10][1] = "N"
+    if flexibilisatie.HL_Actief: flexopslag[9][1] = "Ja"
+    else: flexopslag[10][1] = "Nee"
     
-    if flexibilisatie.HL_Volgorde == "Hoog-laag": flexopslag[11][1] = "Hoog/Laag"
-    elif flexibilisatie.HL_Volgorde == "Laag-hoog": flexopslag[11][1] = "Laag/Hoog"
+    flexopslag[11][1] = flexibilisatie.HL_Volgorde
     
     flexopslag[12][1] = flexibilisatie.HL_Jaar
     
+    flexopslag[13][1] = flexibilisatie.HL_Methode
     if flexibilisatie.HL_Methode == "Verhouding":
-        flexopslag[13][1] = "Verh"
         flexopslag[14][1] = flexibilisatie.HL_Verhouding_Hoog
         flexopslag[15][2] = flexibilisatie.HL_Verhouding_Laag
     elif flexibilisatie.HL_Methode == "Verschil":
-        flexopslag[13][1] = "Verh"
         flexopslag[14][1] = flexibilisatie.HL_Verschil
-    elif flexibilisatie.HL_Methode == "Opvullen AOW":
-        flexopslag[13][1] = "Opv"
     else:
         logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
     
@@ -785,6 +779,55 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     # Waardes in sheet plakken & celkleur instellen
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
+    
+    
+    # # Pensioenleeftijd wijzigen J/N
+    # if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
+    # else: flexopslag[2][1] = "N"
+    
+    # # Pensioenleeftijd: Jaar & Maand
+    # flexopslag[3][1] = flexibilisatie.leeftijdJaar
+    # flexopslag[3][2] = flexibilisatie.leeftijdMaand
+    
+    # # OP/PP Uitruilen wijzigen J/N
+    # if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "J"
+    # else: flexopslag[5][1] = "N"
+    
+    # # OP/PP uitruiling opslaan
+    # if flexibilisatie.OP_PP_UitruilenVan == "OP naar PP": flexopslag[6][1] = "OP/PP"
+    # elif flexibilisatie.OP_PP_UitruilenVan == "PP naar OP": flexopslag[6][1] = "PP/OP"
+    
+    # if flexibilisatie.OP_PP_Methode == "Verhouding":
+    #     flexopslag[7][1] = "Verh"
+    #     flexopslag[8][1] = flexibilisatie.OP_PP_Verhouding_OP
+    #     flexopslag[8][2] = flexibilisatie.OP_PP_Verhouding_PP
+    # elif flexibilisatie.OP_PP_Methode == "Percentage":
+    #     flexopslag[7][1] = "Perc"
+    #     flexopslag[8][1] = flexibilisatie.OP_PP_Percentage
+    # else:
+    #     logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
+    
+    # # Hoog/Laag constructie opslaan
+    # if flexibilisatie.HL_Actief: flexopslag[9][1] = "J"
+    # else: flexopslag[10][1] = "N"
+    
+    # if flexibilisatie.HL_Volgorde == "Hoog-laag": flexopslag[11][1] = "Hoog/Laag"
+    # elif flexibilisatie.HL_Volgorde == "Laag-hoog": flexopslag[11][1] = "Laag/Hoog"
+    
+    # flexopslag[12][1] = flexibilisatie.HL_Jaar
+    
+    # if flexibilisatie.HL_Methode == "Verhouding":
+    #     flexopslag[13][1] = "Verh"
+    #     flexopslag[14][1] = flexibilisatie.HL_Verhouding_Hoog
+    #     flexopslag[15][2] = flexibilisatie.HL_Verhouding_Laag
+    # elif flexibilisatie.HL_Methode == "Verschil":
+    #     flexopslag[13][1] = "Verh"
+    #     flexopslag[14][1] = flexibilisatie.HL_Verschil
+    # elif flexibilisatie.HL_Methode == "Opvullen AOW":
+    #     flexopslag[13][1] = "Opv"
+    # else:
+    #     logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
+    
 
 def UitlezenFlexopslag(book, naamFlex):
     """

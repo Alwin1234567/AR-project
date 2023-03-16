@@ -346,55 +346,46 @@ def afbeelding_aanpassen():
                 #met properties flexibilisaties opslaan in objecten flexibilisatie
                 pensioengegevens = opslag[i]
                 #leeftijd aanpassen
-                if pensioengegevens[1] == "J":
+                if pensioengegevens[1] == "Ja":
                     flexibilisatie.leeftijd_Actief = True
-                elif pensioengegevens[1] == "N":
+                elif pensioengegevens[1] == "Nee":
                     flexibilisatie.leeftijd_Actief = False
                 flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
                 flexibilisatie.leeftijdMaand = int(float(pensioengegevens[3]))
                 
                 #uitruilen
-                if pensioengegevens[4] == "J":
+                if pensioengegevens[4] == "Ja":
                     flexibilisatie.OP_PP_Actief = True
-                elif pensioengegevens[4] == "N":
+                elif pensioengegevens[4] == "Nee":
                     flexibilisatie.OP_PP_Actief = False
                     #volgorde
-                if pensioengegevens[5] == "OP/PP": flexibilisatie.OP_PP_UitruilenVan = "OP naar PP"
-                elif pensioengegevens[5] == "PP/OP": flexibilisatie.OP_PP_UitruilenVan = "PP naar OP"
+                flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[5]
                     #methode
-                if pensioengegevens[6] == "Verh":
-                    flexibilisatie.OP_PP_Methode = "Verhouding"
+                flexibilisatie.OP_PP_Methode = pensioengegevens[6]
+                if pensioengegevens[6] == "Verhouding":
                     flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
                     flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
                 elif pensioengegevens[6] == "Perc":
-                    flexibilisatie.OP_PP_Methode = "Percentage"
                     flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
                 
-                flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[6]
-                
-                
-                flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
                 
                 #hoog-laag-constructie
-                if pensioengegevens[9] == "J":
+                if pensioengegevens[9] == "Ja":
                     flexibilisatie.HL_Actief = True
-                elif pensioengegevens[9] == "N":
+                elif pensioengegevens[9] == "Nee":
                     flexibilisatie.HL_Actief = False
                     #volgorde
-                if pensioengegevens[10] == "Hoog/Laag": flexibilisatie.HL_Volgorde = "Hoog-laag"
-                elif pensioengegevens[10] == "Laag/Hoog": flexibilisatie.HL_Volgorde = "Laag-hoog"
+                flexibilisatie.HL_Volgorde = pensioengegevens[10]
                     #duur
                 flexibilisatie.HL_Jaar = int(float(pensioengegevens[11]))
                     #methode
-                if pensioengegevens[12] == "Verh":
-                    flexibilisatie.HL_Methode = "Verhouding"
+                flexibilisatie.HL_Methode = pensioengegevens[12]
+                if pensioengegevens[12] == "Verhouding":
                     flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
                     flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
-                elif pensioengegevens[12] == "Verh":
-                    flexibilisatie.HL_Methode = "Verschil"
+                elif pensioengegevens[12] == "Verschil":
                     flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))
-                elif pensioengegevens[12] == "Opv":
-                    flexibilisatie.HL_Methode = "Opvullen AOW"
+                
                 
     
     
