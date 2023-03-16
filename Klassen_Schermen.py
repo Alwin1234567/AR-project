@@ -123,7 +123,7 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self.close()
         self._logger.info("Deelnemerselectie scherm gesloten")
         self.windowstart = Functiekeus(self.book, self._logger)
-        self.windowstart.invoerVerandering()
+        #self.windowstart.invoerVerandering() #<-- Waarom staat dit hier?
         self.windowstart.show()
     
     def clearError(self): self.ui.lblFoutmeldingKiezen.clear()
