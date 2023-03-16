@@ -156,6 +156,12 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         if self.ui.lwKeuzes.currentRow() == -1: 
             self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren voordat u gaat flexibiliseren")
             return
+        #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
+        self.book.sheets["Flexopslag"].clear()
+        #laatste opslag is verwijderd, dus drop down legen
+        self.book.sheets["Vergelijken"]["B6"].value = ""
+        
+        #nieuwe deelnemer aanmaken
         deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
         deelnemer.activeerFlexibilisatie()
         self.close()

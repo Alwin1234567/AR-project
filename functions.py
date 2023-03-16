@@ -831,6 +831,7 @@ def FlexopslagVinden(book, naamFlex):
     #sheet definiëren
     flexopslag = book.sheets["Flexopslag"]
     
+    flexKolom = 0
     #startkolom voor het zoeken van flexibilisatie
     zoekKolom = 5
     #alle blokken langsgaan op zoek naar flexibilisatie met naam naamFlex
@@ -843,6 +844,13 @@ def FlexopslagVinden(book, naamFlex):
     #opzoeken hoeveel pensioenen deze deelnemer heeft
     aantalPensioenen = blokkentellen(5, flexKolom, 20, flexopslag)
     return [flexKolom, zoekKolom-4, aantalPensioenen]
+
+def flexopslagLegen(book):
+    #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
+    book.sheets["Flexopslag"].clear()
+        
+    #laatste opslag is verwijderd, dus drop down legen
+    book.sheets["Vergelijken"]["B6"].value = ""
 
 def UitlezenFlexopslag(book, naamFlex):
     """
@@ -923,15 +931,8 @@ def flexopslagNaamNaarID(book, naamFlex):
     #sheet definiëren
     flexopslag = book.sheets["Flexopslag"]
     
-    #startkolom voor het zoeken van flexibilisatie
-    zoekKolom = 5
-    #alle blokken langsgaan op zoek naar flexibilisatie met naam naamFlex
-    while str(flexopslag.cells(2,zoekKolom).value) != "None":
-        naam = str(flexopslag.cells(2,zoekKolom).value)
-        if naam == naamFlex:
-            flexKolom = zoekKolom
-            break   #stop met while loop na vinden van juiste kolom
-        zoekKolom += 4
+    opslag = FlexopslagVinden(book, naamFlex)
+    flexKolom = opslag[0]
     
     ID = flexopslag.cells(3,flexKolom).value
     if type(ID) == int: ID = int(ID)
@@ -1342,19 +1343,22 @@ def vergelijken_keuzes():
     #list maken waarin de opgeslagen pensioenen worden bijgehouden
     pensioenlist = []
     celKolom = 5 
-    #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenlist
-    while str(invoer.cells(2,celKolom).value) != "None":
-        naam = str(invoer.cells(2,celKolom).value)
-        pensioenlist.append(naam)
-        celKolom += 4
-    #lijst omzetten naar string, gescheiden door komma
-    pensioenopties = ','.join(pensioenlist)
+    if str(invoer.cells(2,celKolom).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
+        #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenlist
+        while str(invoer.cells(2,celKolom).value) != "None":
+            naam = str(invoer.cells(2,celKolom).value)
+            pensioenlist.append(naam)
+            celKolom += 4
+        #lijst omzetten naar string, gescheiden door komma
+        pensioenopties = ','.join(pensioenlist)
+    else:   #geen flexibilisaties opgeslagen
+        pensioenopties = pensioenlist
     #cel met de drop down datavalisatie
     keuzeCel = "B6"
     #verwijder bestaande datavalidatie uit cel
     uitvoer[keuzeCel].api.Validation.Delete()
     #voeg nieuwe datavalidatie toe aan cel
     uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
-    #maak keuzeveld leeg
+    #vul keuzeveld met eerste opties uit pensioenlist
     uitvoer[keuzeCel].value = pensioenlist[0]
     
