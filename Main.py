@@ -25,113 +25,6 @@ def Schermen():
     window.show()
     app.exec_()
 
-
-
-@xw.sub
-def vergelijken_afbeelding_generatie():
-    """
-    Functie die de data leest en vevolgens een afbeelding genereerd op basis van de data
-    """
-    
-    #sheets en book opslaan in variabelen
-    book = xw.Book.caller()
-    invoer = book.sheets["Tijdelijk afbeelding"]
-    uitvoer = book.sheets["Vergelijken"]
-    
-    #data lezen
-    titel = (3,1)
-    
-    beginrij = 5
-    OPbeginkolom = 2
-    blokafstand = 7
-    
-    PPbeginkolom = 5
-    PPblokafstand = 3
-    
-    PPnaam = 0
-    PPjaarbedrag = 1
-    
-    OPnaam = 0
-    OPkleur = 1
-    OPbeginjaar = 2
-    OPjaarbedrag = 3
-    OPhooglaaggrens = 4
-    OPverhouding = 5
-    
-    #Aantal blokken tellen
-    blokaantal = functions.blokkentellen(beginrij, OPbeginkolom, blokafstand, invoer)
-    PPblokaantal = functions.blokkentellen(beginrij, PPbeginkolom, PPblokafstand, invoer)
-
-    #Lijst met alle voorkomende jaren van OP
-    allejaren = set()
-    for blok in range(blokaantal):
-        allejaren.add(invoer.range((beginrij + OPbeginjaar + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
-        allejaren.add(invoer.range((beginrij + OPhooglaaggrens + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
-    
-    #geeft de breedte aan van alle hoogtes
-    randen = list(allejaren)
-    randen.sort()
-    randen.append(randen[-1] + 10)
-    
-    #een lijst met alle verzekeringsnamen
-    naamlijst = list()
-    for blok in range(blokaantal): naamlijst.append(invoer.range((beginrij + OPnaam + blok * blokafstand, OPbeginkolom)).value)
-    
-    #bepaald de kleuren
-    kleuren = list()
-    for blok in range(blokaantal): kleuren.append(functions.kleurinvoer(invoer.range((beginrij + OPkleur + blok * blokafstand, OPbeginkolom)).value))
-
-    #berekent de hoogte van elke staaf
-    hoogtes = [[0 for i in range(len(randen)-1)]]
-    ywaardes = set()
-    # ywaardes.add(0)
-    
-    # for blok in range(blokaantal):
-    #     startjaar = float(invoer.range((beginrij + OPbeginjaar + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
-    #     toezegging = float(invoer.range((beginrij + OPjaarbedrag + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
-    #     laaghoogverhouding = float(invoer.range((beginrij + OPverhouding + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
-    #     alternatiefjaar = float(invoer.range((beginrij + OPhooglaaggrens + blok * blokafstand, OPbeginkolom)).options(numbers = float).value)
-        
-    #     hoogtes.append(list())
-
-    #     for i, leeftijd in enumerate(randen[:-1]):
-    #         if leeftijd >= alternatiefjaar:
-    #             bedrag = float(hoogtes[blok][i] + toezegging * laaghoogverhouding)
-    #             hoogtes[blok+1].append(bedrag)
-    #             ywaardes.add(bedrag)
-    #         elif leeftijd >= startjaar:
-    #             bedrag = float(hoogtes[blok][i] + toezegging)
-    #             hoogtes[blok+1].append(bedrag)
-    #             ywaardes.add(bedrag)
-    #         else: hoogtes[blok+1].append(hoogtes[blok][i])
-    # ywaardes = list(ywaardes)
-    # ywaardes.sort()
-
-    # #bereken PP
-    # PPtotaal = 0
-    # for blok in range(PPblokaantal):
-    #     PPtotaal += float(invoer.range((beginrij + PPjaarbedrag + blok * PPblokaantal, PPbeginkolom)).options(numbers = float).value)
-        
-
-
-    # #maak de afbeeling
-    # afbeelding = plt.figure()
-    # for i in range(len(hoogtes) - 1):
-    #     plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
-    
-    # plt.xticks(randen[:-1], [functions.getaltotijd(rand) for rand in randen[:-1]])
-    # plt.setp(plt.gca().get_xticklabels(), rotation=30, horizontalalignment='right')
-    # plt.yticks(ywaardes, [functions.getaltogeld(ywaarde) for ywaarde in ywaardes])
-
-    # handles, labels = plt.gca().get_legend_handles_labels()
-    # order = range(blokaantal-1, -1, -1)
-    # plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order]) 
-    
-    # plt.gca().set_title("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
-    # plt.suptitle(invoer.range(titel).value, fontweight='bold')
-    
-    
-    # uitvoer.pictures.add(afbeelding, top = uitvoer.range((3,3)).top, left = uitvoer.range((3,3)).left, height = 300, name = "testnaam")
     
     
 @xw.sub
@@ -346,55 +239,46 @@ def afbeelding_aanpassen():
                 #met properties flexibilisaties opslaan in objecten flexibilisatie
                 pensioengegevens = opslag[i]
                 #leeftijd aanpassen
-                if pensioengegevens[1] == "J":
+                if pensioengegevens[1] == "Ja":
                     flexibilisatie.leeftijd_Actief = True
-                elif pensioengegevens[1] == "N":
+                elif pensioengegevens[1] == "Nee":
                     flexibilisatie.leeftijd_Actief = False
                 flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
                 flexibilisatie.leeftijdMaand = int(float(pensioengegevens[3]))
                 
                 #uitruilen
-                if pensioengegevens[4] == "J":
+                if pensioengegevens[4] == "Ja":
                     flexibilisatie.OP_PP_Actief = True
-                elif pensioengegevens[4] == "N":
+                elif pensioengegevens[4] == "Nee":
                     flexibilisatie.OP_PP_Actief = False
                     #volgorde
-                if pensioengegevens[5] == "OP/PP": flexibilisatie.OP_PP_UitruilenVan = "OP naar PP"
-                elif pensioengegevens[5] == "PP/OP": flexibilisatie.OP_PP_UitruilenVan = "PP naar OP"
+                flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[5]
                     #methode
-                if pensioengegevens[6] == "Verh":
-                    flexibilisatie.OP_PP_Methode = "Verhouding"
+                flexibilisatie.OP_PP_Methode = pensioengegevens[6]
+                if pensioengegevens[6] == "Verhouding":
                     flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
                     flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
-                elif pensioengegevens[6] == "Perc":
-                    flexibilisatie.OP_PP_Methode = "Percentage"
+                elif pensioengegevens[6] == "Percentage":
                     flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
                 
-                flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[6]
-                
-                
-                flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
                 
                 #hoog-laag-constructie
-                if pensioengegevens[9] == "J":
+                if pensioengegevens[9] == "Ja":
                     flexibilisatie.HL_Actief = True
-                elif pensioengegevens[9] == "N":
+                elif pensioengegevens[9] == "Nee":
                     flexibilisatie.HL_Actief = False
                     #volgorde
-                if pensioengegevens[10] == "Hoog/Laag": flexibilisatie.HL_Volgorde = "Hoog-laag"
-                elif pensioengegevens[10] == "Laag/Hoog": flexibilisatie.HL_Volgorde = "Laag-hoog"
+                flexibilisatie.HL_Volgorde = pensioengegevens[10]
                     #duur
                 flexibilisatie.HL_Jaar = int(float(pensioengegevens[11]))
                     #methode
-                if pensioengegevens[12] == "Verh":
-                    flexibilisatie.HL_Methode = "Verhouding"
+                flexibilisatie.HL_Methode = pensioengegevens[12]
+                if pensioengegevens[12] == "Verhouding":
                     flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
                     flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
-                elif pensioengegevens[12] == "Verh":
-                    flexibilisatie.HL_Methode = "Verschil"
+                elif pensioengegevens[12] == "Verschil":
                     flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))
-                elif pensioengegevens[12] == "Opv":
-                    flexibilisatie.HL_Methode = "Opvullen AOW"
+                
                 
     
     
@@ -432,7 +316,35 @@ def NieuweFlexibilisatie():
     window.show()
     app.exec_()
         
+@xw.sub
+def AndereDeelnemer():
+    """
+    Functie die het deelnemerselectie scherm opent
+    """
     
+    #scherm Deelnemerselectie openen
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+    app = 0
+    app = QtWidgets.QApplication(sys.argv)
+    window = Klassen_Schermen.Deelnemerselectie(xw.Book.caller(), logger)
+    window.show()
+    app.exec_()
+    print("deelnemerselectie openen")
+    
+@xw.sub
+def BeheerderskeuzesOpenen():
+    """
+    Functie die het scherm met de beheerderskeuzes opent
+    """
+    
+    #scherm Beheerderkeuzes openen
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+    app = 0
+    app = QtWidgets.QApplication(sys.argv)
+    windowBeheerder = Klassen_Schermen.Beheerderkeuzes(xw.Book.caller(), logger)
+    windowBeheerder.show()
+    app.exec_()
+    print("Beheerderskeuzes openen")
                   
 @xw.sub
 def flexibilisaties_testen():

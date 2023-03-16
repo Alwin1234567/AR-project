@@ -46,7 +46,9 @@ class Deelnemer():
     def pensioenenOpslaan(self, informatie, pensioeninformatie):
         pensioenen = list()
         for pensioen in pensioeninformatie:
-            if pensioen.soortRegeling != "AOW" and pensioen.soortRegeling != "DC":
+            if pensioen.soortRegeling == "AOW":
+                pensioenen.append(Pensioen(pensioen, 0, 0))
+            else:
                 if informatie[1][pensioen.ouderdomsPensioen] != None: 
                     OP = informatie[1][pensioen.ouderdomsPensioen]
                     if pensioen.partnerPensioen == None: PP = 0
@@ -57,7 +59,8 @@ class Deelnemer():
     
     def activeerFlexibilisatie(self):
         flexibilisaties = list()
-        for pensioen in self._pensioenen: flexibilisaties.append(Flexibilisering(pensioen))
+        for pensioen in self._pensioenen: 
+            if pensioen.pensioenSoortRegeling != "AOW": flexibilisaties.append(Flexibilisering(pensioen))
         self._flexibilisaties = flexibilisaties
             
         

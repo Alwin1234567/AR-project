@@ -14,6 +14,7 @@ import os
 from os.path import exists
 import sys
 from string import ascii_uppercase
+import matplotlib.pyplot as plt
 
 """
 Body
@@ -729,51 +730,43 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[0][1] = str(flexibilisatie.pensioen.pensioenNaam)
     
     # Pensioenleeftijd wijzigen J/N
-    if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
-    else: flexopslag[2][1] = "N"
+    if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "Ja"
+    else: flexopslag[2][1] = "Nee"
     
     # Pensioenleeftijd: Jaar & Maand
     flexopslag[3][1] = flexibilisatie.leeftijdJaar
     flexopslag[3][2] = flexibilisatie.leeftijdMaand
     
     # OP/PP Uitruilen wijzigen J/N
-    if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "J"
-    else: flexopslag[5][1] = "N"
+    if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "Ja"
+    else: flexopslag[5][1] = "Nee"
     
     # OP/PP uitruiling opslaan
-    if flexibilisatie.OP_PP_UitruilenVan == "OP naar PP": flexopslag[6][1] = "OP/PP"
-    elif flexibilisatie.OP_PP_UitruilenVan == "PP naar OP": flexopslag[6][1] = "PP/OP"
-    
+    flexopslag[6][1] = flexibilisatie.OP_PP_UitruilenVan
+    #methode opslaan
+    flexopslag[7][1] = flexibilisatie.OP_PP_Methode
     if flexibilisatie.OP_PP_Methode == "Verhouding":
-        flexopslag[7][1] = "Verh"
         flexopslag[8][1] = flexibilisatie.OP_PP_Verhouding_OP
         flexopslag[8][2] = flexibilisatie.OP_PP_Verhouding_PP
     elif flexibilisatie.OP_PP_Methode == "Percentage":
-        flexopslag[7][1] = "Perc"
         flexopslag[8][1] = flexibilisatie.OP_PP_Percentage
-    else:
-        logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
+    #else: logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
     
     # Hoog/Laag constructie opslaan
-    if flexibilisatie.HL_Actief: flexopslag[9][1] = "J"
-    else: flexopslag[10][1] = "N"
+    if flexibilisatie.HL_Actief: flexopslag[9][1] = "Ja"
+    else: flexopslag[10][1] = "Nee"
     
-    if flexibilisatie.HL_Volgorde == "Hoog-laag": flexopslag[11][1] = "Hoog/Laag"
-    elif flexibilisatie.HL_Volgorde == "Laag-hoog": flexopslag[11][1] = "Laag/Hoog"
+    flexopslag[11][1] = flexibilisatie.HL_Volgorde
     
     flexopslag[12][1] = flexibilisatie.HL_Jaar
     
+    flexopslag[13][1] = flexibilisatie.HL_Methode
     if flexibilisatie.HL_Methode == "Verhouding":
-        flexopslag[13][1] = "Verh"
         flexopslag[14][1] = flexibilisatie.HL_Verhouding_Hoog
         flexopslag[15][2] = flexibilisatie.HL_Verhouding_Laag
     elif flexibilisatie.HL_Methode == "Verschil":
-        flexopslag[13][1] = "Verh"
         flexopslag[14][1] = flexibilisatie.HL_Verschil
-    elif flexibilisatie.HL_Methode == "Opvullen AOW":
-        flexopslag[13][1] = "Opv"
-    else:
-        logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
+    #else: logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
     
     # Nieuwe OP en PP opslaan
     flexopslag[16][1] = "OP Onbekend"
@@ -785,6 +778,55 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     # Waardes in sheet plakken & celkleur instellen
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
+    
+    
+    # # Pensioenleeftijd wijzigen J/N
+    # if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
+    # else: flexopslag[2][1] = "N"
+    
+    # # Pensioenleeftijd: Jaar & Maand
+    # flexopslag[3][1] = flexibilisatie.leeftijdJaar
+    # flexopslag[3][2] = flexibilisatie.leeftijdMaand
+    
+    # # OP/PP Uitruilen wijzigen J/N
+    # if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "J"
+    # else: flexopslag[5][1] = "N"
+    
+    # # OP/PP uitruiling opslaan
+    # if flexibilisatie.OP_PP_UitruilenVan == "OP naar PP": flexopslag[6][1] = "OP/PP"
+    # elif flexibilisatie.OP_PP_UitruilenVan == "PP naar OP": flexopslag[6][1] = "PP/OP"
+    
+    # if flexibilisatie.OP_PP_Methode == "Verhouding":
+    #     flexopslag[7][1] = "Verh"
+    #     flexopslag[8][1] = flexibilisatie.OP_PP_Verhouding_OP
+    #     flexopslag[8][2] = flexibilisatie.OP_PP_Verhouding_PP
+    # elif flexibilisatie.OP_PP_Methode == "Percentage":
+    #     flexopslag[7][1] = "Perc"
+    #     flexopslag[8][1] = flexibilisatie.OP_PP_Percentage
+    # else:
+    #     logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
+    
+    # # Hoog/Laag constructie opslaan
+    # if flexibilisatie.HL_Actief: flexopslag[9][1] = "J"
+    # else: flexopslag[10][1] = "N"
+    
+    # if flexibilisatie.HL_Volgorde == "Hoog-laag": flexopslag[11][1] = "Hoog/Laag"
+    # elif flexibilisatie.HL_Volgorde == "Laag-hoog": flexopslag[11][1] = "Laag/Hoog"
+    
+    # flexopslag[12][1] = flexibilisatie.HL_Jaar
+    
+    # if flexibilisatie.HL_Methode == "Verhouding":
+    #     flexopslag[13][1] = "Verh"
+    #     flexopslag[14][1] = flexibilisatie.HL_Verhouding_Hoog
+    #     flexopslag[15][2] = flexibilisatie.HL_Verhouding_Laag
+    # elif flexibilisatie.HL_Methode == "Verschil":
+    #     flexopslag[13][1] = "Verh"
+    #     flexopslag[14][1] = flexibilisatie.HL_Verschil
+    # elif flexibilisatie.HL_Methode == "Opvullen AOW":
+    #     flexopslag[13][1] = "Opv"
+    # else:
+    #     logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
+    
 
 def UitlezenFlexopslag(book, naamFlex):
     """
@@ -951,50 +993,19 @@ def berekeningen_init(sheet, deelnemer, logger):
         blok.append(["Naam", flexibilisatie.pensioen.pensioenVolNaam, "", ""])
         if flexibilisatie.leeftijd_Actief: blok.append(["Start Pensioenjaar", flexibilisatie.leeftijdJaarMaand, "", ""])
         else: blok.append(["Start Pensioenjaar", flexibilisatie.pensioen.pensioenleeftijd, "", ""])
-        # if flexibilisatie.OP_PP_Actief:
-        #     rij1 = list()
-        #     rij2 = list()
-        #     rij1.append("Uitruilen soort")
-        #     rij2.append("Uitruilen waarde")
-        #     if flexibilisatie.OP_PP_Methode == "Percentage":
-        #         rij1.append("{} {}".format(flexibilisatie.OP_PP_UitruilenVan, flexibilisatie.OP_PP_Methode))
-        #         rij2.append(flexibilisatie.OP_PP_Percentage)
-        #         rij2.append("")
-        #     else:
-        #         rij1.append(flexibilisatie.OP_PP_Methode)
-        #         rij2.append("1")
-        #         rij2.append(flexibilisatie.OP_PP_Verhouding_PP / flexibilisatie.OP_PP_Verhouding_OP)
-        #     rij1.append("")
-        #     rij1.append("")
-        #     rij2.append("")
-        #     blok.append(rij1)
-        #     blok.append(rij2)
-        # else:
+        
         blok.append(["Uitruilen soort", "", "", ""])
         blok.append(["Uitruilen waarde", "", "", '=IF(B{0} = "OP naar PP Percentage", (0.7 * B{1}  - C{1})  / ((0.7 + B{2} / B{3}) * B{1}), "")'.format(blokhoogte + 2, blokhoogte + 8, blokhoogte + 12, blokhoogte + 14)])
         
-        # if flexibilisatie.HL_Actief:
-        #     blok.append(["Hoog Laag", flexibilisatie.HL_Methode, "", ""])
-        #     rij = list()
-        #     rij.append("Hoog Laag waarde")
-        #     rij.append(flexibilisatie.HL_Jaar)
-        #     if flexibilisatie.HL_Methode == "Verhouding":
-        #         if flexibilisatie.HL_Volgorde == "Hoog-laag": rij.append(flexibilisatie.HL_Verhouding_Laag / flexibilisatie.HL_Verhouding_Hoog)
-        #         else: rij.append(flexibilisatie.HL_Verhouding_Hoog / flexibilisatie.HL_Verhouding_Laag) 
-        #     else:
-        #         if flexibilisatie.HL_Volgorde == "Hoog-laag": rij.append(flexibilisatie.HL_Verschil)
-        #         else: rij.append(-1 * flexibilisatie.HL_Verschil) 
-        #     rij.append("")
-        #     blok.append(rij)
-        # else:
         blok.append(["Hoog Laag", "", "", ""])
         blok.append(["Hoog Laag waarde", "", "", '=IF(B{0} = "Verschil", IF(C{0} = "Hoog-laag", (B{1} * B{2}) / (4 * B{2} - B{3}), (B{1} * B{2}) / (4 * B{2} - B{4})), "")'.format(blokhoogte + 4, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16)])    
         
         blok.append(["", "", "", ""])
         
-        blok.append(["OP en PP Origineel", flexibilisatie.pensioen.ouderdomsPensioen, flexibilisatie.pensioen.partnerPensioen, "=B{0} * B{1} + C{0} * B{2}".format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 13)])
-        blok.append(["OP en PP na Uitstellen", '=B{0} * B{1} / B{2}'.format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 12),\
-                     '=C{0} * B{1} / B{2}'.format(blokhoogte + 7, blokhoogte + 13, blokhoogte + 14), "formuletekst"])
+        if flexibilisatie.pensioen.pensioenSoortRegeling == "DC": blok.append(["OP en PP Origineel", "=ROUND(D{0} / B{1}, 0)".format(blokhoogte + 7, blokhoogte + 11), "0", flexibilisatie.pensioen.koopsom])
+        else: blok.append(["OP en PP Origineel", flexibilisatie.pensioen.ouderdomsPensioen, flexibilisatie.pensioen.partnerPensioen, "=B{0} * B{1} + C{0} * B{2}".format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 13)])
+        blok.append(["OP en PP na Uitstellen", '=ROUND(B{0} * B{1} / B{2}, 0)'.format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 12),\
+                     '=ROUND(C{0} * B{1} / B{2}, 0)'.format(blokhoogte + 7, blokhoogte + 13, blokhoogte + 14), "formuletekst"])
         blok.append(["OP en PP na uitruilen", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - MIN(B{2}, D{2})), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
                      '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * MIN(B{2}, D{2}) * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8), "formuletekst"])
         blok.append(["Op en PP met hoog laag", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{2} + IF(C{0} = "Hoog-laag", MIN(C{1}, D{1}) * B{4}, MIN(C{1}, D{1}) * B{5}) / B{3}, 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16),\
@@ -1169,7 +1180,7 @@ def leesOPPP(sheet, flexibilisaties):
         flexibilisatie.ouderdomsPensioenLaag = OPL
     
 
-def maak_afbeelding(flexibilisaties, ax):
+def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0):
     """
     Maakt de afbeelding in het flexscherm.
 
@@ -1186,11 +1197,18 @@ def maak_afbeelding(flexibilisaties, ax):
 
     """
     
+    # verkrijg AOW
+    AOW = None
+    for pensioen in deelnemer.pensioenen:
+        if pensioen.pensioenSoortRegeling == "AOW": 
+            AOW = pensioen
+            break
     # Lijst met alle voorkomende jaren van OP
     allejaren = set()
-    for flexibilisatie in flexibilisaties:
-        allejaren.add(flexibilisatie.pensioen.pensioenleeftijd)
+    if AOW != None: allejaren.add(AOW.pensioenleeftijd)
+    for flexibilisatie in deelnemer.flexibilisaties:
         if flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12)
+        else: allejaren.add(flexibilisatie.pensioen.pensioenleeftijd)
         if flexibilisatie.HL_Actief: 
             if flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12 + flexibilisatie.HL_Jaar)
             else: allejaren.add(flexibilisatie.pensioen.pensioenleeftijd + flexibilisatie.HL_Jaar)
@@ -1201,18 +1219,34 @@ def maak_afbeelding(flexibilisaties, ax):
     
     # een lijst met alle verzekeringsnamen
     naamlijst = list()
-    for flexibilisatie in flexibilisaties: naamlijst.append(flexibilisatie.pensioen.pensioenVolNaam) 
+    if AOW != None: naamlijst.append(AOW.pensioenNaam)
+    for flexibilisatie in deelnemer.flexibilisaties: naamlijst.append(flexibilisatie.pensioen.pensioenVolNaam) 
     
     # bepaald de kleuren
     kleuren = list()
-    for flexibilisatie in flexibilisaties: kleuren.append(tuple([kleur / 255 for kleur in flexibilisatie.pensioen.pensioenKleurHard]))
+    if AOW != None: kleuren.append(tuple([kleur / 255 for kleur in AOW.pensioenKleurHard]))
+    for flexibilisatie in deelnemer.flexibilisaties: kleuren.append(tuple([kleur / 255 for kleur in flexibilisatie.pensioen.pensioenKleurHard]))
     
     #berekent de hoogte van elke staaf
     hoogtes = [[0 for i in range(len(randen)-1)]]
     ywaardes = set()
     ywaardes.add(0)
     
-    for i, flexibilisatie in enumerate(flexibilisaties):
+    #AOW toevoegen
+    if AOW != None:
+        hoogtes.append(list())
+        startjaar = AOW.pensioenleeftijd
+        for j, leeftijd in enumerate(randen[:-1]):
+            if leeftijd < startjaar: hoogtes[1].append(hoogtes[0][j])
+            else: 
+                if deelnemer.burgelijkeStaat == "Samenwonend": bedrag = float(hoogtes[0][j] + AOW.samenwondendAOW)
+                else: bedrag = float(hoogtes[0][j] + AOW.alleenstaandAOW)
+                hoogtes[1].append(bedrag)
+                ywaardes.add(bedrag)
+    
+    # De flexibilisaties toevoegen
+    for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
+        if AOW != None: i += 1
         if flexibilisatie.leeftijd_Actief: startjaar = flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12
         else: startjaar = flexibilisatie.pensioen.pensioenleeftijd
         aanspraakHoog = flexibilisatie.ouderdomsPensioenHoog
@@ -1243,24 +1277,45 @@ def maak_afbeelding(flexibilisaties, ax):
     
     # bereken PP
     PPtotaal = 0
-    for flexibilisatie in flexibilisaties: PPtotaal += flexibilisatie.partnerPensioen
+    for flexibilisatie in deelnemer.flexibilisaties: PPtotaal += flexibilisatie.partnerPensioen
     
+    # maak titel
+    titel = "Een super coole title"
     # maak de afbeeling
-    ax.clear()
-    for i in range(len(hoogtes) - 1):
-        ax.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
+    if ax != None:
+        ax.clear()
+        for i in range(len(hoogtes) - 1): ax.stairs(hoogtes[i+1], edges = randen, baseline = hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
+        
+        ax.set_xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
+        ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation=30, horizontalalignment='right')
+        ax.set_yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
     
-    ax.set_xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
-    ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation=30, horizontalalignment='right')
-    ax.set_yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
+        handles, labels = ax.get_legend_handles_labels()
+        if AOW != None: order = range(len(deelnemer.flexibilisaties), -1, -1)
+        else: order = range(len(deelnemer.flexibilisaties) - 1, -1, -1)
+        ax.legend(handles = [handles[idx] for idx in order], labels = [labels[idx] for idx in order]) 
+    
+        ax.set_xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
+        ax.set_title(titel, fontweight='bold')
+    
+    if sheet != None:
+        locatie = sheet.range((11,1))
+        afbeelding = plt.figure()
+        for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
+        
+        plt.xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
+        plt.setp(plt.gca().get_xticklabels(), rotation=30, horizontalalignment='right')
+        plt.yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
 
-    handles, labels = ax.get_legend_handles_labels()
-    order = range(len(flexibilisaties) - 1, -1, -1)
-    ax.legend(handles = [handles[idx] for idx in order],labels = [labels[idx] for idx in order]) 
-
-    ax.set_xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
-    ax.set_title("naam", fontweight='bold')
-
+        handles, labels = plt.gca().get_legend_handles_labels()
+        if AOW != None: order = range(len(deelnemer.flexibilisaties), -1, -1)
+        else: order = range(len(deelnemer.flexibilisaties) - 1, -1, -1)
+        plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order]) 
+        
+        plt.suptitle(titel, fontweight='bold')
+        plt.xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
+        
+        sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = ID)
 
 
 def vergelijken_keuzes():
