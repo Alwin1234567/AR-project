@@ -14,6 +14,7 @@ import os
 from os.path import exists
 import sys
 from string import ascii_uppercase
+import matplotlib.pyplot as plt
 
 """
 Body
@@ -749,8 +750,7 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
         flexopslag[8][2] = flexibilisatie.OP_PP_Verhouding_PP
     elif flexibilisatie.OP_PP_Methode == "Percentage":
         flexopslag[8][1] = flexibilisatie.OP_PP_Percentage
-    #else:
-        #logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
+    #else: logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
     
     # Hoog/Laag constructie opslaan
     if flexibilisatie.HL_Actief: flexopslag[9][1] = "Ja"
@@ -766,8 +766,7 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
         flexopslag[15][2] = flexibilisatie.HL_Verhouding_Laag
     elif flexibilisatie.HL_Methode == "Verschil":
         flexopslag[14][1] = flexibilisatie.HL_Verschil
-    #else:
-        #logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
+    #else: logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
     
     # Nieuwe OP en PP opslaan
     flexopslag[16][1] = "OP Onbekend"
@@ -1181,7 +1180,7 @@ def leesOPPP(sheet, flexibilisaties):
         flexibilisatie.ouderdomsPensioenLaag = OPL
     
 
-def maak_afbeelding(deelnemer, ax):
+def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0):
     """
     Maakt de afbeelding in het flexscherm.
 
@@ -1280,23 +1279,43 @@ def maak_afbeelding(deelnemer, ax):
     PPtotaal = 0
     for flexibilisatie in deelnemer.flexibilisaties: PPtotaal += flexibilisatie.partnerPensioen
     
+    # maak titel
+    titel = "Een super coole title"
     # maak de afbeeling
-    ax.clear()
-    for i in range(len(hoogtes) - 1):
-        ax.stairs(hoogtes[i+1], edges = randen, baseline = hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
+    if ax != None:
+        ax.clear()
+        for i in range(len(hoogtes) - 1): ax.stairs(hoogtes[i+1], edges = randen, baseline = hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
+        
+        ax.set_xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
+        ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation=30, horizontalalignment='right')
+        ax.set_yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
     
-    ax.set_xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
-    ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation=30, horizontalalignment='right')
-    ax.set_yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
+        handles, labels = ax.get_legend_handles_labels()
+        if AOW != None: order = range(len(deelnemer.flexibilisaties), -1, -1)
+        else: order = range(len(deelnemer.flexibilisaties) - 1, -1, -1)
+        ax.legend(handles = [handles[idx] for idx in order], labels = [labels[idx] for idx in order]) 
+    
+        ax.set_xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
+        ax.set_title(titel, fontweight='bold')
+    
+    if sheet != None:
+        locatie = sheet.range((11,1))
+        afbeelding = plt.figure()
+        for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
+        
+        plt.xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
+        plt.setp(plt.gca().get_xticklabels(), rotation=30, horizontalalignment='right')
+        plt.yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
 
-    handles, labels = ax.get_legend_handles_labels()
-    if AOW != None: order = range(len(deelnemer.flexibilisaties), -1, -1)
-    else: order = range(len(deelnemer.flexibilisaties) - 1, -1, -1)
-    ax.legend(handles = [handles[idx] for idx in order], labels = [labels[idx] for idx in order]) 
-
-    ax.set_xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
-    ax.set_title("naam", fontweight='bold')
-
+        handles, labels = plt.gca().get_legend_handles_labels()
+        if AOW != None: order = range(len(deelnemer.flexibilisaties), -1, -1)
+        else: order = range(len(deelnemer.flexibilisaties) - 1, -1, -1)
+        plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order]) 
+        
+        plt.suptitle(titel, fontweight='bold')
+        plt.xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
+        
+        sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = ID)
 
 
 def vergelijken_keuzes():

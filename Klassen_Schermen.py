@@ -436,7 +436,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # Afbeelding genereren
         try:
-            functions.maak_afbeelding(self.deelnemerObject, self.ui.wdt_pltAfbeelding.canvas.ax)
+            functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax)
             self.ui.wdt_pltAfbeelding.canvas.draw()
         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
     
@@ -636,7 +636,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
             self.samenvattingUpdate() # Update de samenvatting
             try: # probeer een nieuwe afbeelding te maken
-                functions.maak_afbeelding(self.deelnemerObject, self.ui.wdt_pltAfbeelding.canvas.ax)
+                functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax)
                 self.ui.wdt_pltAfbeelding.canvas.draw()
             except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
 
@@ -768,8 +768,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 else:
                     self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
                  
-        except Exception as e:
-            self._logger.exception("Huidig geselecteerde hoog/laag flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
+        except Exception as e: self._logger.exception("Huidig geselecteerde hoog/laag flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
 
     def berekenen(self):
         """
@@ -1092,6 +1091,10 @@ class Flexmenu(QtWidgets.QMainWindow):
         if self.invoerCheck() == True:
             nieuwID = self.zoekNieuwID()
             offsetID = len(self.opslaanList)
+            
+            # afbeelding op vergelijkingsSheet zetten
+            try: functions.maak_afbeelding(self.deelnemerObject, sheet = self.book.sheets["Vergelijken"], ID = nieuwID)
+            except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
             
             # Persoonsgegevens opslaan als dit de eerste flexibilisatie is
             if len(self.opslaanList) < 1:
