@@ -429,9 +429,13 @@ def AndereDeelnemer():
     Functie die het deelnemerselectie scherm opent
     """
     
-    #sheet en book opslaan in variabelen
-    book = xw.Book.caller()
-    flexopslag = book.sheets["Flexopslag"] 
+    #scherm Deelnemerselectie openen
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+    app = 0
+    app = QtWidgets.QApplication(sys.argv)
+    window = Klassen_Schermen.Deelnemerselectie(xw.Book.caller(), logger)
+    window.show()
+    app.exec_()
     print("deelnemerselectie openen")
     
 @xw.sub
@@ -440,9 +444,13 @@ def BeheerderskeuzesOpenen():
     Functie die het scherm met de beheerderskeuzes opent
     """
     
-    #sheet en book opslaan in variabelen
-    book = xw.Book.caller()
-    flexopslag = book.sheets["Flexopslag"]  
+    #scherm Beheerderkeuzes openen
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+    app = 0
+    app = QtWidgets.QApplication(sys.argv)
+    windowBeheerder = Klassen_Schermen.Beheerderkeuzes(xw.Book.caller(), logger)
+    windowBeheerder.show()
+    app.exec_()
     print("Beheerderskeuzes openen")
                   
 @xw.sub
