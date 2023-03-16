@@ -749,8 +749,8 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
         flexopslag[8][2] = flexibilisatie.OP_PP_Verhouding_PP
     elif flexibilisatie.OP_PP_Methode == "Percentage":
         flexopslag[8][1] = flexibilisatie.OP_PP_Percentage
-    else:
-        logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
+    #else:
+        #logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
     
     # Hoog/Laag constructie opslaan
     if flexibilisatie.HL_Actief: flexopslag[9][1] = "Ja"
@@ -766,8 +766,8 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
         flexopslag[15][2] = flexibilisatie.HL_Verhouding_Laag
     elif flexibilisatie.HL_Methode == "Verschil":
         flexopslag[14][1] = flexibilisatie.HL_Verschil
-    else:
-        logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
+    #else:
+        #logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
     
     # Nieuwe OP en PP opslaan
     flexopslag[16][1] = "OP Onbekend"

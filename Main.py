@@ -365,7 +365,7 @@ def afbeelding_aanpassen():
                 if pensioengegevens[6] == "Verhouding":
                     flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
                     flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
-                elif pensioengegevens[6] == "Perc":
+                elif pensioengegevens[6] == "Percentage":
                     flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
                 
                 
@@ -423,7 +423,27 @@ def NieuweFlexibilisatie():
     window.show()
     app.exec_()
         
+@xw.sub
+def AndereDeelnemer():
+    """
+    Functie die het deelnemerselectie scherm opent
+    """
     
+    #sheet en book opslaan in variabelen
+    book = xw.Book.caller()
+    flexopslag = book.sheets["Flexopslag"] 
+    print("deelnemerselectie openen")
+    
+@xw.sub
+def BeheerderskeuzesOpenen():
+    """
+    Functie die het scherm met de beheerderskeuzes opent
+    """
+    
+    #sheet en book opslaan in variabelen
+    book = xw.Book.caller()
+    flexopslag = book.sheets["Flexopslag"]  
+    print("Beheerderskeuzes openen")
                   
 @xw.sub
 def flexibilisaties_testen():
