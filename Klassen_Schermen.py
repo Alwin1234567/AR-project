@@ -65,12 +65,10 @@ class Inloggen(QtWidgets.QMainWindow):
         if self.ui.txtBeheerderscode.text() == self._Wachtwoord:
             self._logger.info("Inloggen scherm gesloten")
             self.close()
-            #sheet opslaan in variabelen
-            sheet = self.book.sheets["Beheerder"]
             #Aangeven dat beheerder ingelogd is
-            sheet.cells(1, 1).value = "Beheerder"
-            self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
-            self._windowdeelnemer.show()
+            self.book.sheets["Beheerder"].cells(1, 1).value = "Beheerder"
+            self._windowBeheerder = Beheerderkeuzes(self.book, self._logger)
+            self._windowBeheerder.show()
         else:
             self.ui.lblFoutmeldingInlog.setText("Wachtwoord incorrrect")
     def btnTerugClicked(self):
@@ -78,8 +76,50 @@ class Inloggen(QtWidgets.QMainWindow):
         self._logger.info("Inloggen scherm gesloten")
         self._windowkeus = Functiekeus(self.book, self._logger)
         self._windowkeus.show()
+
+
+class Beheerderkeuzes(QtWidgets.QMainWindow):
+    def __init__(self, book, logger):
+        self._logger = logger
+        self._logger.info("Beheerderkeuzes scherm geopend")
+        Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\Beheerderkeuzes.ui".format(sys.path[0]))
+        super(Beheerderkeuzes, self).__init__()
+        self.book = book
+        self.ui = Ui_MainWindow2()
+        self.ui.setupUi(self)
+        self.setWindowTitle("Beheerderkeuzes")
+        self.ui.btnGegevensWijzigen.clicked.connect(self.btnGegevensWijzigenClicked)
+        self.ui.btnBeheren.clicked.connect(self.btnBeherenClicked)
+        self.ui.btnAdviseren.clicked.connect(self.btnAdviserenClicked)
+        self.ui.btnUitloggen.clicked.connect(self.btnUitloggenClicked)
         
+    def btnGegevensWijzigenClicked(self):
+        self.close()
+        self._logger.info("Beheerderkeuzes scherm gesloten")
+        #self._windowkeus = Functiekeus(self.book, self._logger)
+        #self._windowkeus.show()
+    
+    def btnBeherenClicked(self):
+        self.close()
+        self._logger.info("Beheerderkeuzes scherm gesloten")
+        #self._windowkeus = Functiekeus(self.book, self._logger)
+        #self._windowkeus.show()
         
+    def btnAdviserenClicked(self):
+        self.close()
+        self._logger.info("Beheerderkeuzes scherm gesloten")
+        self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
+        self._windowdeelnemer.show()
+    
+    def btnUitloggenClicked(self):
+        #Aangeven dat beheerder ingelogd is
+        self.book.sheets["Beheerder"].cells(1, 1).value = ""
+        self.close()
+        self._logger.info("Beheerderkeuzes scherm gesloten")
+        self._windowkeus = Functiekeus(self.book, self._logger)
+        self._windowkeus.show()
+
+
 
 class Deelnemerselectie(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
@@ -126,9 +166,13 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
     def btnTerugClicked(self):
         self.close()
         self._logger.info("Deelnemerselectie scherm gesloten")
-        self.windowstart = Functiekeus(self.book, self._logger)
-        #self.windowstart.invoerVerandering() #<-- Waarom staat dit hier?
-        self.windowstart.show()
+        #controleren of beheerder is ingelogd
+        if self.book.sheets["Beheerder"].cells(1, 1).value == "Beheerder":
+            self.windowBeheerder = Beheerderkeuzes(self.book, self._logger)
+            self.windowBeheerder.show()
+        else:
+            self.windowstart = Functiekeus(self.book, self._logger)
+            self.windowstart.show()
     
     def clearError(self): self.ui.lblFoutmeldingKiezen.clear()
         
