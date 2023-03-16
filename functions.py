@@ -1323,7 +1323,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0):
         plt.suptitle(titel, fontweight='bold')
         plt.xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
         
-        sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "vergelijking {}".format(ID))
+        sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         
 
 def vergelijken_keuzes():
