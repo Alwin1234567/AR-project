@@ -269,6 +269,19 @@
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="btnAOWleeftijd">
+     <property name="geometry">
+      <rect>
+       <x>264</x>
+       <y>102</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>AOW-leeftijd</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_OP_PP">
     <property name="geometry">
@@ -1842,7 +1855,7 @@
      <x>0</x>
      <y>0</y>
      <width>1033</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
