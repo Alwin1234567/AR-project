@@ -826,7 +826,23 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     #     flexopslag[13][1] = "Opv"
     # else:
     #     logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
+
+def FlexopslagVinden(book, naamFlex):
+    #sheet definiëren
+    flexopslag = book.sheets["Flexopslag"]
     
+    #startkolom voor het zoeken van flexibilisatie
+    zoekKolom = 5
+    #alle blokken langsgaan op zoek naar flexibilisatie met naam naamFlex
+    while str(flexopslag.cells(2,zoekKolom).value) != "None":
+        naam = str(flexopslag.cells(2,zoekKolom).value)
+        if naam == naamFlex:
+            flexKolom = zoekKolom
+        zoekKolom += 4
+    
+    #opzoeken hoeveel pensioenen deze deelnemer heeft
+    aantalPensioenen = blokkentellen(5, flexKolom, 20, flexopslag)
+    return [flexKolom, zoekKolom-4, aantalPensioenen]
 
 def UitlezenFlexopslag(book, naamFlex):
     """
@@ -850,18 +866,9 @@ def UitlezenFlexopslag(book, naamFlex):
     #sheet definiëren
     flexopslag = book.sheets["Flexopslag"]
     
-    #startkolom voor het zoeken van flexibilisatie
-    zoekKolom = 5
-    #alle blokken langsgaan op zoek naar flexibilisatie met naam naamFlex
-    while str(flexopslag.cells(2,zoekKolom).value) != "None":
-        naam = str(flexopslag.cells(2,zoekKolom).value)
-        if naam == naamFlex:
-            flexKolom = zoekKolom
-            break   #stop met while loop na vinden van juiste kolom
-        zoekKolom += 4
-    
-    #opzoeken hoeveel pensioenen deze deelnemer heeft
-    aantalPensioenen = blokkentellen(5, flexKolom, 20, flexopslag)
+    opslag = FlexopslagVinden(book, naamFlex)
+    flexKolom = opslag[0]
+    aantalPensioenen = opslag[2]
     
     flexgegevens = []
     rij = 0
@@ -869,7 +876,7 @@ def UitlezenFlexopslag(book, naamFlex):
         #lijst met gegevens van 1 pensioen aanmaken
         #pensioen = [pensioenfonds, wijzigen, leeftijd-jaar, leeftijd-maand, uitruilen, volgorde, methode, verhouding/percentage,
         #hoog/laag, volgorde, duur, methode, vers/verh/opvullen, OP, PP, kleur]
-        pensioen = []
+        pensioen = [] #list(range(18))
         pensioen.append(str(flexopslag.cells(rij+5 ,flexKolom).value))       #0  pensioenfonds
         pensioen.append(str(flexopslag.cells(rij+7 ,flexKolom).value))       #1  wijzigen J/N
         pensioen.append(str(flexopslag.cells(rij+8 ,flexKolom).value))       #2  pensioenleeftijd-jaar

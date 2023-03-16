@@ -183,6 +183,7 @@ def AfbeeldingKiezen():
     #naam van gekozen afbeelding op sheet printen
     sheet.cells(8, "M").value = gekozenAfbeelding
     
+    
 
 @xw.sub
 def AfbeeldingVerwijderen():
@@ -192,17 +193,38 @@ def AfbeeldingVerwijderen():
     
     #sheets en book opslaan in variabelen
     book = xw.Book.caller()
-    sheet = book.sheets["Vergelijken"]
+    Vergelijken = book.sheets["Vergelijken"]
+    Opslag = book.sheets["Flexopslag"]
     #gekozen afbeelding inlezen
-    gekozenAfbeelding = sheet.cells(6,"B").value
+    gekozenAfbeelding = Vergelijken.cells(6,"B").value
     #naam van gekozen afbeelding op sheet printen
-    sheet.cells(11, "M").value = gekozenAfbeelding
+    Vergelijken.cells(11, "M").value = gekozenAfbeelding
     
     #ID van de gekozen afbeelding opzoeken
     ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
     
     #gekozen afbeelding verwijderen
-    sheet.pictures[ID].delete()
+    try:
+        Vergelijken.pictures[ID].delete()
+    except:
+        functions.Mbox("fout", "afbeelding verwijderen lukt niet", 0)
+    
+    #tellen hoeveel opgeslagen flexibiliseringen en hoeveel pensioenen
+    Flexopslag = functions.FlexopslagVinden(xw.Book.caller(), gekozenAfbeelding)
+    
+    startKolom = Flexopslag[0]
+    laatsteKolom = Flexopslag[1]
+    aantalPensioenen = Flexopslag[2]
+    rijen = aantalPensioenen*20 + 4
+    #verwijderen gegevens verwijderde flexibilisatie
+    Opslag.range((1,startKolom-1),(rijen,startKolom+1)).clear_contents()
+    #flexibilisaties na verwijderde blok opschuiven
+    Opslag.cells(1,startKolom-1).value = Opslag.range((1,startKolom+3),(rijen,laatsteKolom-3)).value
+    #laatste kolom verwijderen
+    Opslag.range((1,laatsteKolom-1),(rijen,laatsteKolom+1)).clear()
+    
+    #drop down op vergelijkingssheet updaten
+    functions.vergelijken_keuzes()
 
 @xw.sub
 def afbeelding_aanpassen():

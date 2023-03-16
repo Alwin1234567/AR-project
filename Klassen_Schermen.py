@@ -1110,7 +1110,11 @@ class Flexmenu(QtWidgets.QMainWindow):
             # Flexibilisatiekeuzes opslaan in Excel
             for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
                 functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,offsetID,regelingCount) 
-                
+            
+            #melding geven dat flexibilisatie opgeslagen is
+            tekst = "Deze flexibilisatie is opgeslagen. \nU kunt nu verder flexibiliseren. \nMet de knop 'Vergelijken' kunt u uw opgeslagen flexibilisaties vergelijken."
+            functions.Mbox("Flexibilisatie opgeslagen", tekst, 0)
+            
             self.opslaanList.append(nieuwID)
             self.opslaanCount += 1
             
