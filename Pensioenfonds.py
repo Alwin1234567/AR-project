@@ -41,7 +41,6 @@ class Pensioenfonds():
         if type(self._opmerking) == str: reduced = self._opmerking.replace(",", ".").split("; ")
         else: reduced = str()
         if self._soortRegeling == "AOW": self.setvars(0, 0, 0, float(reduced[0]), float(reduced[1]))
-        elif self._soortRegeling == "DC": self.setvars(0, 0, OPenPP[0], 0, 0)
         else: self.setvars(OPenPP[0], OPenPP[1], 0, 0, 0)
             
     def setvars(self, OP, PP, koopsom, alleenstaand, samenwonend):
@@ -59,6 +58,7 @@ class Pensioenfonds():
         elif self._naam == "NN OP67": self._volNaam = "Nationale Nederlanden 67"
         elif self._naam == "PF VLC OP68": self._volNaam = "Pensioenfonds VLC 68"
         elif self._naam == "AOW": self._volnaam = "AOW"
+        else: print(self._naam)
             
     @property
     def pensioenVolNaam(self): return self._volNaam
@@ -98,9 +98,6 @@ class Pensioenfonds():
     
     @property
     def partnerPensioen(self): return self._partnerPensioen
-    
-    @property
-    def koopsom(self): return self._koopsom
     
     @property
     def alleenstaandAOW(self): return self._alleenstaandAOW
