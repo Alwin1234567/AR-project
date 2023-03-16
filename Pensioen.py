@@ -20,11 +20,20 @@ class Pensioen():
         Het PP bedrag van de deelnemer bij dit pensioen, kan ook 0 zijn.
     """
     
-    def __init__(self, pensioen, OP, PP):
+    def __init__(self, pensioen, kolom1, kolom2):
         self._pensioen = pensioen
-        self._OP = OP
-        self._PP = PP
-        
+        if self._pensioen.soortRegeling == "DC":
+            self._OP = 0
+            self._PP = 0
+            self._koopsom = kolom1
+        elif self._pensioen.soortRegeling != "AOW":
+            self._OP = kolom1
+            self._PP = kolom2
+            self._koopsom = 0
+        else:
+            self._OP = 0
+            self._PP = 0
+            self._koopsom = 0
     @property
     def pensioenVolNaam(self):
         return self._pensioen.pensioenVolNaam
@@ -36,29 +45,40 @@ class Pensioen():
     def pensioenSoortRegeling(self): return self._pensioen.soortRegeling
     
     @property
-    def pensioenleeftijd(self):
-        return self._pensioen.pensioenleeftijd
+    def pensioenleeftijd(self): return self._pensioen.pensioenleeftijd
     
     @property
-    def rente(self):
-        return self._pensioen.rente
+    def rente(self): return self._pensioen.rente
     
     @property
-    def sterftetafel(self):
-        return self._pensioen.sterftetafel
+    def sterftetafel(self): return self._pensioen.sterftetafel
     
     @property
-    def pensioenKleurZacht(self):
-        return self._pensioen.kleurZacht
+    def opbouwpercentage(self): return self._pensioen.opbouwpercentage
     
     @property
-    def pensioenKleurHard(self):
-        return self._pensioen.kleurHard
+    def franchise(self): return self._pensioen.franchise
     
     @property
-    def ouderdomsPensioen(self):
-        return self._OP
+    def opmerking(self): return self._pensioen.opmerking
     
     @property
-    def partnerPensioen(self):
-        return self._PP
+    def pensioenKleurZacht(self): return self._pensioen.kleurZacht
+    
+    @property
+    def pensioenKleurHard(self): return self._pensioen.kleurHard
+    
+    @property
+    def ouderdomsPensioen(self): return self._OP
+    
+    @property
+    def partnerPensioen(self): return self._PP
+    
+    @property
+    def koopsom(self): return self._koopsom
+    
+    @property
+    def alleenstaandAOW(self): return self._pensioen.alleenstaandAOW
+    
+    @property
+    def samenwondendAOW(self): return self._pensioen.samenwondendAOW

@@ -436,7 +436,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # Afbeelding genereren
         try:
-            functions.maak_afbeelding(self.deelnemerObject.flexibilisaties, self.ui.wdt_pltAfbeelding.canvas.ax)
+            functions.maak_afbeelding(self.deelnemerObject, self.ui.wdt_pltAfbeelding.canvas.ax)
             self.ui.wdt_pltAfbeelding.canvas.draw()
         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
     
@@ -636,7 +636,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
             self.samenvattingUpdate() # Update de samenvatting
             try: # probeer een nieuwe afbeelding te maken
-                functions.maak_afbeelding(self.deelnemerObject.flexibilisaties, self.ui.wdt_pltAfbeelding.canvas.ax)
+                functions.maak_afbeelding(self.deelnemerObject, self.ui.wdt_pltAfbeelding.canvas.ax)
                 self.ui.wdt_pltAfbeelding.canvas.draw()
             except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
 
