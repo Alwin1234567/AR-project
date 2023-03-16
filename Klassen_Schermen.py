@@ -65,6 +65,10 @@ class Inloggen(QtWidgets.QMainWindow):
         if self.ui.txtBeheerderscode.text() == self._Wachtwoord:
             self._logger.info("Inloggen scherm gesloten")
             self.close()
+            #sheet opslaan in variabelen
+            sheet = self.book.sheets["Beheerder"]
+            #Aangeven dat beheerder ingelogd is
+            sheet.cells(1, 1).value = "Beheerder"
             self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
             self._windowdeelnemer.show()
         else:

@@ -17,7 +17,7 @@
    <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="btnAdviseur">
+   <widget class="QPushButton" name="btnAdviseren">
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -57,7 +57,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnBeheerder">
+   <widget class="QPushButton" name="btnGegevensWijzigen">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -78,7 +78,7 @@
      <string>Deelnemersgegevens wijzigen</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnBeheerder_2">
+   <widget class="QPushButton" name="btnBeheren">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -99,7 +99,7 @@
      <string>Beheren</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnBeheerder_3">
+   <widget class="QPushButton" name="btnUitloggen">
     <property name="geometry">
      <rect>
       <x>70</x>
