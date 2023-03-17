@@ -412,7 +412,7 @@ def DeelnemerVinden(book, persoonsgegevens):
     return deelnemerlijst
 
 
-def ToevoegenDeelnemer(gegevens):
+def ToevoegenDeelnemer(gegevens, regel = 0):
     """
     Functie die een deelnemer toevoegt onderaan het deelnemersbestand
     input : lijst met gegevens van de deelnemer
@@ -422,13 +422,14 @@ def ToevoegenDeelnemer(gegevens):
     book = xw.Book.caller()
     deelnemersbestand = book.sheets["deelnemersbestand"]
     
-    #check wat eerstvolgende lege regel is
-    #bereken het aantal deelnemers door het aantal volle rijen na 1e regel te tellen
-    aantalDeelnemers = len(deelnemersbestand.cells(1,1).expand().value)
-    legeRegel = aantalDeelnemers + 1
-     
+    if regel == 0:   #geen specifieke regel meegegeven
+        #check wat eerstvolgende lege regel is
+        #bereken het aantal deelnemers door het aantal volle rijen na 1e regel te tellen
+        aantalDeelnemers = len(deelnemersbestand.cells(1,1).expand().value)
+        regel = aantalDeelnemers + 1
+    
     #gegevens deelnemer invullen in de lege regel
-    deelnemersbestand.cells(legeRegel, 1).value = gegevens
+    deelnemersbestand.cells(regel, 1).value = gegevens
 
 
 def Mbox(title, text, style):

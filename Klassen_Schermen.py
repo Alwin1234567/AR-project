@@ -41,8 +41,12 @@ class Functiekeus(QtWidgets.QMainWindow):
     def btnBeheerderClicked(self): 
         self.close()
         self._logger.info("Functiekeus scherm gesloten")
-        self._windowinlog = Inloggen(self.book, self._logger)
-        self._windowinlog.show()
+        if functions.isBeheerder(self.book):
+            self._windowBeheerder = Beheerderkeuzes(self.book, self._logger)
+            self._windowBeheerder.show()
+        else:
+            self._windowinlog = Inloggen(self.book, self._logger)
+            self._windowinlog.show()
         
 
 
@@ -96,14 +100,13 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
     def btnGegevensWijzigenClicked(self):
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
-        #self._windowkeus = Functiekeus(self.book, self._logger)
-        #self._windowkeus.show()
+        self._windowWijzigen = DeelnemerselectieBeheerder(self.book, self._logger)
+        self._windowWijzigen.show()
     
     def btnBeherenClicked(self):
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
-        #self._windowkeus = Functiekeus(self.book, self._logger)
-        #self._windowkeus.show()
+        
         
     def btnAdviserenClicked(self):
         self.close()
@@ -118,6 +121,11 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self._logger.info("Beheerderkeuzes scherm gesloten")
         self._windowkeus = Functiekeus(self.book, self._logger)
         self._windowkeus.show()
+        functions.Mbox("Uitgelogd", "U bent nu uitgelogd.", 0)
+        #sheets locken en hidden
+        self.book.sheets["Vergelijken"].Locked = True
+        #self.book.sheets["Beheerder"].Protect
+        
 
 
 
@@ -1149,3 +1157,277 @@ class Flexmenu(QtWidgets.QMainWindow):
             
         elif self.invoerCheck() == False:
             self.ui.lbl_opslaanMelding.setText("Opslaan niet mogelijk bij foute invoer.")
+            
+
+class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
+    def __init__(self, book, logger):
+        self._logger = logger
+        self._logger.info("DeelnemerselectieBeheerder scherm geopend")
+        Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
+        super(DeelnemerselectieBeheerder, self).__init__()
+        self.book = book
+        self.ui = Ui_MainWindow3()
+        self.ui.setupUi(self)
+        self.setWindowTitle("Deelnemerselectie")
+        self.deelnemerlijst = functions.getDeelnemersbestand(self.book)
+        self.kleinDeelnemerlijst = list()
+        #naam button aanpassen
+        self.ui.btnStartFlexibiliseren.setText("Gegevens wijzigen")
+        #button deelnemer toevoegen verbergen
+        self.ui.btnDeelnemerToevoegen.hide()
+        #buttons connecten
+        self.ui.btnStartFlexibiliseren.clicked.connect(self.btnGegevensWijzigenClicked)
+        self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
+        self.ui.sbDag.valueChanged.connect(lambda: self.onChange(False))
+        self.ui.sbMaand.valueChanged.connect(lambda: self.onChange(True))
+        self.ui.sbJaar.valueChanged.connect(lambda: self.onChange(True))
+        self.ui.txtVoorletters.textChanged.connect(lambda: self.onChange(False))
+        self.ui.txtTussenvoegsel.textChanged.connect(lambda: self.onChange(False))
+        self.ui.txtAchternaam.textChanged.connect(lambda: self.onChange(False))
+        self.ui.cbGeslacht.currentTextChanged.connect(lambda: self.onChange(False))
+        self.ui.lwKeuzes.currentItemChanged.connect(self.clearError)
+        
+    
+    def btnGegevensWijzigenClicked(self):
+        if self.ui.lwKeuzes.currentRow() == -1: 
+            self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren voordat u gaat flexibiliseren")
+            return
+        
+        #nieuwe deelnemer aanmaken
+        deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
+        deelnemer.activeerFlexibilisatie()
+        self.close()
+        self._logger.info("DeelnemerselectieBeheerder scherm gesloten")
+        self._windowWijzigen = DeelnemerWijzigen(self.book, self._logger, deelnemer)
+        self._windowWijzigen.show()
+        
+        
+    def btnTerugClicked(self):
+        self.close()
+        self._logger.info("DeelnemerselectieBeheerder scherm gesloten")
+        #controleren of beheerder is ingelogd
+        if functions.isBeheerder(self.book):
+            self.windowBeheerder = Beheerderkeuzes(self.book, self._logger)
+            self.windowBeheerder.show()
+        else:
+            self.windowstart = Functiekeus(self.book, self._logger)
+            self.windowstart.show()
+    
+    def clearError(self): self.ui.lblFoutmeldingKiezen.clear()
+        
+    def onChange(self, datumChange):
+        if datumChange: functions.maanddag(self)
+        kleinDeelnemerlijst = self.deelnemerlijst
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, self.ui.txtVoorletters.text(), "voorletters")
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, self.ui.txtTussenvoegsel.text(), "tussenvoegsels")
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, self.ui.txtAchternaam.text(), "achternaam")
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, datetime(self.ui.sbJaar.value(), self.ui.sbMaand.value(), self.ui.sbDag.value()), "geboortedatum")
+        kleinDeelnemerlijst = functions.filterkolom(kleinDeelnemerlijst, self.ui.cbGeslacht.currentText(), "geslacht")
+        self.ui.lwKeuzes.clear()
+        for deelnemer in kleinDeelnemerlijst[:10]:
+            weergave = "{} {}".format(getattr(deelnemer, "voorletters"), getattr(deelnemer, "achternaam"))
+            if getattr(deelnemer, "tussenvoegsels") != None: weergave += ", {}".format(getattr(deelnemer, "tussenvoegsels"))
+            weergave += " | {} | {}".format(getattr(deelnemer, "geboortedatum").date(), getattr(deelnemer, "geslacht"))
+            self.ui.lwKeuzes.addItem(weergave)
+        self.kleinDeelnemerlijst = kleinDeelnemerlijst
+        self.ui.lwKeuzes.repaint()
+  
+
+class DeelnemerWijzigen(QtWidgets.QMainWindow):
+    def __init__(self, book, logger, deelnemer):
+        self._logger = logger
+        self._logger.info("Deelnemer wijzigen scherm geopend")
+        Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
+        super(DeelnemerWijzigen, self).__init__()
+        self.book = book
+        self.ui = Ui_MainWindow4()
+        self.ui.setupUi(self)
+        self.setWindowTitle("Deelnemer wijzigen")
+        #naam button aanpassen
+        self.ui.btnToevoegen.setText("Wijzigen")
+        #buttons connecten
+        self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
+        self.ui.btnToevoegen.clicked.connect(self.btnWijzigenClicked)
+        self.ui.sbMaand.valueChanged.connect(self.onChange)
+        self.ui.sbJaar.valueChanged.connect(self.onChange)
+        self._30maand = [4,6,9,11]
+        #voeg schaduwtekst toe aan de invoervelden
+        self.ui.txtVoorletters.setPlaceholderText("A.B.")
+        self.ui.txtTussenvoegsel.setPlaceholderText("van")
+        self.ui.txtAchternaam.setPlaceholderText("Albert")
+        self.ui.txtParttimePercentage.setPlaceholderText("70")
+        for i in [self.ui.txtFulltimeLoon, self.ui.txtOPAegon65, self.ui.txtOPAegon67, self.ui.txtOPNN65, self.ui.txtOPNN67, 
+                  self.ui.txtOPVLC68, self.ui.txtOPZL, self.ui.txtPPNN65, self.ui.txtPPNN67, self.ui.txtPPVLC68]:
+            i.setPlaceholderText("500,00")
+        #voeg deelnemergegevens toe aan invoervelden
+        self.ui.txtVoorletters.setText(deelnemer.voorletters)
+        self.ui.txtTussenvoegsel.setText(deelnemer.tussenvoegsels)
+        self.ui.txtAchternaam.setText(deelnemer.achternaam)
+        self.ui.sbDag.setValue(deelnemer.geboortedatum.day)
+        self.ui.sbMaand.setValue(deelnemer.geboortedatum.month)
+        self.ui.sbJaar.setValue(deelnemer.geboortedatum.year)
+        self.ui.cbGeslacht.setCurrentText(deelnemer.geslacht)               
+        self.ui.cbBurgerlijkeStaat.setCurrentText(deelnemer.burgelijkeStaat)
+        self.ui.cbHuidigeRegeling.setCurrentText(deelnemer.regeling)
+        if str(deelnemer.regeling) != "Inactief": 
+            self.ui.txtFulltimeLoon.setText(str(deelnemer.ftLoon).replace(".", ","))
+            self.ui.txtParttimePercentage.setText(str(deelnemer.pt*100).replace(".", ","))
+        else:
+            self.ui.txtFulltimeLoon.setText("")
+            self.ui.txtParttimePercentage.setText("")
+        pensioenfondsen = [["ZL", self.ui.CheckZL, self.ui.txtOPZL], ["Aegon OP65", self.ui.CheckAegon65, self.ui.txtOPAegon65], 
+                            ["Aegon OP67", self.ui.CheckAegon67, self.ui.txtOPAegon67], ["NN OP65", self.ui.CheckNN65, self.ui.txtOPNN65, self.ui.txtPPNN65], 
+                            ["NN OP67", self.ui.CheckNN67, self.ui.txtOPNN67, self.ui.txtPPNN67], ["PF VLC OP68", self.ui.CheckPFVLC68, self.ui.txtOPVLC68, self.ui.txtPPVLC68]]
+        
+        #OP en PP invullen en aanvinken als ingevuld
+        x = 1   #begin op 1, omdat op plek 0 AOW zit
+        for i in range(6):
+            if x < len(deelnemer.pensioenen):
+                if pensioenfondsen[i][0] == deelnemer.pensioenen[x].pensioenNaam:
+                    pensioenfondsen[i][2].setText(str(deelnemer.pensioenen[x].ouderdomsPensioen).replace(".", ","))
+                    if str(deelnemer.pensioenen[x].ouderdomsPensioen) != "":
+                        pensioenfondsen[i][1].setChecked(True)
+                    if i > 2:
+                        pensioenfondsen[i][3].setText(str(deelnemer.pensioenen[x].partnerPensioen).replace(".", ","))
+                    x += 1
+        
+        self.rijNr = deelnemer.rijNr
+        
+    def btnTerugClicked(self):
+        self.close()
+        self._logger.info("Deelnemer wijzigen scherm gesloten")
+        self._windowdeelnemer = DeelnemerselectieBeheerder(self.book, self._logger)
+        self._windowdeelnemer.show()
+        
+    def btnWijzigenClicked(self):
+        #lege foutmeldingen aanmaken
+        foutmeldingGegevens = ""
+        foutmeldingPensioen = ""
+        AantalPensioenen = 0 #teller voor aantal afgeronde pensioenopbouwen
+        FouteRegelingen = [] #lijst met pensioenregelingen met foute invoer
+        #controleer persoonsgegevens
+        
+        if self.ui.txtVoorletters.text() == "" or self.ui.txtAchternaam.text() == "":
+            foutmeldingGegevens = foutmeldingGegevens + "Uw naam is niet ingevuld. "
+        if self.ui.cbHuidigeRegeling.currentText() != "Inactief":
+            if functions.isfloat(self.ui.txtFulltimeLoon.text()) == False or functions.isfloat(self.ui.txtParttimePercentage.text()) == False or float(self.ui.txtParttimePercentage.text().replace(",", ".")) > 100:
+                if len(foutmeldingGegevens) > 0: #De naam is ook niet goed ingevoerd
+                    foutmeldingGegevens = "Uw naam en werkinformatie zijn niet (goed) ingevuld. "
+                else: 
+                    foutmeldingGegevens = "Uw werkinformatie is niet (goed) ingevuld. "
+                
+        #controleer of de deelnemer al de pensioenleeftijd heeft behaald
+        if self.ui.sbJaar.text() < str(functions.pensioensdatum())[3:7]:
+            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
+        elif self.ui.sbJaar.text() == str(functions.pensioensdatum())[3:7] and int(self.ui.sbMaand.text()) < int(str(functions.pensioensdatum())[0:2]):
+            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
+        
+        #controleer pensioengegevens
+        #lijst met pensioensgegevens [regeling, ZL, AegonOP65, AegonOP67, NNOP65, NNPP65,NNOP67, NNPP67, PFVLCOP68, PFVLCPP68]
+        Pensioensgegevens = [self.ui.cbHuidigeRegeling.currentText(), "", "", "", "", "", "", "", "", ""]
+        #lijst met invoervelden van het userform
+        invoerPensioenen = [[self.ui.CheckZL, self.ui.txtOPZL, "ZL"], [self.ui.CheckAegon65, self.ui.txtOPAegon65, "Aegon65"], 
+                            [self.ui.CheckAegon67, self.ui.txtOPAegon67, "Aegon67"], [self.ui.CheckNN65, self.ui.txtOPNN65, self.ui.txtPPNN65, "NN65"], 
+                            [self.ui.CheckNN67, self.ui.txtOPNN67, self.ui.txtPPNN67, "NN67"], [self.ui.CheckPFVLC68, self.ui.txtOPVLC68, self.ui.txtPPVLC68, "VLC68"]]
+        tellerPensioenen = 1    #zorgt dat juist pensioen op juiste plek in Pensioensgegevens komt
+        
+        for i in invoerPensioenen:
+            if i[0].isChecked() == True:    #het pensioen is aangevinkt
+                AantalPensioenen += 1       #houdt het aantal aangevinkte pensioenen bij
+                for x in i[1:-1]:
+                    if functions.isfloat(x.text()) == True:   #Er is een getal-waarde ingevuld
+                        Pensioensgegevens[tellerPensioenen] = float(x.text().replace(".", "").replace(",", "."))
+                    else:
+                        FouteRegelingen.append(i[-1])   #regeling aan foutmelding toevoegen
+                    tellerPensioenen += 1
+            else:
+                for x in i[1:-1]:
+                    if functions.isfloat(x.text()) == True:   #wel een getal-waarde ingevuld, maar pensioen niet aangevinkt
+                        FouteRegelingen.append(i[-1])
+                tellerPensioenen += len(i)-2        #tellerPensioenen ophogen met aantal pensioenopties OP of OP+PP
+        
+        #controleren of OP:PP verhouding kleiner is dan 100:70
+        verhoudingFout = ""
+        PPRegelingen = ["NN65", "NN67", "VLC"]  #pensioenen met PP
+        for i in range(4,10,2):
+            #kijken of pensioen ingevuld is.
+            if Pensioensgegevens[i] != "":
+                verhouding = (Pensioensgegevens[i+1])/(Pensioensgegevens[i])
+                if verhouding > 0.7:
+                    #als verhouding groter dan 100:70, pensioen toevoegen aan foutmelding
+                    verhoudingFout = verhoudingFout + ", " + PPRegelingen[int(i/2 - 2)]
+        
+        #foutmelding pensioensgegevens genereren
+        if AantalPensioenen == 0 and len(FouteRegelingen) == 0: #foutmelding als er geen regeling aangegeven is
+            foutmeldingPensioen = "U heeft nog geen opgebouwd pensioen aangegeven"
+        elif len(FouteRegelingen) > 0: #foutmelding als regelingen niet volledig of fout zijn ingevuld
+            foutmeldingPensioen = "De volgende regelingen zijn niet (goed) ingevoerd: " + FouteRegelingen[0]
+            for i in FouteRegelingen[1:]:
+                foutmeldingPensioen = foutmeldingPensioen + ", " + i        
+        if len(verhoudingFout) > 0:
+            foutmeldingPensioen = foutmeldingPensioen + " De verhouding OP:PP mag niet groter zijn dan 100:70:" + verhoudingFout[1:]
+        
+        
+        #gegevens invullen of foutmelding geven
+        if foutmeldingGegevens == "" and foutmeldingPensioen == "":
+            geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text()))
+            achternaam = self.ui.txtAchternaam.text()[0].upper() + self.ui.txtAchternaam.text()[1:]
+            #voorletters met hoofdletters en punten ertussen
+            voorletters = ""
+            for i in self.ui.txtVoorletters.text().replace(".", "").upper():
+                voorletters += i + "."
+            if self.ui.cbHuidigeRegeling.currentText() != "Inactief":
+                #fulltime loon en parttime percentage als float
+                fulltimeLoon = float(self.ui.txtFulltimeLoon.text().replace(".", "").replace(",", "."))
+                getcontext().prec = 7
+                ptPercentage = Decimal(self.ui.txtParttimePercentage.text().replace(",", "."))
+            else:
+                fulltimeLoon = ""
+                ptPercentage = ""
+            #lijst met deelnemersgegevens [achternaam, tussenvoegsel, voorletters, geboortedatum, geslacht, burg.staat, ftloon, pt%]
+            Deelnemersgegevens = [achternaam, self.ui.txtTussenvoegsel.text(), voorletters, geboortedatum, self.ui.cbGeslacht.currentText(), 
+                                  self.ui.cbBurgerlijkeStaat.currentText(), fulltimeLoon, ptPercentage]
+                        
+                        
+            #geboortedatum in goede notatie voor invoer in excel
+            geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text())).strftime("%m-%d-%Y")
+            Deelnemersgegevens[3] = geboortedatum
+            #lijst met alle gegevens
+            gegevens = Deelnemersgegevens + Pensioensgegevens
+            
+            #deelnemer zijn gegevens laten controleren
+            self._logger.info("Ingevulde gegevens worden getoont voor controle")
+            controle = functions.gegevenscontrole(gegevens)
+            if controle == "correct":
+                #window sluiten
+                self.close()
+                self._logger.info("Deelnemer toevoegen scherm gesloten")
+                
+                #het parttime percentage delen door 100, zodat het in excel als % komt
+                if gegevens[7] != "": 
+                    gegevens[7] = float(gegevens[7])/100
+                try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
+                    functions.ToevoegenDeelnemer(gegevens, regel = self.rijNr)
+                    self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
+                except Exception as e:
+                    self._logger.exception("Er is iets fout gegaan bij het wijzigen van een deelnemer in het deelnemersbestand")
+                
+                #deelnemerselectie openen
+                self._windowBeheerder = Beheerderkeuzes(self.book, self._logger)
+                self._windowBeheerder.show()
+            elif controle == "fout":
+                self._logger.info("Deelnemer wil zijn ingevulde gegevens aanpassen. Deelnemer wijzigen scherm blijft open")
+                #als niet op "ja" wordt geklikt, wordt de messagebox gesloten en het invoerveld weer getoont
+        
+                
+        else: 
+            self._logger.info("Niet alle deelnemersgegevens zijn goed ingevuld. De deelnemer moet zijn gegevens aanpassen")
+            #foutmelding tonen
+            self.ui.lblFoutmeldingGegevens.setText(foutmeldingGegevens)
+            self.ui.lblFoutmeldingPensioen.setText(foutmeldingPensioen)
+        
+    
+    
+    def onChange(self): functions.maanddag(self)
+
+

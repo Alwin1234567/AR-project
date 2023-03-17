@@ -22,9 +22,14 @@ def Schermen():
     logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
     app = 0
     app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.Functiekeus(xw.Book.caller(), logger)
-    window.show()
-    app.exec_()
+    if functions.isBeheerder(xw.Book.caller()):
+        windowBeheerder = Klassen_Schermen.Beheerderkeuzes(xw.Book.caller(), logger)
+        windowBeheerder.show()
+        app.exec_()
+    else:
+        window = Klassen_Schermen.Functiekeus(xw.Book.caller(), logger)
+        window.show()
+        app.exec_()
 
     
     
@@ -202,37 +207,40 @@ def AfbeeldingVerwijderen():
     if str(Opslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
         #gekozen afbeelding inlezen
         gekozenAfbeelding = Vergelijken.cells(6,"B").value
-        #ID van de gekozen afbeelding opzoeken
-        ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
-        #Vergelijken.cells(11, "O").value = ID
-        
-        #gekozen afbeelding verwijderen
-        try:
-            Vergelijken.pictures[ID].delete()
-        except:
-            functions.Mbox("fout", "afbeelding verwijderen lukt niet\nAfbeeldingID bestaat niet", 0)
-        
-        #tellen hoeveel opgeslagen flexibiliseringen en hoeveel pensioenen
-        Flexopslag = functions.FlexopslagVinden(xw.Book.caller(), gekozenAfbeelding)
-        
-        startKolom = Flexopslag[0]
-        laatsteKolom = Flexopslag[1]
-        aantalPensioenen = Flexopslag[2]
-        rijen = aantalPensioenen*20 + 4
-        if startKolom != laatsteKolom: #er zijn meer dan 1 flexibilisaties opgeslagen
-            #verwijderen gegevens verwijderde flexibilisatie
-            Opslag.range((1,startKolom-1),(rijen,startKolom+1)).clear_contents()
-            #flexibilisaties na verwijderde blok opschuiven
-            Opslag.cells(1,startKolom-1).value = Opslag.range((1,startKolom+3),(rijen,laatsteKolom+1)).value
-        #laatste (of enige) kolom verwijderen
-        Opslag.range((1,laatsteKolom-1),(rijen,laatsteKolom+1)).clear()
-        
-        try:
-            #drop down op vergelijkingssheet updaten
-            functions.vergelijken_keuzes()
-        except:
-            #laatste opslag is verwijderd, dus drop down legen
-            Vergelijken["B6"].value = ""
+        #vragen of echt verwijderd moet worden
+        controle = functions.Mbox("Afbeelding verwijderen", f"Wilt u de flexibilisatie '{gekozenAfbeelding}' echt verwijderen?\nU kunt deze actie niet ongedaan maken.", 4)
+        if controle == "Ja":
+            #ID van de gekozen afbeelding opzoeken
+            ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+            #Vergelijken.cells(11, "O").value = ID
+            
+            #gekozen afbeelding verwijderen
+            try:
+                Vergelijken.pictures[ID].delete()
+            except:
+                functions.Mbox("Foutmelding", f"Het verwijderen van flexibilisatie '{gekozenAfbeelding}' lukt niet.\n Het AfbeeldingID bestaat niet", 0)
+            
+            #tellen hoeveel opgeslagen flexibiliseringen en hoeveel pensioenen
+            Flexopslag = functions.FlexopslagVinden(xw.Book.caller(), gekozenAfbeelding)
+            
+            startKolom = Flexopslag[0]
+            laatsteKolom = Flexopslag[1]
+            aantalPensioenen = Flexopslag[2]
+            rijen = aantalPensioenen*20 + 4
+            if startKolom != laatsteKolom: #er zijn meer dan 1 flexibilisaties opgeslagen
+                #verwijderen gegevens verwijderde flexibilisatie
+                Opslag.range((1,startKolom-1),(rijen,startKolom+1)).clear_contents()
+                #flexibilisaties na verwijderde blok opschuiven
+                Opslag.cells(1,startKolom-1).value = Opslag.range((1,startKolom+3),(rijen,laatsteKolom+1)).value
+            #laatste (of enige) kolom verwijderen
+            Opslag.range((1,laatsteKolom-1),(rijen,laatsteKolom+1)).clear()
+            
+            try:
+                #drop down op vergelijkingssheet updaten
+                functions.vergelijken_keuzes()
+            except:
+                #laatste opslag is verwijderd, dus drop down legen
+                Vergelijken["B6"].value = ""
     
     else: #er zijn geen flexibilisaties opgeslagen
         #keuzecel in vergelijkingssheet legen
@@ -362,15 +370,15 @@ def AndereDeelnemer():
     """
     Functie die het deelnemerselectie scherm opent
     """
-    
-    #scherm Deelnemerselectie openen
-    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
-    app = 0
-    app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.Deelnemerselectie(xw.Book.caller(), logger)
-    window.show()
-    app.exec_()
-    print("deelnemerselectie openen")
+    controle = functions.Mbox("Andere deelnemer selecteren", "Door een andere deelnemer te selecteren zullen de huidige gegevens op de vergelijken sheet verwijderd worden.\nU kunt deze actie niet ongedaan maken.", 2)
+    if controle == "OK Clicked":
+        #scherm Deelnemerselectie openen
+        logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+        app = 0
+        app = QtWidgets.QApplication(sys.argv)
+        window = Klassen_Schermen.Deelnemerselectie(xw.Book.caller(), logger)
+        window.show()
+        app.exec_()
     
 @xw.sub
 def BeheerderskeuzesOpenen():
@@ -385,7 +393,7 @@ def BeheerderskeuzesOpenen():
     windowBeheerder = Klassen_Schermen.Beheerderkeuzes(xw.Book.caller(), logger)
     windowBeheerder.show()
     app.exec_()
-    print("Beheerderskeuzes openen")
+    
                   
 @xw.sub
 def flexibilisaties_testen():
