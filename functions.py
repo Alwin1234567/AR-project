@@ -20,6 +20,17 @@ import matplotlib.pyplot as plt
 Body
 Hier komen alle functies
 """
+def wachtwoord():
+    '''
+    functie waarin het wachtwoord voor het protecten en unprotecten van sheets staat
+
+    Returns
+    -------
+    wachtwoord
+
+    '''
+    wachtwoord = "wachtwoord"
+    return wachtwoord
 
 def isBeheerder(book):
     '''

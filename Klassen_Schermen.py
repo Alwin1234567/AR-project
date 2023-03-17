@@ -70,9 +70,13 @@ class Inloggen(QtWidgets.QMainWindow):
             self._logger.info("Inloggen scherm gesloten")
             self.close()
             #Aangeven dat beheerder ingelogd is
-            self.book.sheets["Beheerder"].cells(1, 1).value = "Beheerder"
+            beheerder = self.book.sheets["Beheerder"]
+            beheerder.api.Unprotect(Password = functions.wachtwoord())
+            beheerder.cells(1, 1).value = "Beheerder"
+            beheerder.api.Protect(Password = functions.wachtwoord())
             self._windowBeheerder = Beheerderkeuzes(self.book, self._logger)
             self._windowBeheerder.show()
+            
         else:
             self.ui.lblFoutmeldingInlog.setText("Wachtwoord incorrrect")
     def btnTerugClicked(self):
@@ -97,6 +101,16 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.ui.btnAdviseren.clicked.connect(self.btnAdviserenClicked)
         self.ui.btnUitloggen.clicked.connect(self.btnUitloggenClicked)
         
+        #sheets definieren
+        self.sterftetafels = self.book.sheets["Sterftetafels"]
+        self.AG2020 = self.book.sheets["AG2020"]
+        self.berekeningen = self.book.sheets["Berekeningen"]
+        self.deelnemersbestand = self.book.sheets["deelnemersbestand"]
+        self.pensioencontracten = self.book.sheets["Gegevens pensioencontracten"]
+        self.vergelijken = self.book.sheets["Vergelijken"]
+        self.flexopslag = self.book.sheets["Flexopslag"]
+        self.beheerder = self.book.sheets["Beheerder"]
+        
     def btnGegevensWijzigenClicked(self):
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
@@ -106,8 +120,12 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
     def btnBeherenClicked(self):
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
-        
-        
+        #beveiliging sheets ongedaan maken
+        # for i in [self.sterftetafels, self.AG2020, self.berekeningen, self.deelnemersbestand, 
+        #           self.pensioencontracten, self.vergelijken, self.flexopslag]:
+        #     i.api.Unprotect(Password = "wachtwoord")
+        #     i.visible = True
+                
     def btnAdviserenClicked(self):
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
@@ -115,18 +133,22 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self._windowdeelnemer.show()
     
     def btnUitloggenClicked(self):
-        #Aangeven dat beheerder ingelogd is
-        self.book.sheets["Beheerder"].cells(1, 1).value = ""
+        #Aangeven dat beheerder uitgelogd is
+        self.beheerder.api.Unprotect(Password = functions.wachtwoord())
+        self.beheerder.cells(1, 1).value = ""
+        self.beheerder.api.Protect(Password = functions.wachtwoord())
+        self.beheerder.visible = False
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
         self._windowkeus = Functiekeus(self.book, self._logger)
         self._windowkeus.show()
         functions.Mbox("Uitgelogd", "U bent nu uitgelogd.", 0)
-        #sheets locken en hidden
-        self.book.sheets["Vergelijken"].Locked = True
-        #self.book.sheets["Beheerder"].Protect
+        #sheets beveiligen en hidden
+        # for i in [self.sterftetafels, self.AG2020, self.berekeningen, self.deelnemersbestand, 
+        #           self.pensioencontracten, self.vergelijken, self.flexopslag]:
+        #     i.api.Protect(Password = functions.wachtwoord())
+        #     i.visible = False
         
-
 
 
 class Deelnemerselectie(QtWidgets.QMainWindow):
@@ -353,7 +375,9 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                     if gegevens[7] != "": 
                         gegevens[7] = float(gegevens[7])/100
                     try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
+                        #self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                         functions.ToevoegenDeelnemer(gegevens)
+                        #self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
                         self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
                     except Exception as e:
                         self._logger.exception("Er is iets fout gegaan bij het toevoegen van een deelnemer aan het deelnemersbestand")
