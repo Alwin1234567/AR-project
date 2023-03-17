@@ -740,7 +740,8 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[13][0] = "Methode"
     flexopslag[14][0] = "Vers/Verh/Opv"
     
-    flexopslag[16][0] = "Jaarbedrag"
+    flexopslag[16][0] = "OP H|L"
+    flexopslag[17][0] = "PP"
     
     flexopslag[18][0] = "Kleur"
     
@@ -787,8 +788,9 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     #else: logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
     
     # Nieuwe OP en PP opslaan
-    flexopslag[16][1] = "OP Onbekend"
-    flexopslag[16][2] = "PP Onbekend"
+    flexopslag[16][1] = flexibilisatie.ouderdomsPensioenHoog
+    flexopslag[16][2] = flexibilisatie.ouderdomsPensioenLaag
+    flexopslag[17][1] = flexibilisatie.partnerPensioen
     
     # RGB opslaan
     flexopslag[18][1] = str(flexibilisatie.pensioen.pensioenKleurHard)

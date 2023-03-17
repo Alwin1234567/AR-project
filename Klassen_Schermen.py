@@ -415,34 +415,33 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.btnOpslaan.clicked.connect(self.btnOpslaanClicked)
         
         # Aanpassing: pensioenleeftijd
-        self.ui.CheckLeeftijdWijzigen.stateChanged.connect(self.invoerVerandering)
-        self.ui.sbJaar.valueChanged.connect(self.invoerVerandering)
-        self.ui.sbMaand.valueChanged.connect(self.invoerVerandering)
-        self.ui.btnAOWleeftijd.clicked.connect(self.AOWbutton)
+        self.ui.CheckLeeftijdWijzigen.stateChanged.connect(lambda: self.invoerVerandering(1))
+        self.ui.sbJaar.valueChanged.connect(lambda: self.invoerVerandering(1))
+        self.ui.sbMaand.valueChanged.connect(lambda: self.invoerVerandering(1))
+        self.ui.btnAOWleeftijd.clicked.connect(self.btnAOWClicked)
         
         # Aanpassing: OP/PP
-        self.ui.CheckUitruilen.stateChanged.connect(self.invoerVerandering)
-        self.ui.cbUitruilenVan.activated.connect(self.invoerVerandering)
-        self.ui.cbUMethode.activated.connect(self.invoerVerandering)
-        self.ui.txtUVerhoudingOP.textEdited.connect(self.invoerVerandering)
-        self.ui.txtUVerhoudingPP.textEdited.connect(self.invoerVerandering)
-        self.ui.txtUPercentage.textEdited.connect(self.invoerVerandering)
+        self.ui.CheckUitruilen.stateChanged.connect(lambda: self.invoerVerandering(2))
+        self.ui.cbUitruilenVan.activated.connect(lambda: self.invoerVerandering(2))
+        self.ui.cbUMethode.activated.connect(lambda: self.invoerVerandering(2))
+        self.ui.txtUVerhoudingOP.textEdited.connect(lambda: self.invoerVerandering(2))
+        self.ui.txtUVerhoudingPP.textEdited.connect(lambda: self.invoerVerandering(2))
+        self.ui.txtUPercentage.textEdited.connect(lambda: self.invoerVerandering(2))
            
         # Aanpassing: hoog-laag constructie
-        self.ui.CheckHoogLaag.stateChanged.connect(self.invoerVerandering)
-        self.ui.cbHLVolgorde.activated.connect(self.invoerVerandering)
-        self.ui.cbHLMethode.activated.connect(self.invoerVerandering)
-        self.ui.txtHLVerhoudingHoog.textEdited.connect(self.invoerVerandering)
-        self.ui.txtHLVerhoudingLaag.textEdited.connect(self.invoerVerandering)
-        self.ui.txtHLVerschil.textEdited.connect(self.invoerVerandering)
-        self.ui.sbHLJaar.valueChanged.connect(self.invoerVerandering)
+        self.ui.CheckHoogLaag.stateChanged.connect(lambda: self.invoerVerandering(3))
+        self.ui.cbHLVolgorde.activated.connect(lambda: self.invoerVerandering(3))
+        self.ui.cbHLMethode.activated.connect(lambda: self.invoerVerandering(3))
+        self.ui.txtHLVerhoudingHoog.textEdited.connect(lambda: self.invoerVerandering(3))
+        self.ui.txtHLVerhoudingLaag.textEdited.connect(lambda: self.invoerVerandering(3))
+        self.ui.txtHLVerschil.textEdited.connect(lambda: self.invoerVerandering(3))
+        self.ui.sbHLJaar.valueChanged.connect(lambda: self.invoerVerandering(3))
 
         # Aanpassing: Regeling
         self.ui.cbRegeling.activated.connect(self.wijzigVelden)
         
         # Laatste UI update
         self.ui.sbMaand.setValue(0)
-        #self.invoerVerandering()
         self.samenvattingUpdate()
         self.wijzigVelden()
         
@@ -460,32 +459,6 @@ class Flexmenu(QtWidgets.QMainWindow):
         if len(self.opslaanList) < 1:
             functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
             self._logger.info("Persoonsgegevens deelnemer opgeslagen in flexopslag")
-    
-    def zoekFlexibilisaties(self):
-        self.opslaanList = self.book.sheets["Flexopslag"].range("3:3")[1:500].value # Zoekt maximaal tot 500 anders wordt het langzaam
-        self.opslaanList = [int(value) for value in self.opslaanList if type(value) == float] # Flex IDs worden uit Excel opgehaald als type Float, moet opgeslagen worden als type int
-
-    def zoekNieuwID(self):
-        if len(self.opslaanList) > 0: # Als de lijst niet leeg is, zijn er al ID's opgeslagen en moet de eerstvolgende "lege" ID gevonden worden
-            for i in range(len(self.opslaanList)):
-                if (i+1) not in self.opslaanList: # Als getal niet in lijst staat, is dit het nieuwe ID
-                    return (i+1)
-            return len(self.opslaanList)+1
-        else:
-            return 1 # Als lijst leeg is, zijn er nog geen ID's opgeslagen. De eerste moet ID waarde 1 krijgen.
-    
-    def dropdownRegelingen(self):
-        regelingenActief = list() # Lijst met lange namen van regelingen
-        regelingenActiefKort = list() # Lijst met verkorte namen van regelingen
-        
-        for regeling in self.deelnemerObject.pensioenen:
-            if regeling.ouderdomsPensioen != None: # Check of deelnemer wel gespaard heeft bij een regeling
-                if regeling.ouderdomsPensioen > 0:
-                    regelingenActief.append(regeling.pensioenVolNaam) # Lange regeling naam opslaan
-                    regelingenActiefKort.append(regeling.pensioenNaam) # Korte regeling naam opslaan
-
-        self.ui.cbRegeling.addItems(regelingenActief) # Dropdown krijgt lijst met lange namen van regelingen
-        self._regelingenActiefKort = regelingenActiefKort # Wordt apart een lijst met korte namen van regelingen opgeslagen
     
     def blokkeerSignalen(self, actief):
         """
@@ -524,44 +497,33 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.txtHLVerschil.blockSignals(actief)
         self.ui.sbHLJaar.blockSignals(actief)
     
-    def invoerCheck(self):
-        """
-        Deze functie checkt voor de volgende velden of de invoer klopt:
-            - OP verhouding
-            - PP verhouding
-            - OP/PP uitruil percentage
-            - Hoog verhouding
-            - Laag verhouding
-            - Hoog/laag verschil
+    def dropdownRegelingen(self):
+        regelingenActief = list() # Lijst met lange namen van regelingen
+        regelingenActiefKort = list() # Lijst met verkorte namen van regelingen
         
-        Er wordt voor al deze velden gecheckt of er letters staan.
-        Er wordt alleen voor de relevante velden voor de methode gecheckt of er missende invoer is.
-        
-        Bij missende invoer en/of letters returnt deze functie False.
-        Als alles klopt, returnt deze functie True.
-        """
-        
-        # Check of invoer klopt van OP/PP blok
-        melding_OP, OK_OP = functions.checkVeldInvoer(self.ui.cbUMethode.currentText(),
-                                  self.ui.txtUPercentage.text(),
-                                  self.ui.txtUVerhoudingOP.text(),
-                                  self.ui.txtUVerhoudingPP.text())
-        
-        self.ui.lblFoutmeldingUitruilen.setText(melding_OP)
-        
-        # Check of invoer klopt van Hoog/Laag blok
-        melding_HL, OK_HL = functions.checkVeldInvoer(self.ui.cbHLMethode.currentText(),
-                                                      self.ui.txtHLVerschil.text(),
-                                                      self.ui.txtHLVerhoudingHoog.text(),
-                                                      self.ui.txtHLVerhoudingLaag.text())
-        
-        self.ui.lblFoutmeldingHoogLaag.setText(melding_HL)
+        for regeling in self.deelnemerObject.pensioenen:
+            if regeling.ouderdomsPensioen != None: # Check of deelnemer wel gespaard heeft bij een regeling
+                if regeling.ouderdomsPensioen > 0:
+                    regelingenActief.append(regeling.pensioenVolNaam) # Lange regeling naam opslaan
+                    regelingenActiefKort.append(regeling.pensioenNaam) # Korte regeling naam opslaan
 
-        if (OK_OP == True and OK_HL == True):
-            return True # De check geeft aan dat alles goed ingevoerd is.
-        else:
-            return False # De check geeft aan dat er foute invoer is.
+        self.ui.cbRegeling.addItems(regelingenActief) # Dropdown krijgt lijst met lange namen van regelingen
+        self._regelingenActiefKort = regelingenActiefKort # Wordt apart een lijst met korte namen van regelingen opgeslagen
+    
+    def getAOWleeftijd(self):
+        """
+        Deze functie zorgt ervoor dat er niet elke keer bij het klikken op de AOW knop opnieuw de 
+        AOW leeftijd ingeladen moet worden, dit vergt namelijk veel tijd. In de __init__ wordt deze
+        functie opgeroepen zodat het maar 1 keer opgeslagen hoeft te worden.
+        """
+        
+        functions.getPensioeninformatie(self.book)
 
+        for pensioenV in functions.getPensioeninformatie(self.book):
+            if pensioenV.pensioenNaam == "AOW":
+                self.AOWjaar = int(pensioenV.pensioenleeftijd)
+                self.AOWmaand = int(round((pensioenV.pensioenleeftijd-self.AOWjaar)*12))
+        
     def wijzigVelden(self):
         """
         Deze functie wordt geactiveerd als de regeling in de dropdown aangepast wordt.
@@ -640,19 +602,76 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         self.blokkeerSignalen(False)
         
-    def invoerVerandering(self):
+    def invoerCheck(self,num):
+        """
+        Deze functie checkt voor de volgende velden of de invoer klopt:
+            - OP verhouding
+            - PP verhouding
+            - OP/PP uitruil percentage
+            - Hoog verhouding
+            - Laag verhouding
+            - Hoog/laag verschil
+        
+        Er wordt voor al deze velden gecheckt of er letters staan.
+        Er wordt alleen voor de relevante velden voor de methode gecheckt of er missende invoer is.
+        
+        Bij missende invoer en/of letters returnt deze functie False.
+        Als alles klopt, returnt deze functie True.
+        
+        Parameters
+        ----------
+        num : int (0,1,2,3)
+            0 verandert alle onderdelen
+            1 voor verandering bij leeftijd
+            2 voor verandering bij OP/PP
+            3 voor verandering bij Hoog/Laag
+            
+        Returns
+        -------
+        OK : bool
+            True als invoer klopt. False als invoer fout is.
+        
+        """
+        
+        if num == 1 or num == 0: # Check of invoer klopt van leeftijd blok
+            return True
+        
+        if num == 2 or num == 0: # Check of invoer klopt van OP/PP blok
+            melding, OK = functions.checkVeldInvoer(self.ui.cbUMethode.currentText(),
+                                      self.ui.txtUPercentage.text(),
+                                      self.ui.txtUVerhoudingOP.text(),
+                                      self.ui.txtUVerhoudingPP.text())
+            
+            self.ui.lblFoutmeldingUitruilen.setText(melding)
+            return OK
+   
+        if num == 3 or num == 0: # Check of invoer klopt van Hoog/Laag blok
+            melding, OK = functions.checkVeldInvoer(self.ui.cbHLMethode.currentText(),
+                                                          self.ui.txtHLVerschil.text(),
+                                                          self.ui.txtHLVerhoudingHoog.text(),
+                                                          self.ui.txtHLVerhoudingLaag.text())
+            
+            self.ui.lblFoutmeldingHoogLaag.setText(melding)
+            return OK
+        
+    def invoerVerandering(self,num):
         """ 
         Deze functie activeert zodra de gebruiker een verandering maakt in het flexmenu scherm.
         Zo kan het scherm live aanpassen op basis van input van de gebruiker.
+        
+        Parameters
+        ----------
+        num : int (0,1,2,3)
+            0 verandert alle onderdelen
+            1 voor verandering bij leeftijd
+            2 voor verandering bij OP/PP
+            3 voor verandering bij Hoog/Laag
+        
         """
-        # Functie voor invoer check
-        #  > Is alles wat ingevoerd wel correct? (dus geen letters waar cijfers horen enzo)
-        #  > Is alles ingevoerd waar invoer moet staan?
-        # Als beide eisen voldoen, kunnen de volgende functies doorgevoerd worden
-      
-        if self.invoerCheck():
+
+        if self.invoerCheck(num):
             self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
-            self.flexkeuzesOpslaan() # Sla flex keuzes op
+            self.flexkeuzesOpslaan(num) # Sla flex keuzes op
             self.berekeningenDoorvoeren()
             functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
             self.samenvattingUpdate() # Update de samenvatting
@@ -661,38 +680,31 @@ class Flexmenu(QtWidgets.QMainWindow):
                 self.ui.wdt_pltAfbeelding.canvas.draw()
             except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
 
-    def getAOWleeftijd(self):
-        """
-        Deze functie zorgt ervoor dat er niet elke keer bij het klikken op de AOW knop opnieuw de 
-        AOW leeftijd ingeladen moet worden, dit vergt namelijk veel tijd. In de __init__ wordt deze
-        functie opgeroepen zodat het maar 1 keer opgeslagen hoeft te worden.
-        """
-        
-        functions.getPensioeninformatie(self.book)
+    def zoekFlexibilisaties(self):
+        self.opslaanList = self.book.sheets["Flexopslag"].range("3:3")[1:500].value # Zoekt maximaal tot 500 anders wordt het langzaam
+        self.opslaanList = [int(value) for value in self.opslaanList if type(value) == float] # Flex IDs worden uit Excel opgehaald als type Float, moet opgeslagen worden als type int
 
-        for pensioenV in functions.getPensioeninformatie(self.book):
-            if pensioenV.pensioenNaam == "AOW":
-                self.AOWjaar = int(pensioenV.pensioenleeftijd)
-                self.AOWmaand = int(round((pensioenV.pensioenleeftijd-self.AOWjaar)*12))
-        
-    def AOWbutton(self):
+    def zoekNieuwID(self):
+        if len(self.opslaanList) > 0: # Als de lijst niet leeg is, zijn er al ID's opgeslagen en moet de eerstvolgende "lege" ID gevonden worden
+            for i in range(len(self.opslaanList)):
+                if (i+1) not in self.opslaanList: # Als getal niet in lijst staat, is dit het nieuwe ID
+                    return (i+1)
+            return len(self.opslaanList)+1
+        else:
+            return 1 # Als lijst leeg is, zijn er nog geen ID's opgeslagen. De eerste moet ID waarde 1 krijgen.
 
-        self.blokkeerSignalen(True)
-        self._logger.info("AOW-leeftijd button in flexmenu geklikt.")
-
-        try:
-            self.ui.sbJaar.setValue(self.AOWjaar)
-            self.ui.sbMaand.setValue(self.AOWmaand)
-        except Exception as e:
-            self._logger.exception("Probleem bij het wijzigen van leeftijdvelden naar AOW-leeftijd.")
-
-        self.blokkeerSignalen(False)
-        self.invoerVerandering()
-
-
-    def flexkeuzesOpslaan(self):
+    def flexkeuzesOpslaan(self,num):
         """
         Deze functie slaat huidig ingevulde flex opties op in het flexibiliseringsobject.
+        
+        Parameters
+        ----------
+        num : int (0,1,2,3)
+            0 verandert alle onderdelen
+            1 voor verandering bij leeftijd
+            2 voor verandering bij OP/PP
+            3 voor verandering bij Hoog/Laag
+        
         """
         
         # self.regelingCode = functions.regelingNaamCode(str(self.ui.cbRegeling.currentText()))
@@ -705,103 +717,127 @@ class Flexmenu(QtWidgets.QMainWindow):
                 self.regelingCode = flexibilisatie
                 break
         
-        # --- Leeftijd wijzigen ---
-        try:
-            self.regelingCode.leeftijd_Actief = self.ui.CheckLeeftijdWijzigen.isChecked()
-            self.regelingCode.leeftijdJaar = int(self.ui.sbJaar.value())
-            self.regelingCode.leeftijdMaand = int(self.ui.sbMaand.value())
-        except Exception as e:
-            self._logger.exception("Er gaat iets fout bij het opslaan van de pensioenleeftijd in flexmenu.ui")
+        if num == 1 or num == 0: # Leeftijd wijziging opslaan
+            try:
+                self.regelingCode.leeftijd_Actief = self.ui.CheckLeeftijdWijzigen.isChecked()
+                self.regelingCode.leeftijdJaar = int(self.ui.sbJaar.value())
+                self.regelingCode.leeftijdMaand = int(self.ui.sbMaand.value())
+            except Exception as e:
+                self._logger.exception("Er gaat iets fout bij het opslaan van de pensioenleeftijd in flexmenu.ui")
         
-        # --- OP/PP uitruiling ---
-        try:
-            self.regelingCode.OP_PP_Actief = self.ui.CheckUitruilen.isChecked() 
-            self.regelingCode.OP_PP_UitruilenVan = str(self.ui.cbUitruilenVan.currentText()) 
-            self.regelingCode.OP_PP_Methode = str(self.ui.cbUMethode.currentText()) 
-            
-            if str(self.ui.cbUMethode.currentText()) == "Verhouding":
-                self.regelingCode.OP_PP_Verhouding_OP = int(self.ui.txtUVerhoudingOP.text())
-                self.regelingCode.OP_PP_Verhouding_PP = int(self.ui.txtUVerhoudingPP.text())
+        if num == 2 or num == 0: # OP/PP uitruiling opslaan
+            try:
+                self.regelingCode.OP_PP_Actief = self.ui.CheckUitruilen.isChecked() 
+                self.regelingCode.OP_PP_UitruilenVan = str(self.ui.cbUitruilenVan.currentText()) 
+                self.regelingCode.OP_PP_Methode = str(self.ui.cbUMethode.currentText()) 
                 
-                if str(self.ui.txtUPercentage.text()) == "":
-                    self.regelingCode.OP_PP_Percentage = 0
-                else:
-                    self.regelingCode.OP_PP_Percentage = int(self.ui.txtUPercentage.text())
-            
-            elif str(self.ui.cbUMethode.currentText()) == "Percentage":
-                self.regelingCode.OP_PP_Percentage = int(self.ui.txtUPercentage.text())
-                
-                if str(self.ui.txtUVerhoudingOP.text()) == "":
-                    self.regelingCode.OP_PP_Verhouding_OP = 0
-                else:
+                if str(self.ui.cbUMethode.currentText()) == "Verhouding":
                     self.regelingCode.OP_PP_Verhouding_OP = int(self.ui.txtUVerhoudingOP.text())
-                
-                if str(self.ui.txtUVerhoudingPP.text()) == "":
-                    self.regelingCode.OP_PP_Verhouding_PP = 0
-                else:
                     self.regelingCode.OP_PP_Verhouding_PP = int(self.ui.txtUVerhoudingPP.text())
-
-        except Exception as e:
-            self._logger.exception("Huidig geselecteerde OP/PP flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
-        
-        # --- Hoog/laag constructie ---
-        try:
-            self.regelingCode.HL_Actief = self.ui.CheckHoogLaag.isChecked() 
-            self.regelingCode.HL_Volgorde = str(self.ui.cbHLVolgorde.currentText()) 
-            self.regelingCode.HL_Methode = str(self.ui.cbHLMethode.currentText()) 
-            self.regelingCode.HL_Jaar = int(self.ui.sbHLJaar.value()) 
-            
-            if str(self.ui.cbHLMethode.currentText()) == "Verhouding":
-                self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
-                self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
-                
-                if str(self.ui.txtHLVerhoudingHoog.text()) == "":
-                    self.regelingCode.HL_Verhouding_Hoog = 0
-                else:
-                    self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
-                
-            elif str(self.ui.cbHLMethode.currentText()) == "Verschil":
-                self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
-                
-                if str(self.ui.txtHLVerhoudingHoog.text()) == "":
-                    self.regelingCode.HL_Verhouding_Hoog = 0
-                else:
-                    self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
-                
-                if str(self.ui.txtHLVerhoudingLaag.text()) == "":
-                    self.regelingCode.HL_Verhouding_Laag = 0
-                else:
-                    self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
                     
-            elif str(self.ui.cbHLMethode.currentText()) == "Opvullen AOW":
-                if str(self.ui.txtHLVerhoudingHoog.text()) == "":
-                    self.regelingCode.HL_Verhouding_Hoog = 0
-                else:
-                    self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
-                    
-                if str(self.ui.txtHLVerhoudingHoog.text()) == "":
-                    self.regelingCode.HL_Verhouding_Hoog = 0
-                else:
-                    self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
+                    if str(self.ui.txtUPercentage.text()) == "":
+                        self.regelingCode.OP_PP_Percentage = 0
+                    else:
+                        self.regelingCode.OP_PP_Percentage = int(self.ui.txtUPercentage.text())
                 
-                if str(self.ui.txtHLVerhoudingLaag.text()) == "":
-                    self.regelingCode.HL_Verhouding_Laag = 0
-                else:
-                    self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
-                 
-        except Exception as e: self._logger.exception("Huidig geselecteerde hoog/laag flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
-
-    def berekenen(self):
-        """
-        Deze functie zal alle flexibiliseringswaarden naar de Excel sheet plaatsen voor berekenen.
-        """
-        pass
+                elif str(self.ui.cbUMethode.currentText()) == "Percentage":
+                    self.regelingCode.OP_PP_Percentage = int(self.ui.txtUPercentage.text())
+                    
+                    if str(self.ui.txtUVerhoudingOP.text()) == "":
+                        self.regelingCode.OP_PP_Verhouding_OP = 0
+                    else:
+                        self.regelingCode.OP_PP_Verhouding_OP = int(self.ui.txtUVerhoudingOP.text())
+                    
+                    if str(self.ui.txtUVerhoudingPP.text()) == "":
+                        self.regelingCode.OP_PP_Verhouding_PP = 0
+                    else:
+                        self.regelingCode.OP_PP_Verhouding_PP = int(self.ui.txtUVerhoudingPP.text())
     
-    def diagramUpdate(self):
-        """
-        Deze functie update het diagram.
-        """
-        pass
+            except Exception as e:
+                self._logger.exception("Huidig geselecteerde OP/PP flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
+        
+        if num == 3 or num == 0: # Hoog/Laag constructie opslaan
+            try:
+                self.regelingCode.HL_Actief = self.ui.CheckHoogLaag.isChecked() 
+                self.regelingCode.HL_Volgorde = str(self.ui.cbHLVolgorde.currentText()) 
+                self.regelingCode.HL_Methode = str(self.ui.cbHLMethode.currentText()) 
+                self.regelingCode.HL_Jaar = int(self.ui.sbHLJaar.value()) 
+                
+                if str(self.ui.cbHLMethode.currentText()) == "Verhouding":
+                    self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
+                    self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
+                    
+                    if str(self.ui.txtHLVerhoudingHoog.text()) == "":
+                        self.regelingCode.HL_Verhouding_Hoog = 0
+                    else:
+                        self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
+                    
+                elif str(self.ui.cbHLMethode.currentText()) == "Verschil":
+                    self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
+                    
+                    if str(self.ui.txtHLVerhoudingHoog.text()) == "":
+                        self.regelingCode.HL_Verhouding_Hoog = 0
+                    else:
+                        self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
+                    
+                    if str(self.ui.txtHLVerhoudingLaag.text()) == "":
+                        self.regelingCode.HL_Verhouding_Laag = 0
+                    else:
+                        self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
+                        
+                elif str(self.ui.cbHLMethode.currentText()) == "Opvullen AOW":
+                    if str(self.ui.txtHLVerhoudingHoog.text()) == "":
+                        self.regelingCode.HL_Verhouding_Hoog = 0
+                    else:
+                        self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
+                        
+                    if str(self.ui.txtHLVerhoudingHoog.text()) == "":
+                        self.regelingCode.HL_Verhouding_Hoog = 0
+                    else:
+                        self.regelingCode.HL_Verhouding_Hoog = int(self.ui.txtHLVerhoudingHoog.text())
+                    
+                    if str(self.ui.txtHLVerhoudingLaag.text()) == "":
+                        self.regelingCode.HL_Verhouding_Laag = 0
+                    else:
+                        self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
+                     
+            except Exception as e: self._logger.exception("Huidig geselecteerde hoog/laag flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
+
+    def berekeningenDoorvoeren(self):
+        instellingen = functions.berekeningen_instellingen()
+        for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
+            blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(self.deelnemerObject.flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
+            blok = list()
+            
+            # Leeftijd doorvoeren
+            if flexibilisatie.leeftijd_Actief: blok.append([flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12, ""])
+            else: blok.append([flexibilisatie.pensioen.pensioenleeftijd, ""])
+            
+            # OP/PP doorvoeren
+            if flexibilisatie.OP_PP_Actief:
+                if flexibilisatie.OP_PP_Methode == "Verhouding":
+                    blok.append([flexibilisatie.OP_PP_Methode, ""])
+                    blok.append(["1", str(min(flexibilisatie.OP_PP_Verhouding_PP / flexibilisatie.OP_PP_Verhouding_OP, 0.7))])
+                else:
+                    blok.append(["{} {}".format(flexibilisatie.OP_PP_UitruilenVan, flexibilisatie.OP_PP_Methode), ""])
+                    blok.append([flexibilisatie.OP_PP_Percentage / 100, ""])
+            else:
+                blok.append(["", ""])
+                blok.append(["", ""])
+                
+            # Hoog/Laag doorvoeren
+            if flexibilisatie.HL_Actief:
+                blok.append([flexibilisatie.HL_Methode, flexibilisatie.HL_Volgorde])
+                if flexibilisatie.HL_Methode == "Verhouding": blok.append([flexibilisatie.HL_Jaar, min(max(flexibilisatie.HL_Verhouding_Laag / flexibilisatie.HL_Verhouding_Hoog, 3/4), 1)])
+                else: blok.append([flexibilisatie.HL_Jaar, max(flexibilisatie.HL_Verschil, 0)])
+            else:
+                blok.append(["", ""])
+                blok.append(["", ""])
+            
+            updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 1, 2),\
+                                                                 (blokhoogte + 5, 3))
+            try: updaterange.value = blok
+            except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
     
     def samenvattingUpdate(self):
         """
@@ -1055,39 +1091,20 @@ class Flexmenu(QtWidgets.QMainWindow):
         if self.regelingCode.HL_Actief: lblOP.setText("€{},-/{},-".format(self.regelingCode.ouderdomsPensioenHoog, self.regelingCode.ouderdomsPensioenLaag).replace(',','.'))
         else: lblOP.setText("€{},-".format(self.regelingCode.ouderdomsPensioenHoog).replace(',','.'))
         lblPP.setText("€{},-".format(self.regelingCode.partnerPensioen))
+    
+    def btnAOWClicked(self):
+        self.blokkeerSignalen(True)
+        self._logger.info("AOW-leeftijd button in flexmenu geklikt.")
+
+        try:
+            self.ui.sbJaar.setValue(self.AOWjaar)
+            self.ui.sbMaand.setValue(self.AOWmaand)
+        except Exception as e:
+            self._logger.exception("Probleem bij het wijzigen van leeftijdvelden naar AOW-leeftijd.")
+
+        self.blokkeerSignalen(False)
+        self.invoerVerandering(0)
         
-    
-    def berekeningenDoorvoeren(self):
-        instellingen = functions.berekeningen_instellingen()
-        for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
-            blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(self.deelnemerObject.flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
-            blok = list()
-            if flexibilisatie.leeftijd_Actief: blok.append([flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12, ""])
-            else: blok.append([flexibilisatie.pensioen.pensioenleeftijd, ""])
-            if flexibilisatie.OP_PP_Actief:
-                if flexibilisatie.OP_PP_Methode == "Verhouding":
-                    blok.append([flexibilisatie.OP_PP_Methode, ""])
-                    blok.append(["1", str(min(flexibilisatie.OP_PP_Verhouding_PP / flexibilisatie.OP_PP_Verhouding_OP, 0.7))])
-                else:
-                    blok.append(["{} {}".format(flexibilisatie.OP_PP_UitruilenVan, flexibilisatie.OP_PP_Methode), ""])
-                    blok.append([flexibilisatie.OP_PP_Percentage / 100, ""])
-            else:
-                blok.append(["", ""])
-                blok.append(["", ""])
-            if flexibilisatie.HL_Actief:
-                blok.append([flexibilisatie.HL_Methode, flexibilisatie.HL_Volgorde])
-                if flexibilisatie.HL_Methode == "Verhouding": blok.append([flexibilisatie.HL_Jaar, min(max(flexibilisatie.HL_Verhouding_Laag / flexibilisatie.HL_Verhouding_Hoog, 3/4), 1)])
-                else: blok.append([flexibilisatie.HL_Jaar, max(flexibilisatie.HL_Verschil, 0)])
-            else:
-                blok.append(["", ""])
-                blok.append(["", ""])
-            
-            updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 1, 2),\
-                                                                 (blokhoogte + 5, 3))
-            try: updaterange.value = blok
-            except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
-                
-    
     def btnAndereDeelnemerClicked(self):
         self.close()
         self._logger.info("Flexmenu scherm gesloten")
@@ -1099,64 +1116,59 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.close()
         self._logger.info("Flexmenu scherm gesloten")
         
-        #drop down op vergelijkingssheet updaten
+        # Drop down op vergelijkingssheet updaten
         functions.vergelijken_keuzes()
-        #open Vergelijken sheet
+        
+        # Open Vergelijken sheet
         self.book.sheets["Vergelijken"].activate()
         self._logger.info("drop down op vergelijkingssheet geüpdate")
         
     def btnOpslaanClicked(self): 
         # Alle huidige flexibiliserignen opslaan in een Excel sheet
         # Huidig diagram opslaan en plaats in vergelijking sheet    
+
+        nieuwID = self.zoekNieuwID()
+        offsetID = len(self.opslaanList)
         
-        if self.invoerCheck() == True:
-            nieuwID = self.zoekNieuwID()
-            offsetID = len(self.opslaanList)
+        # ID nummer met laatste opgeslagen flexibilisaties ophogen
+        flexopslag = self.book.sheets["Flexopslag"]
+        if str(flexopslag.cells(2, 5).value) != "None":   # Alleen als er nog flexibilisaties opgeslagen zijn
+            # ID-nummer van laatste opgeslagen flexibilisatie vinden
+            kolomLaatsteOpslag = functions.FlexopslagVinden(self.book)[1]
+            IDLaatsteOpslag = flexopslag.cells(3, kolomLaatsteOpslag).value
+            IDoud = int(IDLaatsteOpslag.split()[-1])
+            if nieuwID != IDoud + 1:
+                nieuwID = nieuwID + IDoud
+                offsetID = (kolomLaatsteOpslag-1)/4
+        
+        # Afbeelding op vergelijkingsSheet zetten
+        try: functions.maak_afbeelding(self.deelnemerObject, sheet = self.book.sheets["Vergelijken"], ID = nieuwID, titel = f"{nieuwID} - Een super coole title")
+        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
             
-            #ID nummer met laatste opgeslagen flexibilisaties ophogen
-            flexopslag = self.book.sheets["Flexopslag"]
-            if str(flexopslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
-                #ID-nummer van laatste opgeslagen flexibilisatie vinden
-                kolomLaatsteOpslag = functions.FlexopslagVinden(self.book)[1]
-                IDLaatsteOpslag = flexopslag.cells(3, kolomLaatsteOpslag).value
-                IDoud = int(IDLaatsteOpslag.split()[-1])
-                if nieuwID != IDoud + 1:
-                    nieuwID = nieuwID + IDoud
-                    offsetID = (kolomLaatsteOpslag-1)/4
-            
-            # afbeelding op vergelijkingsSheet zetten
-            try: functions.maak_afbeelding(self.deelnemerObject, sheet = self.book.sheets["Vergelijken"], ID = nieuwID, titel = f"{nieuwID} - Een super coole title")
-            except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
-                
-            
-            # # Persoonsgegevens opslaan als dit de eerste flexibilisatie is
-            # #persoonsgegevens al opgeslagen bij openen flexmenu
-            # if len(self.opslaanList) < 1:
-            #     functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
-            
-            
-            # ID van de flexibilisatie in Excel opslaan
-            flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
-                     ["AfbeeldingID",f"Vergelijking {nieuwID}"]]
-            self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).options(ndims = 2).value = flexID
-            self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).color = (150,150,150)
-            
-            # Flexibilisatiekeuzes opslaan in Excel
-            for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
-                functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,offsetID,regelingCount) 
-            
-            #melding geven dat flexibilisatie opgeslagen is
-            tekst = "Deze flexibilisatie is opgeslagen. \nU kunt nu verder flexibiliseren. \nMet de knop 'Vergelijken' kunt u uw opgeslagen flexibilisaties vergelijken."
-            functions.Mbox("Flexibilisatie opgeslagen", tekst, 0)
-            
-            self.opslaanList.append(nieuwID)
-            self.opslaanCount += 1
-            
-            #self.close()
-            self._logger.info("Flexibilisatie opgeslagen.")
-            
-        elif self.invoerCheck() == False:
-            self.ui.lbl_opslaanMelding.setText("Opslaan niet mogelijk bij foute invoer.")
+        
+        # # Persoonsgegevens opslaan als dit de eerste flexibilisatie is
+        # #persoonsgegevens al opgeslagen bij openen flexmenu
+        # if len(self.opslaanList) < 1:
+        #     functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
+        
+        # ID van de flexibilisatie in Excel opslaan
+        flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
+                 ["AfbeeldingID",f"Vergelijking {nieuwID}"]]
+        self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).options(ndims = 2).value = flexID
+        self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).color = (150,150,150)
+        
+        # Flexibilisatiekeuzes opslaan in Excel
+        for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
+            functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,offsetID,regelingCount) 
+        
+        # Melding geven dat flexibilisatie opgeslagen is
+        tekst = "Deze flexibilisatie is opgeslagen. \nU kunt nu verder flexibiliseren. \nMet de knop 'Vergelijken' kunt u uw opgeslagen flexibilisaties vergelijken."
+        functions.Mbox("Flexibilisatie opgeslagen", tekst, 0)
+        
+        self.opslaanList.append(nieuwID)
+        self.opslaanCount += 1
+
+        self._logger.info("Flexibilisatie opgeslagen.")
             
 
 class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
