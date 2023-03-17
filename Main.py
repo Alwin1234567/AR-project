@@ -16,6 +16,7 @@ from logging import getLogger
 Body
 Hier komen alle functies
 """
+
 @xw.sub
 def Schermen():
     logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
@@ -187,7 +188,7 @@ def AfbeeldingKiezen():
     else:
         functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
     
-
+#book.sheets["Vergelijken"].cells(2, "O").value = "Test"
 @xw.sub
 def AfbeeldingVerwijderen():
     """

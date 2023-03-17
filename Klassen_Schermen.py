@@ -167,6 +167,10 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self._windowflex = Flexmenu(self.book, deelnemer, self._logger)
         self._windowflex.show()
         
+        #afbeelding huidige pensioen op vergelijken sheet plaatsen
+        try: functions.maak_afbeelding(deelnemer, sheet = self.book.sheets["Vergelijken"], ID = 0, titel = "0 - Originele pensioen")
+        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
+        
     def btnTerugClicked(self):
         self.close()
         self._logger.info("Deelnemerselectie scherm gesloten")
@@ -1104,9 +1108,10 @@ class Flexmenu(QtWidgets.QMainWindow):
             # afbeelding op vergelijkingsSheet zetten
             try: functions.maak_afbeelding(self.deelnemerObject, sheet = self.book.sheets["Vergelijken"], ID = nieuwID)
             except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
+                
             
             # # Persoonsgegevens opslaan als dit de eerste flexibilisatie is
-            #persoonsgegevens al opgeslagen bij openen flexmenu
+            # #persoonsgegevens al opgeslagen bij openen flexmenu
             # if len(self.opslaanList) < 1:
             #     functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
                 
