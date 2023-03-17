@@ -21,6 +21,23 @@ Body
 Hier komen alle functies
 """
 
+def isBeheerder(book):
+    '''
+    functie die controleert of er een beheerder is ingelogd
+
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+
+    Returns
+    -------
+    beheerder : bool
+        True als beheerder is ingelogd, False als geen beheerder is ingelogd
+
+    '''
+    beheerder = book.sheets["Beheerder"].cells(1, 1).value == "Beheerder"
+    return beheerder
 
 def getaltotijd(getal):
     """
@@ -827,11 +844,32 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     # else:
     #     logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
 
-def FlexopslagVinden(book, naamFlex):
+def FlexopslagVinden(book, naamFlex = "Geen"):
+    '''
+    functie die telt hoeveel flexibilisaties opgeslagen zijn, 
+    hoeveel pensioenen deze persoon heeft
+    en op welke plek de flexibilisatie met als naam naamFlex zit
+
+    Parameters
+    ----------
+    book : xlwings.Book
+        Het excel bestand waarin het programma runned.
+    naamFlex : string
+        naam van de flexibilisatie die gezocht moet worden.
+
+    Returns
+    -------
+    list
+        flexKolom = kolom waarop naamFlex zit
+        zoekKolom -4 = kolom met laatste flexibilisatie
+        aantalPensionenen = aantal pensioenen van deze deelnemer
+
+    '''
     #sheet definiëren
     flexopslag = book.sheets["Flexopslag"]
     
     flexKolom = 0
+    aantalPensioenen = 0
     #startkolom voor het zoeken van flexibilisatie
     zoekKolom = 5
     #alle blokken langsgaan op zoek naar flexibilisatie met naam naamFlex
@@ -840,9 +878,9 @@ def FlexopslagVinden(book, naamFlex):
         if naam == naamFlex:
             flexKolom = zoekKolom
         zoekKolom += 4
-    
-    #opzoeken hoeveel pensioenen deze deelnemer heeft
-    aantalPensioenen = blokkentellen(5, flexKolom, 20, flexopslag)
+    if flexKolom != 0:
+        #opzoeken hoeveel pensioenen deze deelnemer heeft
+        aantalPensioenen = blokkentellen(5, flexKolom, 20, flexopslag)
     return [flexKolom, zoekKolom-4, aantalPensioenen]
 
 def flexopslagLegen(book):
@@ -1343,6 +1381,8 @@ def vergelijken_keuzes():
     #list maken waarin de opgeslagen pensioenen worden bijgehouden
     pensioenlist = []
     celKolom = 5 
+    #cel met de drop down datavalisatie
+    keuzeCel = "B6"
     if str(invoer.cells(2,celKolom).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
         #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenlist
         while str(invoer.cells(2,celKolom).value) != "None":
@@ -1351,14 +1391,43 @@ def vergelijken_keuzes():
             celKolom += 4
         #lijst omzetten naar string, gescheiden door komma
         pensioenopties = ','.join(pensioenlist)
+        #verwijder bestaande datavalidatie uit cel
+        uitvoer[keuzeCel].api.Validation.Delete()
+        #voeg nieuwe datavalidatie toe aan cel
+        uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
+        #vul keuzeveld met eerste opties uit pensioenlist
+        uitvoer[keuzeCel].value = pensioenlist[0]
     else:   #geen flexibilisaties opgeslagen
-        pensioenopties = pensioenlist
-    #cel met de drop down datavalisatie
-    keuzeCel = "B6"
-    #verwijder bestaande datavalidatie uit cel
-    uitvoer[keuzeCel].api.Validation.Delete()
-    #voeg nieuwe datavalidatie toe aan cel
-    uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
-    #vul keuzeveld met eerste opties uit pensioenlist
-    uitvoer[keuzeCel].value = pensioenlist[0]
+        #verwijder bestaande datavalidatie uit cel
+        uitvoer[keuzeCel].api.Validation.Delete()
+        #vul keuzeveld met eerste opties uit pensioenlist
+        uitvoer[keuzeCel].value = ""
+        #voeg nieuwe datavalidatie toe aan cel
+        uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
+   
+def opslagLegen(book, logger):
+    flexopslag = book.sheets["Flexopslag"]
+    vergelijken = book.sheets["Vergelijken"]
+    if str(flexopslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
+        #Vergelijken sheet legen
+        #ID-nummer van laatste opgeslagen flexibilisatie vinden
+        kolomLaatsteOpslag = FlexopslagVinden(book)[1]
+        IDLaatsteOpslag = flexopslag.cells(3, kolomLaatsteOpslag).value
+        stopNummer = int(IDLaatsteOpslag.split()[-1])
+        #alle ID's tot laatste ID afgaan om (mogelijke) afbeelding te verwijderen
+        for i in range(1,stopNummer+1):
+            ID = f"Vergelijking {i}"
+            try:
+                vergelijken.pictures[ID].delete()
+            except:
+                pass
+        logger.info("Afbeeldingen op vergelijken sheet verwijderd")
+        #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
+        flexopslag.clear()
+        #laatste opslag is verwijderd, dus drop down legen
+        vergelijken_keuzes()
+        logger.info("Flexopslag is geleegd")
+    else:
+        logger.info("Flexopslag legen niet nodig, was al leeg")
+    
     

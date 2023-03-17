@@ -185,7 +185,7 @@ def AfbeeldingKiezen():
         #naam van gekozen afbeelding op sheet printen
         sheet.cells(8, "M").value = gekozenAfbeelding
     else:
-        functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen", 0)
+        functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
     
 
 @xw.sub
@@ -203,13 +203,7 @@ def AfbeeldingVerwijderen():
         gekozenAfbeelding = Vergelijken.cells(6,"B").value
         #ID van de gekozen afbeelding opzoeken
         ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
-        Vergelijken.cells(11, "O").value = ID
-        
-        fotos = []
-        AantalObjecten = Vergelijken.pictures.count
-        for i in range(0,AantalObjecten):
-            fotos.append(Vergelijken.pictures[i].name)
-        Vergelijken.cells(11, "P").value = fotos
+        #Vergelijken.cells(11, "O").value = ID
         
         #gekozen afbeelding verwijderen
         try:
@@ -242,6 +236,7 @@ def AfbeeldingVerwijderen():
     else: #er zijn geen flexibilisaties opgeslagen
         #keuzecel in vergelijkingssheet legen
         Vergelijken["B6"].value = ""
+        functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
     
     
 @xw.sub
@@ -332,7 +327,7 @@ def afbeelding_aanpassen():
         window.show()
         app.exec_()
     else:
-        functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen", 0)
+        functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
     
 @xw.sub
 def NieuweFlexibilisatie():
@@ -359,7 +354,7 @@ def NieuweFlexibilisatie():
         window.show()
         app.exec_()
     else:
-        functions.Mbox("foutmelding", "Er is geen deelnemer opgeslagen", 0)
+        functions.Mbox("foutmelding", "Er is geen deelnemer opgeslagen. \nGelieve eerst een deelnemer te selecteren via de knop 'Andere deelnemer'.", 0)
         
 @xw.sub
 def AndereDeelnemer():

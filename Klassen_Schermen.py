@@ -156,11 +156,9 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         if self.ui.lwKeuzes.currentRow() == -1: 
             self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren voordat u gaat flexibiliseren")
             return
-        #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
-        self.book.sheets["Flexopslag"].clear()
-        #laatste opslag is verwijderd, dus drop down legen
-        self.book.sheets["Vergelijken"]["B6"].value = ""
-        
+        #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag en vergelijken sheet
+        functions.opslagLegen(self.book, self._logger)
+                
         #nieuwe deelnemer aanmaken
         deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
         deelnemer.activeerFlexibilisatie()
@@ -173,7 +171,7 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self.close()
         self._logger.info("Deelnemerselectie scherm gesloten")
         #controleren of beheerder is ingelogd
-        if self.book.sheets["Beheerder"].cells(1, 1).value == "Beheerder":
+        if functions.isBeheerder(self.book):
             self.windowBeheerder = Beheerderkeuzes(self.book, self._logger)
             self.windowBeheerder.show()
         else:
@@ -445,6 +443,11 @@ class Flexmenu(QtWidgets.QMainWindow):
             functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax)
             self.ui.wdt_pltAfbeelding.canvas.draw()
         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+        
+        # Persoonsgegevens opslaan als dit de eerste flexibilisatie is
+        if len(self.opslaanList) < 1:
+            functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
+            self._logger.info("Persoonsgegevens deelnemer opgeslagen in flexopslag")
     
     def zoekFlexibilisaties(self):
         self.opslaanList = self.book.sheets["Flexopslag"].range("3:3")[1:500].value # Zoekt maximaal tot 500 anders wordt het langzaam
@@ -1102,14 +1105,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             try: functions.maak_afbeelding(self.deelnemerObject, sheet = self.book.sheets["Vergelijken"], ID = nieuwID)
             except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
             
-            # Persoonsgegevens opslaan als dit de eerste flexibilisatie is
-            if len(self.opslaanList) < 1:
-                functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
+            # # Persoonsgegevens opslaan als dit de eerste flexibilisatie is
+            #persoonsgegevens al opgeslagen bij openen flexmenu
+            # if len(self.opslaanList) < 1:
+            #     functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
                 
             
             # ID van de flexibilisatie in Excel opslaan
             flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
-                     ["AfbeeldingID",f"{nieuwID}"]]
+                     ["AfbeeldingID",f"Vergelijking {nieuwID}"]]
             self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).options(ndims = 2).value = flexID
             self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).color = (150,150,150)
             
