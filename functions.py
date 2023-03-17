@@ -1361,7 +1361,8 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         ax.set_title(titel, fontweight='bold')
     
     if sheet != None:
-        locatie = sheet.range((11,1))
+        locatieHoogte = 12 + 21*int(ID)
+        locatie = sheet.range((locatieHoogte,2))
         afbeelding = plt.figure()
         for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
         

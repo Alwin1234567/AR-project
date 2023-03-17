@@ -1105,8 +1105,19 @@ class Flexmenu(QtWidgets.QMainWindow):
             nieuwID = self.zoekNieuwID()
             offsetID = len(self.opslaanList)
             
+            #ID nummer met laatste opgeslagen flexibilisaties ophogen
+            flexopslag = self.book.sheets["Flexopslag"]
+            if str(flexopslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
+                #ID-nummer van laatste opgeslagen flexibilisatie vinden
+                kolomLaatsteOpslag = functions.FlexopslagVinden(self.book)[1]
+                IDLaatsteOpslag = flexopslag.cells(3, kolomLaatsteOpslag).value
+                IDoud = int(IDLaatsteOpslag.split()[-1])
+                if nieuwID != IDoud + 1:
+                    nieuwID = nieuwID + IDoud
+                    offsetID = (kolomLaatsteOpslag-1)/4
+            
             # afbeelding op vergelijkingsSheet zetten
-            try: functions.maak_afbeelding(self.deelnemerObject, sheet = self.book.sheets["Vergelijken"], ID = nieuwID)
+            try: functions.maak_afbeelding(self.deelnemerObject, sheet = self.book.sheets["Vergelijken"], ID = nieuwID, titel = f"{nieuwID} - Een super coole title")
             except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
                 
             
@@ -1114,7 +1125,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             # #persoonsgegevens al opgeslagen bij openen flexmenu
             # if len(self.opslaanList) < 1:
             #     functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
-                
+            
             
             # ID van de flexibilisatie in Excel opslaan
             flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
