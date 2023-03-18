@@ -675,19 +675,21 @@ class Flexmenu(QtWidgets.QMainWindow):
             return True
         
         if num == 2 or num == 0: # Check of invoer klopt van OP/PP blok
-            melding, OK = functions.checkVeldInvoer(self.ui.cbUMethode.currentText(),
-                                      self.ui.txtUPercentage.text(),
-                                      self.ui.txtUVerhoudingOP.text(),
-                                      self.ui.txtUVerhoudingPP.text())
+            melding, OK = functions.checkVeldInvoer("OP-PP",
+                                                    self.ui.cbUMethode.currentText(),
+                                                    self.ui.txtUPercentage.text(),
+                                                    self.ui.txtUVerhoudingOP.text(),
+                                                    self.ui.txtUVerhoudingPP.text())
             
             self.ui.lblFoutmeldingUitruilen.setText(melding)
             return OK
    
         if num == 3 or num == 0: # Check of invoer klopt van Hoog/Laag blok
-            melding, OK = functions.checkVeldInvoer(self.ui.cbHLMethode.currentText(),
-                                                          self.ui.txtHLVerschil.text(),
-                                                          self.ui.txtHLVerhoudingHoog.text(),
-                                                          self.ui.txtHLVerhoudingLaag.text())
+            melding, OK = functions.checkVeldInvoer("hoog-laag",
+                                                    self.ui.cbHLMethode.currentText(),
+                                                    self.ui.txtHLVerschil.text(),
+                                                    self.ui.txtHLVerhoudingHoog.text(),
+                                                    self.ui.txtHLVerhoudingLaag.text())
             
             self.ui.lblFoutmeldingHoogLaag.setText(melding)
             return OK

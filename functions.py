@@ -602,9 +602,11 @@ def isNotInteger(veldInput):
     except ValueError:
         return True
         
-def checkVeldInvoer(methode,veld1,veld2,veld3):
+def checkVeldInvoer(soort,methode,veld1,veld2,veld3):
     intProblem = False
     emptyProblem = False
+    message = ""
+    OK = True
     
     if str(methode) == "Percentage" or str(methode) == "Verschil":
         if str(veld1) == "": emptyProblem = True
@@ -619,28 +621,56 @@ def checkVeldInvoer(methode,veld1,veld2,veld3):
     elif str(methode) == "Verhouding":
         if str(veld1) == "": pass
         elif isNotInteger(veld1): intProblem = True
-        
+
         if str(veld2) == "": emptyProblem = True
         elif isNotInteger(veld2): intProblem = True
             
         if str(veld3) == "": emptyProblem = True
-        elif isNotInteger(veld3): intProblem = True     
+        elif isNotInteger(veld3): intProblem = True
     
     elif str(methode) == "Opvullen AOW":
         if isNotInteger(veld1): intProblem = True
 
         if isNotInteger(veld2): intProblem = True
 
-        if isNotInteger(veld3): intProblem = True   
+        if isNotInteger(veld3): intProblem = True
 
-    if intProblem == True and emptyProblem == True:
+    if intProblem == True and emptyProblem == True: # Er zijn letters ingevuld & er zijn lege vakjes
         return ["Er is foute invoer en missende invoer.",False]
-    elif intProblem == True and emptyProblem == False:
-        return ["Invoer mag alleen een geheel getal zijn.",False]
-    elif intProblem == False and emptyProblem == True:
+    elif intProblem == True and emptyProblem == False: # Er zijn letters ingevuld
+        return ["Invoer mag alleen een positief geheel getal zijn.",False]
+    elif intProblem == False and emptyProblem == True: # Er zijn lege vakjes
         return ["Er is missende invoer.",False]
-    else:
-        return ["",True]
+    elif intProblem == False and emptyProblem == False: # Alle vakjes zijn met gehele getallen ingevuld
+        if soort == "OP-PP":
+            if str(methode) == "Verhouding":
+                if int(veld2) < 0 or int(veld3) < 0: # Getallen mogen niet negatief zijn
+                    message = "Getallen mogen niet negatief zijn."
+                    OK = False
+                elif int(veld3)/int(veld2) > 0.70: # Verhouding moet voldoen aan PP max. 70% van OP regel
+                    message = "Verhouding ongeldig (PP maximaal 70% van OP)"
+                    OK = False
+            elif str(methode) == "Percentage":
+                if int(veld1) < 0: # Getallen mogen niet negatief zijn
+                    message = "Getallen mogen niet negatief zijn."
+                    OK = False
+                elif int(veld1) > 100: # Percentage kan niet hoger dan 100% zijn
+                    message = "Percentage ongeldig (kan niet hoger dan 100%)"
+                    OK = False
+        elif soort == "hoog-laag":
+            if str(methode) == "Verhouding":
+                if int(veld2) < 0 and int(veld3) < 0: # Getallen mogen niet negatief zijn
+                    message = "Getallen mogen niet negatief zijn."
+                    OK = False
+                elif int(veld3)/int(veld2) < 0.75 or int(veld3)/int(veld2) > 1: # Verhouding moet voldoen aan hoog-laag 4:3 regel
+                    message = "Verhouding ongeldig (3:4 regel)"
+                    OK = False
+            elif str(methode) == "Verschil":
+                if int(veld1) < 0: # Getallen mogen niet negatief zijn
+                    message = "Getallen mogen niet negatief zijn."
+                    OK = False
+            
+        return [message,OK]
     
 # def tpxFormule(sterftetafel, rij, leeftijdKolomLetter, jaarKolom, tpxKolom):
 #     if sterftetafel == "AG_2020": return '=if({0}{1}<>"", (1-INDEX(INDIRECT("{2}"),{0}{3}+1,{4}{3}-2018))*{5}{3},"")'.format(leeftijdKolomLetter, rij + 3,  sterftetafel, rij + 2, jaarKolom, tpxKolom)
