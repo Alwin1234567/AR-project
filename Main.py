@@ -332,7 +332,7 @@ def afbeelding_aanpassen():
         app = 0
         app = QtWidgets.QApplication(sys.argv)
         window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
-        window.invoerVerandering()
+        window.invoerVerandering(num = 0)
         window.show()
         app.exec_()
     else:
@@ -359,7 +359,7 @@ def NieuweFlexibilisatie():
         app = 0
         app = QtWidgets.QApplication(sys.argv)
         window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
-        window.invoerVerandering()
+        
         window.show()
         app.exec_()
     else:
@@ -370,7 +370,7 @@ def AndereDeelnemer():
     """
     Functie die het deelnemerselectie scherm opent
     """
-    controle = functions.Mbox("Andere deelnemer selecteren", "Door een andere deelnemer te selecteren zullen de huidige gegevens op de vergelijken sheet verwijderd worden.\nU kunt deze actie niet ongedaan maken.", 2)
+    controle = functions.Mbox("Andere deelnemer selecteren", "Door een andere deelnemer te selecteren zullen de huidige gegevens op de vergelijken sheet verwijderd worden.\nU kunt deze actie niet ongedaan maken.", 1)
     if controle == "OK Clicked":
         #scherm Deelnemerselectie openen
         logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
