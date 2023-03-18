@@ -39,7 +39,7 @@ class Flexibilisering:
         self._OP_PP_UitruilenVan = "OP naar PP"
         self._OP_PP_Methode = "Percentage"
         self._OP_PP_Verhouding_OP = 100
-        self._OP_PP_Verhouding_PP = 0
+        self._OP_PP_Verhouding_PP = 70
         self._OP_PP_Percentage = 0
         
         # Hoog/laag constructie
@@ -47,7 +47,7 @@ class Flexibilisering:
         self._HL_Volgorde = "Hoog-laag"
         self._HL_Methode = "Opvullen AOW" 
         self._HL_Verhouding_Hoog = 100
-        self._HL_Verhouding_Laag = 0
+        self._HL_Verhouding_Laag = 75
         self._HL_Verschil = 0
         self._HL_Jaar = 5
         self._HL_Maand = 0

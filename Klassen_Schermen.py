@@ -659,22 +659,36 @@ class Flexmenu(QtWidgets.QMainWindow):
         """
         
         if num == 1 or num == 0: # Check of invoer klopt van leeftijd blok
+            if int(self.ui.sbJaar.value()) > (self.AOWjaar+5):
+                self.ui.sbJaar.setValue(self.AOWjaar+5)
+                self.ui.sbMaand.setValue(self.AOWmaand)
+                self.ui.lblFoutmeldingLeeftijd.setText(f"Maximum leeftijd is {self.AOWjaar+5} jaar en {self.AOWmaand} maanden.")
+            elif int(self.ui.sbJaar.value()) == (self.AOWjaar+5):
+                if int(self.ui.sbMaand.value()) > self.AOWmaand:
+                    self.ui.sbMaand.setValue(self.AOWmaand)
+                    self.ui.lblFoutmeldingLeeftijd.setText(f"Maximum leeftijd is {self.AOWjaar+5} jaar en {self.AOWmaand} maanden.")
+                else:
+                    self.ui.lblFoutmeldingLeeftijd.setText("")
+            else:
+                self.ui.lblFoutmeldingLeeftijd.setText("")
             return True
         
         if num == 2 or num == 0: # Check of invoer klopt van OP/PP blok
-            melding, OK = functions.checkVeldInvoer(self.ui.cbUMethode.currentText(),
-                                      self.ui.txtUPercentage.text(),
-                                      self.ui.txtUVerhoudingOP.text(),
-                                      self.ui.txtUVerhoudingPP.text())
+            melding, OK = functions.checkVeldInvoer("OP-PP",
+                                                    self.ui.cbUMethode.currentText(),
+                                                    self.ui.txtUPercentage.text(),
+                                                    self.ui.txtUVerhoudingOP.text(),
+                                                    self.ui.txtUVerhoudingPP.text())
             
             self.ui.lblFoutmeldingUitruilen.setText(melding)
             return OK
    
         if num == 3 or num == 0: # Check of invoer klopt van Hoog/Laag blok
-            melding, OK = functions.checkVeldInvoer(self.ui.cbHLMethode.currentText(),
-                                                          self.ui.txtHLVerschil.text(),
-                                                          self.ui.txtHLVerhoudingHoog.text(),
-                                                          self.ui.txtHLVerhoudingLaag.text())
+            melding, OK = functions.checkVeldInvoer("hoog-laag",
+                                                    self.ui.cbHLMethode.currentText(),
+                                                    self.ui.txtHLVerschil.text(),
+                                                    self.ui.txtHLVerhoudingHoog.text(),
+                                                    self.ui.txtHLVerhoudingLaag.text())
             
             self.ui.lblFoutmeldingHoogLaag.setText(melding)
             return OK
