@@ -1460,5 +1460,104 @@ def opslagLegen(book, logger):
         logger.info("Flexopslag is geleegd")
     else:
         logger.info("Flexopslag legen niet nodig, was al leeg")
+
+def dictAssign(lbl,lbl_OP,lbl_PP,lbl_pLeeftijd,lbl_OP_PP,lbl_hlConstructie):
+    """
+    Parameters
+    ----------
+    lbl,lbl_OP,lbl_PP,lbl_pLeeftijd,lbl_OP_PP,lbl_hlConstructie : self.ui labels
+        Dit zijn verwijzingen naar samenvatting labels uit het flexmenu
+    
+    Returns
+    -------
+    rDict: dict
+        Dictionary met labels van de samenvatting in het flexmenu voor specifieke regeling
+    """
+    rDict = dict()
+    
+    rDict["lbl"] = lbl
+    rDict["lbl_OP"] = lbl_OP
+    rDict["lbl_PP"] = lbl_PP
+    rDict["lbl_pLeeftijd"] = lbl_pLeeftijd
+    rDict["lbl_OP_PP"] = lbl_OP_PP
+    rDict["lbl_hlConstructie"] = lbl_hlConstructie
+    
+    return rDict
+
+def samenvattingDict(regeling,UI):
+    """
+    Parameters
+    ----------
+    regeling : str
+        Korte naam van de regeling
+    
+    UI : self.ui object
+        Meegegeven vanuit flexmenu class
+    
+    Returns
+    -------
+    regelingDict : dict
+        Dictionary met labels van de samenvatting in het flexmenu voor specifieke regeling
+    """
+    
+    regelingDict = dict()
+    
+    if regeling == "ZL":
+        regelingDict = dictAssign(UI.lbl_ZL,
+                   UI.lbl_ZL_OP,
+                   UI.lbl_ZL_PP,
+                   UI.lbl_ZL_pLeeftijd,
+                   UI.lbl_ZL_OP_PP,
+                   UI.lbl_ZL_hlConstructie)
+    elif regeling == "Aegon OP65":
+        regelingDict = dictAssign(UI.lbl_A65,
+                   UI.lbl_A65_OP,
+                   UI.lbl_A65_PP,
+                   UI.lbl_A65_pLeeftijd,
+                   UI.lbl_A65_OP_PP,
+                   UI.lbl_A65_hlConstructie)
+    elif regeling == "Aegon OP67":
+        regelingDict = dictAssign(UI.lbl_A67,
+                   UI.lbl_A67_OP,
+                   UI.lbl_A67_PP,
+                   UI.lbl_A67_pLeeftijd,
+                   UI.lbl_A67_OP_PP,
+                   UI.lbl_A67_hlConstructie)
+    elif regeling == "NN OP65":
+        regelingDict = dictAssign(UI.lbl_NN65,
+                   UI.lbl_NN65_OP,
+                   UI.lbl_NN65_PP,
+                   UI.lbl_NN65_pLeeftijd,
+                   UI.lbl_NN65_OP_PP,
+                   UI.lbl_NN65_hlConstructie)
+    elif regeling == "NN OP67":
+        regelingDict = dictAssign(UI.lbl_NN67,
+                   UI.lbl_NN67_OP,
+                   UI.lbl_NN67_PP,
+                   UI.lbl_NN67_pLeeftijd,
+                   UI.lbl_NN67_OP_PP,
+                   UI.lbl_NN67_hlConstructie)
+    elif regeling == "PF VLC OP68":
+        regelingDict = dictAssign(UI.lbl_VLC,
+                   UI.lbl_VLC_OP,
+                   UI.lbl_VLC_PP,
+                   UI.lbl_VLC_pLeeftijd,
+                   UI.lbl_VLC_OP_PP,
+                   UI.lbl_VLC_hlConstructie)
+    
+    return regelingDict
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
