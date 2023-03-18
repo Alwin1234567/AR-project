@@ -193,6 +193,14 @@ def AfbeeldingKiezen():
         #naam van gekozen afbeelding op sheet printen
         sheet.cells(8, "M").value = gekozenAfbeelding
         
+        #Deelnemer toegevoegd zodat er gekeken kan worden naar het oude pensioen. Ik heb alleen nog geen idee hoe
+        #rijnummer deelnemer zoeken
+        rijNr = int(float(flexopslag.cells(15,"B").value))
+        
+        #deelnemerobject inladen
+        deelnemer = functions.getDeelnemersbestand(book, rijNr)
+        deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
+        
         pdf_canvas = Canvas("test.pdf")
         pdf_canvas.setFont("Helvetica", 11)
         halfbreedte = cm*10.5
