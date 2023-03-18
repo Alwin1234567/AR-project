@@ -783,7 +783,7 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     #else: logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
     
     # Hoog/Laag constructie opslaan
-    if flexibilisatie.HL_Actief: flexopslag[9][1] = "Ja"
+    if flexibilisatie.HL_Actief: flexopslag[10][1] = "Ja"
     else: flexopslag[10][1] = "Nee"
     
     flexopslag[11][1] = flexibilisatie.HL_Volgorde
