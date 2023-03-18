@@ -417,8 +417,10 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.opslaanCount = 0 #Teller voor aantal opgeslagen flexibilisaties.
         self.opslaanList = list()
         self.zoekFlexibilisaties()
-        self.AOWjaar = 60 # Deze wordt aangepast met functie self.getAOWleeftijd()
-        self.AOWmaand = 0 # Deze wordt aangepast met functie self.getAOWleeftijd()
+        
+        # Setup AOW-leeftijd knop
+        self.AOWjaar = 60 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
+        self.AOWmaand = 0 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
         self.getAOWleeftijd()
         
         # Setup van UI
@@ -716,7 +718,8 @@ class Flexmenu(QtWidgets.QMainWindow):
             return len(self.opslaanList)+1
         else:
             return 1 # Als lijst leeg is, zijn er nog geen ID's opgeslagen. De eerste moet ID waarde 1 krijgen.
-
+    
+    
     def flexkeuzesOpslaan(self,num):
         """
         Deze functie slaat huidig ingevulde flex opties op in het flexibiliseringsobject.
@@ -862,7 +865,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                                  (blokhoogte + 5, 3))
             try: updaterange.value = blok
             except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
-    
+       
     def samenvattingUpdate(self):
         """
         Deze functie update de waarden in de samenvatting boxes.
@@ -870,246 +873,44 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         self._logger.info("Samenvatting updaten...")
         
-        # ZwitserLeven
-        if "ZL" in self._regelingenActiefKort:
-            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "ZL")
+        regelingenList = ["ZL","Aegon OP65","Aegon OP67","NN OP65","NN OP67","PF VLC OP68"]
+
+        for regeling in regelingenList:
+            for flexibilisatie in self.deelnemerObject.flexibilisaties:
+                if flexibilisatie.pensioen.pensioenNaam == str(regeling):
+                    self.regelingCode = flexibilisatie
+                    break
             
-            self.ui.lbl_ZL.setText("ZL")
+            regelingDict = functions.samenvattingDict(regeling,self.ui)
             
-            # if (self.regelingCode.leeftijd_Actief == False
-            #     and self.regelingCode.OP_PP_Actief == False
-            #     and self.regelingCode.HL_Actief == False):
-            #     self.ui.lbl_ZL_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-            #     self.ui.lbl_ZL_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            # else:
-            #     self.ui.lbl_ZL_OP.setText("€—")
-            #     self.ui.lbl_ZL_PP.setText("€—")
-            self.update_samenvatting(self.ui.lbl_ZL_OP, self.ui.lbl_ZL_PP)
-            
-            if self.regelingCode.leeftijd_Actief == True:
-                self.ui.lbl_ZL_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
-            elif self.regelingCode.leeftijd_Actief == False:
-                self.ui.lbl_ZL_pLeeftijd.setText("Leeftijd nog bepalen.")
-            
-            if self.regelingCode.OP_PP_Actief == True:
-                self.ui.lbl_ZL_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
-            elif self.regelingCode.OP_PP_Actief == False:
-                self.ui.lbl_ZL_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            
-            if self.regelingCode.HL_Actief == True:
-                self.ui.lbl_ZL_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
-            elif self.regelingCode.HL_Actief == False:
-                self.ui.lbl_ZL_hlConstructie.setText("H/L constructie n.v.t.")
-                                          
-        else:
-            self.ui.lbl_ZL.setText("ZL (n.v.t.)")
-            self.ui.lbl_ZL_OP.setText("€—")
-            self.ui.lbl_ZL_PP.setText("€—")
-            
-            self.ui.lbl_ZL_pLeeftijd.setText("Leeftijd n.v.t.")
-            self.ui.lbl_ZL_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            self.ui.lbl_ZL_hlConstructie.setText("H/L constructie n.v.t.")
-        
-        # Aegon OP65
-        if "Aegon OP65" in self._regelingenActiefKort:
-            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "Aegon OP65")
-            
-            self.ui.lbl_A65.setText("Aegon 65")
-            
-            # if (self.regelingCode.leeftijd_Actief == False
-            #     and self.regelingCode.OP_PP_Actief == False
-            #     and self.regelingCode.HL_Actief == False):
-            #     self.ui.lbl_A65_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-            #     self.ui.lbl_A65_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            # else:
-            #     self.ui.lbl_A65_OP.setText("€"+f"{self.regelingCode.ouderdomsPensioenHoog:,}".replace(',','.')+",-")
-            #     self.ui.lbl_A65_PP.setText("€"+f"{self.regelingCode.partnerPensioen:,}".replace(',','.')+",-")
-            
-            self.update_samenvatting(self.ui.lbl_A65_OP, self.ui.lbl_A65_PP)
-            
-            if self.regelingCode.leeftijd_Actief == True:
-                self.ui.lbl_A65_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
-            elif self.regelingCode.leeftijd_Actief == False:
-                self.ui.lbl_A65_pLeeftijd.setText("65 jaar en 0 maanden")
-            
-            if self.regelingCode.OP_PP_Actief == True:
-                self.ui.lbl_A65_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
-            elif self.regelingCode.OP_PP_Actief == False:
-                self.ui.lbl_A65_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            
-            if self.regelingCode.HL_Actief == True:
-                self.ui.lbl_A65_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
-            elif self.regelingCode.HL_Actief == False:
-                self.ui.lbl_A65_hlConstructie.setText("H/L constructie n.v.t.")
+            if regeling in self._regelingenActiefKort:
+                regelingDict["lbl"].setText(f"{regeling}")
                 
-        else:
-            self.ui.lbl_A65.setText("Aegon 65 (n.v.t.)")
-            self.ui.lbl_A65_OP.setText("€—")
-            self.ui.lbl_A65_PP.setText("€—")
-            
-            self.ui.lbl_A65_pLeeftijd.setText("Leeftijd n.v.t.")
-            self.ui.lbl_A65_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            self.ui.lbl_A65_hlConstructie.setText("H/L constructie n.v.t.")
-        
-        # Aegon OP67
-        if "Aegon OP67" in self._regelingenActiefKort:
-            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "Aegon OP67")
-            
-            self.ui.lbl_A67.setText("Aegon 67")
-            
-            # if (self.regelingCode.leeftijd_Actief == False
-            #     and self.regelingCode.OP_PP_Actief == False
-            #     and self.regelingCode.HL_Actief == False):
-            #     self.ui.lbl_A67_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-            #     self.ui.lbl_A67_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            # else:
-            #     self.ui.lbl_A67_OP.setText("€—")
-            #     self.ui.lbl_A67_PP.setText("€—")
-            self.update_samenvatting(self.ui.lbl_A67_OP, self.ui.lbl_A67_PP)
-            
-            if self.regelingCode.leeftijd_Actief == True:
-                self.ui.lbl_A67_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
-            elif self.regelingCode.leeftijd_Actief == False:
-                self.ui.lbl_A67_pLeeftijd.setText("67 jaar en 0 maanden")
-            
-            if self.regelingCode.OP_PP_Actief == True:
-                self.ui.lbl_A67_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
-            elif self.regelingCode.OP_PP_Actief == False:
-                self.ui.lbl_A67_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            
-            if self.regelingCode.HL_Actief == True:
-                self.ui.lbl_A67_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
-            elif self.regelingCode.HL_Actief == False:
-                self.ui.lbl_A67_hlConstructie.setText("H/L constructie n.v.t.")
+                self.update_samenvatting(regelingDict["lbl_OP"], regelingDict["lbl_PP"])
                 
-        else:
-            self.ui.lbl_A67.setText("Aegon 67 (n.v.t.)")
-            self.ui.lbl_A67_OP.setText("€—")
-            self.ui.lbl_A67_PP.setText("€—")
-            
-            self.ui.lbl_A67_pLeeftijd.setText("Leeftijd n.v.t.")
-            self.ui.lbl_A67_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            self.ui.lbl_A67_hlConstructie.setText("H/L constructie n.v.t.")
-        
-        # NN OP65
-        if "NN OP65" in self._regelingenActiefKort:
-            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "NN OP65")
-            
-            self.ui.lbl_NN65.setText("NN 65")
-            
-            # if (self.regelingCode.leeftijd_Actief == False
-            #     and self.regelingCode.OP_PP_Actief == False
-            #     and self.regelingCode.HL_Actief == False):
-            #     self.ui.lbl_NN65_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-            #     self.ui.lbl_NN65_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            # else:
-            #     self.ui.lbl_NN65_OP.setText("€—")
-            #     self.ui.lbl_NN65_PP.setText("€—")
-            self.update_samenvatting(self.ui.lbl_NN65_OP, self.ui.lbl_NN65_PP)
-            
-            if self.regelingCode.leeftijd_Actief == True:
-                self.ui.lbl_NN65_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
-            elif self.regelingCode.leeftijd_Actief == False:
-                self.ui.lbl_NN65_pLeeftijd.setText("65 jaar en 0 maanden")
-            
-            if self.regelingCode.OP_PP_Actief == True:
-                self.ui.lbl_NN65_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
-            elif self.regelingCode.OP_PP_Actief == False:
-                self.ui.lbl_NN65_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            
-            if self.regelingCode.HL_Actief == True:
-                self.ui.lbl_NN65_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
-            elif self.regelingCode.HL_Actief == False:
-                self.ui.lbl_NN65_hlConstructie.setText("H/L constructie n.v.t.")
+                if self.regelingCode.leeftijd_Actief == True:
+                    regelingDict["lbl_pLeeftijd"].setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
+                elif self.regelingCode.leeftijd_Actief == False:
+                    regelingDict["lbl_pLeeftijd"].setText("Leeftijd nog bepalen.")
                 
-        else:
-            self.ui.lbl_NN65.setText("NN 65 (n.v.t.)")
-            self.ui.lbl_NN65_OP.setText("€—")
-            self.ui.lbl_NN65_PP.setText("€—")
-            
-            self.ui.lbl_NN65_pLeeftijd.setText("Leeftijd n.v.t.")
-            self.ui.lbl_NN65_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            self.ui.lbl_NN65_hlConstructie.setText("H/L constructie n.v.t.")
-        
-        # NN OP67
-        if "NN OP67" in self._regelingenActiefKort:
-            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "NN OP67")
-            
-            self.ui.lbl_NN67.setText("NN 67")
-            
-            # if (self.regelingCode.leeftijd_Actief == False
-            #     and self.regelingCode.OP_PP_Actief == False
-            #     and self.regelingCode.HL_Actief == False):
-            #     self.ui.lbl_NN67_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-            #     self.ui.lbl_NN67_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            # else:
-            #     self.ui.lbl_NN67_OP.setText("€—")
-            #     self.ui.lbl_NN67_PP.setText("€—")
-            self.update_samenvatting(self.ui.lbl_NN67_OP, self.ui.lbl_NN67_PP)
-            
-            if self.regelingCode.leeftijd_Actief == True:
-                self.ui.lbl_NN67_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
-            elif self.regelingCode.leeftijd_Actief == False:
-                self.ui.lbl_NN67_pLeeftijd.setText("67 jaar en 0 maanden")
-            
-            if self.regelingCode.OP_PP_Actief == True:
-                self.ui.lbl_NN67_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
-            elif self.regelingCode.OP_PP_Actief == False:
-                self.ui.lbl_NN67_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            
-            if self.regelingCode.HL_Actief == True:
-                self.ui.lbl_NN67_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
-            elif self.regelingCode.HL_Actief == False:
-                self.ui.lbl_NN67_hlConstructie.setText("H/L constructie n.v.t.")
+                if self.regelingCode.OP_PP_Actief == True:
+                    regelingDict["lbl_OP_PP"].setText(str(self.regelingCode.OP_PP_UitruilenVan))
+                elif self.regelingCode.OP_PP_Actief == False:
+                    regelingDict["lbl_OP_PP"].setText("OP/PP uitruiling n.v.t.")
                 
-        else:
-            self.ui.lbl_NN67.setText("NN 67 (n.v.t.)")
-            self.ui.lbl_NN67_OP.setText("€—")
-            self.ui.lbl_NN67_PP.setText("€—")
-            
-            self.ui.lbl_NN67_pLeeftijd.setText("Leeftijd n.v.t.")
-            self.ui.lbl_NN67_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            self.ui.lbl_NN67_hlConstructie.setText("H/L constructie n.v.t.")
-        
-        # PF VLC OP68
-        if "PF VLC OP68" in self._regelingenActiefKort:
-            self.regelingCode = next(flexibilisatie for flexibilisatie in self.deelnemerObject.flexibilisaties if flexibilisatie.pensioen.pensioenNaam == "PF VLC OP68")
-            
-            self.ui.lbl_VLC.setText("PF VLC 68")
-            
-            # if (self.regelingCode.leeftijd_Actief == False
-            #     and self.regelingCode.OP_PP_Actief == False
-            #     and self.regelingCode.HL_Actief == False):
-            #     self.ui.lbl_VLC_OP.setText("€"+f"{self.regelingCode.pensioen.ouderdomsPensioen:,}".replace(',','.')+",-")
-            #     self.ui.lbl_VLC_PP.setText("€"+f"{self.regelingCode.pensioen.partnerPensioen:,}".replace(',','.')+",-")
-            # else:
-            #     self.ui.lbl_VLC_OP.setText("€—")
-            #     self.ui.lbl_VLC_PP.setText("€—")
-            self.update_samenvatting(self.ui.lbl_VLC_OP, self.ui.lbl_VLC_PP)
-        
-            if self.regelingCode.leeftijd_Actief == True:
-                self.ui.lbl_VLC_pLeeftijd.setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
-            elif self.regelingCode.leeftijd_Actief == False:
-                self.ui.lbl_VLC_pLeeftijd.setText("68 jaar en 0 maanden")
-            
-            if self.regelingCode.OP_PP_Actief == True:
-                self.ui.lbl_VLC_OP_PP.setText(str(self.regelingCode.OP_PP_UitruilenVan))
-            elif self.regelingCode.OP_PP_Actief == False:
-                self.ui.lbl_VLC_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            
-            if self.regelingCode.HL_Actief == True:
-                self.ui.lbl_VLC_hlConstructie.setText(str(self.regelingCode.HL_Volgorde))
-            elif self.regelingCode.HL_Actief == False:
-                self.ui.lbl_VLC_hlConstructie.setText("H/L constructie n.v.t.")
+                if self.regelingCode.HL_Actief == True:
+                    regelingDict["lbl_hlConstructie"].setText(str(self.regelingCode.HL_Volgorde))
+                elif self.regelingCode.HL_Actief == False:
+                    regelingDict["lbl_hlConstructie"].setText("H/L constructie n.v.t.")
+                                              
+            else:
+                regelingDict["lbl"].setText(f"{regeling} (n.v.t.)")
+                regelingDict["lbl_OP"].setText("€—")
+                regelingDict["lbl_PP"].setText("€—")
                 
-        else:
-            self.ui.lbl_VLC.setText("PF VLC 68 (n.v.t.)")
-            self.ui.lbl_VLC_OP.setText("€—")
-            self.ui.lbl_VLC_PP.setText("€—")
-            
-            self.ui.lbl_VLC_pLeeftijd.setText("Leeftijd n.v.t.")
-            self.ui.lbl_VLC_OP_PP.setText("OP/PP uitruiling n.v.t.")
-            self.ui.lbl_VLC_hlConstructie.setText("H/L constructie n.v.t.")
+                regelingDict["lbl_pLeeftijd"].setText("Leeftijd n.v.t.")
+                regelingDict["lbl_OP_PP"].setText("OP/PP uitruiling n.v.t.")
+                regelingDict["lbl_hlConstructie"].setText("H/L constructie n.v.t.")
     
     def update_samenvatting(self, lblOP, lblPP):
         if self.regelingCode.HL_Actief: lblOP.setText("€{},-/{},-".format(self.regelingCode.ouderdomsPensioenHoog, self.regelingCode.ouderdomsPensioenLaag).replace(',','.'))
