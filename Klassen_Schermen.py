@@ -102,11 +102,7 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.ui.btnUitloggen.clicked.connect(self.btnUitloggenClicked)
         
         #sheets definieren
-        self.sterftetafels = self.book.sheets["Sterftetafels"]
-        self.AG2020 = self.book.sheets["AG2020"]
-        self.berekeningen = self.book.sheets["Berekeningen"]
-        self.deelnemersbestand = self.book.sheets["deelnemersbestand"]
-        self.pensioencontracten = self.book.sheets["Gegevens pensioencontracten"]
+        self.sheets = ["Sterftetafels", "AG2020", "Berekeningen", "deelnemersbestand", "Gegevens pensioencontracten"]
         self.vergelijken = self.book.sheets["Vergelijken"]
         self.flexopslag = self.book.sheets["Flexopslag"]
         self.beheerder = self.book.sheets["Beheerder"]
@@ -121,10 +117,11 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
         #beveiliging sheets ongedaan maken
-        # for i in [self.sterftetafels, self.AG2020, self.berekeningen, self.deelnemersbestand, 
-        #           self.pensioencontracten, self.vergelijken, self.flexopslag]:
-        #     i.api.Unprotect(Password = "wachtwoord")
-        #     i.visible = True
+        # for i in self.sheets:
+        #     self.book.sheets[i].api.Unprotect(Password = "wachtwoord")
+        #     self.book.sheets[i].visible = True
+        # #sheets leesbaar maken
+        # functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
                 
     def btnAdviserenClicked(self):
         self.close()
@@ -139,16 +136,18 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.beheerder.api.Protect(Password = functions.wachtwoord())
         self.beheerder.visible = False
         self.close()
+        #sheets onleesbaar maken
+        # functions.tekstkleurSheets(self.book, self.sheets, zicht = 0)
+        # #sheets beveiligen en hidden
+        # for i in self.sheets:
+        #     self.book.sheets[i].api.Protect(Password = functions.wachtwoord())
+        #     self.book.sheets[i].visible = False
+        
         self._logger.info("Beheerderkeuzes scherm gesloten")
         self._windowkeus = Functiekeus(self.book, self._logger)
         self._windowkeus.show()
         functions.Mbox("Uitgelogd", "U bent nu uitgelogd.", 0)
-        #sheets beveiligen en hidden
-        # for i in [self.sterftetafels, self.AG2020, self.berekeningen, self.deelnemersbestand, 
-        #           self.pensioencontracten, self.vergelijken, self.flexopslag]:
-        #     i.api.Protect(Password = functions.wachtwoord())
-        #     i.visible = False
-        
+               
 
 
 class Deelnemerselectie(QtWidgets.QMainWindow):
@@ -1443,7 +1442,9 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                 if gegevens[7] != "": 
                     gegevens[7] = float(gegevens[7])/100
                 try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
+                    #self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                     functions.ToevoegenDeelnemer(gegevens, regel = self.rijNr)
+                    #self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
                     self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
                 except Exception as e:
                     self._logger.exception("Er is iets fout gegaan bij het wijzigen van een deelnemer in het deelnemersbestand")

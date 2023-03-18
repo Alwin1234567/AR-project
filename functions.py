@@ -5,6 +5,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 
 import xlwings as xw
 from xlwings.constants import DVType
+from xlwings.utils import rgb_to_int
 from datetime import datetime, date
 from Deelnemer import Deelnemer
 from Pensioenfonds import Pensioenfonds
@@ -1461,4 +1462,73 @@ def opslagLegen(book, logger):
     else:
         logger.info("Flexopslag legen niet nodig, was al leeg")
     
+def tekstkleurSheets(book, sheets, zicht):
+    '''
+    functie die de tekstkleur van de tekst in meegegeven sheets aanpast. Hierdoor wordt de tekst onleesbaar.
+
+    Parameters
+    ----------
+    book : xw.book
+        
+    sheets : list("naam sheet")
+        lijst met daarin namen van de sheets die aangepast moeten worden.
+    zicht : integer
+        0 - tekst onleesbaar
+        1 - tekst leesbaar.
+
+    Returns
+    -------
+    veranderd de tekstkleur van de tekst in de sheet om deze leesbaar of onleesbaar te maken.
+
+    '''
+    #rgb_int definieren voor wit en zwart
+    wit = 16777215
+    zwart = 0
+    for sheetnaam in sheets:
+        sheet = book.sheets[sheetnaam]
+        #mogelijk maken om sheet te wijzigen
+        sheet.api.Unprotect(Password = wachtwoord())
+        #grootte van gegevensblok inlezen
+        aantalRegels = len(sheet.cells(1,1).expand().value) + 1
+        aantalKolommen = len(sheet.cells(1,1).expand().value[0]) + 1
+        
+        if zicht == 0:  #tekstkleur zelfde als achtegrondkleur -> onleesbaar maken
+            if sheetnaam == "Sterftetafels":
+                sheet.range((1,1),(aantalRegels,aantalKolommen)).api.Font.Color = wit
+                sheet.range((1,2),(2,3)).api.Font.Color = rgb_to_int((146,208,80))  #groen
+                sheet.range((3,1)).api.Font.Color = rgb_to_int((146,208,80))        #groen
+            
+            elif sheetnaam == "AG2020":
+                sheet.range((1,1),(aantalRegels,aantalKolommen)).api.Font.Color = rgb_to_int((255,153,0))   #oranje
+                sheet.range((2,2),(aantalRegels,aantalKolommen)).api.Font.Color = rgb_to_int((0,128,128))   #turquoise
+            
+            elif sheetnaam == "deelnemersbestand":
+                kleuren = [(225,211,212), (229,220,255), (206,232,255), (255,227,194), (255,227,194), (255,255,197), (255,255,197), (222,255,250), (222,255,250)]
+                sheet.range((1,1),(aantalRegels,9)).api.Font.Color = wit
+                for i in range(0,(len(kleuren))):
+                    sheet.range((1,i+10),(aantalRegels,i+10)).api.Font.Color = rgb_to_int(kleuren[i])
+            
+            elif sheetnaam == "Gegevens pensioencontracten":
+                sheet.range((1,1),(aantalRegels,aantalKolommen)).api.Font.Color = wit
+                sheet.range((2,2),(2,aantalKolommen)).api.Font.Color = rgb_to_int((146,208,80))  #groen
+                
+            elif sheetnaam == "Berekeningen": 
+                sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = True
+            
+            #sheet weer beveiligen, omdat gebruiker gegevens niet mag zien
+            #book.sheets[sheet].api.Protect(Password = wachtwoord())
+        
+        elif zicht == 1:    #tekstkleur zwart maken -> leesbaar maken
+            if sheetnaam in ["Sterftetafels", "AG2020", "deelnemersbestand", "Gegevens pensioencontracten"]:
+                sheet.range((1,1),(aantalRegels,aantalKolommen)).api.Font.Color = zwart
+            elif sheetnaam == "Berekeningen":
+                sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = False
+            
+            
+        
+        
+        
+        
     
+    
+
