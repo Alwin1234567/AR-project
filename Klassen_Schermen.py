@@ -660,6 +660,18 @@ class Flexmenu(QtWidgets.QMainWindow):
         """
         
         if num == 1 or num == 0: # Check of invoer klopt van leeftijd blok
+            if int(self.ui.sbJaar.value()) > (self.AOWjaar+5):
+                self.ui.sbJaar.setValue(self.AOWjaar+5)
+                self.ui.sbMaand.setValue(self.AOWmaand)
+                self.ui.lblFoutmeldingLeeftijd.setText(f"Maximum leeftijd is {self.AOWjaar+5} jaar en {self.AOWmaand} maanden.")
+            elif int(self.ui.sbJaar.value()) == (self.AOWjaar+5):
+                if int(self.ui.sbMaand.value()) > self.AOWmaand:
+                    self.ui.sbMaand.setValue(self.AOWmaand)
+                    self.ui.lblFoutmeldingLeeftijd.setText(f"Maximum leeftijd is {self.AOWjaar+5} jaar en {self.AOWmaand} maanden.")
+                else:
+                    self.ui.lblFoutmeldingLeeftijd.setText("")
+            else:
+                self.ui.lblFoutmeldingLeeftijd.setText("")
             return True
         
         if num == 2 or num == 0: # Check of invoer klopt van OP/PP blok
