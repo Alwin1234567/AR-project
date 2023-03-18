@@ -937,8 +937,8 @@ def UitlezenFlexopslag(book, naamFlex):
         #pensioen = [0-pensioenfonds, 1-wijzigen, 2-leeftijd, 3-jaar, 4-leeftijd, 5-maand, 6-uitruilen, 7-volgorde, 8-methode,
         #9-verhouding/percentage, 10-hoog/laag, 11-volgorde, 12-duur, 13-methode, 14-vers/verh/opvullen, 15-OP, 16-PP, 17-kleur]
         pensioen = []
-        rijAdd = [5,7,8,8,10,11,12,13,13,15,16,17,18,18,18,21,21,23]
-        kolomAdd = [0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,1,0]
+        rijAdd = [5,7,8,8,10,11,12,13,13,15,16,17,18,18,18,21,21,22,23]
+        kolomAdd = [0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0]
         for i in range(18):
             pensioen.append(str(flexopslag.cells(rij+rijAdd[i] ,flexKolom+kolomAdd[i]).value))
             #pensioensgegevens toevoegen aan lijst met totale flexibilisatiegegevens
