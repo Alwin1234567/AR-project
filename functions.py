@@ -15,6 +15,7 @@ from os.path import exists
 import sys
 from string import ascii_uppercase
 import matplotlib.pyplot as plt
+from reportlab.lib.units import cm
 
 """
 Body
@@ -1550,7 +1551,32 @@ def samenvattingDict(regeling,UI):
     
     
     
-    
+def nieuwe_pagina(pdf, halfbreedte):
+    """
+    Functie die alles op de pagina van de pdf zet dat op elke pagina moet komen
+
+    Parameters
+    ----------
+    pdf : Canvas van reportlap
+        Een pdf vanuit canvas
+    halfbreedte: float
+        De helft van de breedte van een a4
+
+    Returns
+    -------
+    Pdf
+        Het VLC-logo rechtsboven in de hoek en een lijn door het midden van de pagina in de pdf
+
+    """
+    breedte_logo = 183.2
+    hoogte_logo = 40
+    image = ("{}\\logo.png".format(sys.path[0]))
+    pdf.drawImage(image, cm*21 -breedte_logo, cm* 29.7-hoogte_logo, breedte_logo, hoogte_logo)
+    pdf.line(halfbreedte, 0, halfbreedte, cm* 29.7)
+    pdf.setFont("Helvetica", 30)
+    pdf.drawString(40, 770, "Nieuw")
+    pdf.drawString(halfbreedte + 40, 770, "Oud")
+    pdf.setFont("Helvetica", 11)
     
     
     
