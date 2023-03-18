@@ -18,6 +18,24 @@ from reportlab.lib.units import cm
 Body
 Hier komen alle functies
 """
+@xw.sub
+def Test():
+    '''
+    functie om functie van tekstkleurveranderen te testen
+
+    Returns
+    -------
+    None.
+
+    '''
+    book = xw.Book.caller()
+    # sht = "Sterftetafels"   #"deelnemersbestand"
+    # sheets = [sht]
+    # functions.tekstkleurSheets(book, sheets, zicht = 0)
+    sht = "deelnemersbestand"
+    #sheets = ["Sterftetafels", "AG2020", "Gegevens pensioencontracten"]
+    sheets = ["Berekeningen"]
+    functions.tekstkleurSheets(book, sheets, zicht = 1)
 
 @xw.sub
 def Schermen():
@@ -497,7 +515,36 @@ def BeheerderskeuzesOpenen():
     windowBeheerder.show()
     app.exec_()
     
-                  
+@xw.sub
+def InEnUitloggen() :
+    '''
+    functie om in of uit te loggen als beheerder
+
+    Returns
+    -------
+    None.
+
+    '''
+    book = xw.Book.caller()
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+    if functions.isBeheerder(book):
+        #beheerder is ingelogd, dus wil uitloggen
+        controle = functions.Mbox("Uitloggen", "Weet u zeker dat u wilt uitloggen?",4)
+        if controle == "Ja":
+            app = 0
+            app = QtWidgets.QApplication(sys.argv)
+            windowBeheerder = Klassen_Schermen.Beheerderkeuzes(xw.Book.caller(), logger)
+            windowBeheerder.btnUitloggenClicked()
+            app.exec_()
+        
+    else:
+        #beheerder is niet ingelogd, dus wil inloggen
+        app = 0
+        app = QtWidgets.QApplication(sys.argv)
+        windowInloggen = Klassen_Schermen.Inloggen(xw.Book.caller(), logger)
+        windowInloggen.show()
+        app.exec_()
+                 
 @xw.sub
 def flexibilisaties_testen():
    book = xw.Book.caller()
