@@ -29,10 +29,26 @@ def Test():
 
     '''
     book = xw.Book.caller()
+    #testen met protected en unprotected sheet
+    # sheet = book.sheets["Test Julia"]
+    # sterftetafel = book.sheets["Sterftetafels"]
+    # sheet.api.Protect(Password = functions.wachtwoord())
+    
+    # sterftetafel.cells(7,6).value = "sheet protected"
+    # #haal waarde uit sheet
+    # waarde = sheet.cells(6,2).value
+    # #print opgehaalde tekst
+    # sterftetafel.cells(6,6).value = waarde
+    
+    # #waarde printen in sheet
+    # sheet.api.Unprotect(Password = functions.wachtwoord())
+    # sheet.cells(9,2).value = "Test printen"
+    
+    
     # sht = "Sterftetafels"   #"deelnemersbestand"
     # sheets = [sht]
     # functions.tekstkleurSheets(book, sheets, zicht = 0)
-    sht = "deelnemersbestand"
+    # sht = "deelnemersbestand"
     #sheets = ["Sterftetafels", "AG2020", "Gegevens pensioencontracten"]
     sheets = ["Berekeningen"]
     functions.tekstkleurSheets(book, sheets, zicht = 1)
@@ -72,7 +88,8 @@ def invoer_test_klikken():
     book = xw.Book.caller()
     invoer = book.sheets["Tijdelijk invoerscherm"]
     
-
+    #unprotect sheet
+    #invoer.api.Unprotect(Password = functions.wachtwoord())
     #Berekeningskolommen leegmaken
     kolommen = invoer.range((1,8), (80,130))
     Uitkomst_kolommen = invoer.range((10,6), (20,6))
@@ -193,7 +210,8 @@ def invoer_test_klikken():
             basis_koopsom(i).value= 0
             rente.append(0)
             pensioenleeftijd.append(0)
-
+    #sheet protecten
+    #invoer.api.Protect(Password = functions.wachtwoord())
         
 @xw.sub
 def AfbeeldingKiezen():
@@ -349,6 +367,8 @@ def AfbeeldingVerwijderen():
             laatsteKolom = Flexopslag[1]
             aantalPensioenen = Flexopslag[2]
             rijen = aantalPensioenen*20 + 4
+            #opslag sheet unprotecten
+            #Opslag.api.Unprotect(Password = functions.wachtwoord())
             if startKolom != laatsteKolom: #er zijn meer dan 1 flexibilisaties opgeslagen
                 #verwijderen gegevens verwijderde flexibilisatie
                 Opslag.range((1,startKolom-1),(rijen,startKolom+1)).clear_contents()
@@ -356,6 +376,8 @@ def AfbeeldingVerwijderen():
                 Opslag.cells(1,startKolom-1).value = Opslag.range((1,startKolom+3),(rijen,laatsteKolom+1)).value
             #laatste (of enige) kolom verwijderen
             Opslag.range((1,laatsteKolom-1),(rijen,laatsteKolom+1)).clear()
+            #opslag sheet protecten
+            #Opslag.api.Protect(Password = functions.wachtwoord())
             
             try:
                 #drop down op vergelijkingssheet updaten

@@ -440,10 +440,12 @@ def ToevoegenDeelnemer(gegevens, regel = 0):
         #bereken het aantal deelnemers door het aantal volle rijen na 1e regel te tellen
         aantalDeelnemers = len(deelnemersbestand.cells(1,1).expand().value)
         regel = aantalDeelnemers + 1
-    
+    #sheet unprotecten
+    #deelnemersbestand.api.Unprotect(Password = wachtwoord())
     #gegevens deelnemer invullen in de lege regel
     deelnemersbestand.cells(regel, 1).value = gegevens
-
+    #sheet protecten
+    #deelnemersbestand.api.Protect(Password = wachtwoord())
 
 def Mbox(title, text, style):
     """
@@ -677,14 +679,14 @@ def checkVeldInvoer(soort,methode,veld1,veld2,veld3):
 #     if sterftetafel == "AG_2020": return '=if({0}{1}<>"", (1-INDEX(INDIRECT("{2}"),{0}{3}+1,{4}{3}-2018))*{5}{3},"")'.format(leeftijdKolomLetter, rij + 3,  sterftetafel, rij + 2, jaarKolom, tpxKolom)
 #     else: return '=if({0}{1}<>"", INDEX(INDIRECT("{2}"),{0}{1}+1,1)/ INDEX(INDIRECT("{2}"),${0}$2+1,1),"")'.format(leeftijdKolomLetter, rij + 3, sterftetafel)
 
-def persoonOpslag(book, persoonObject):
+def persoonOpslag(sheet, persoonObject):
     """
     Functie die persoonsgegevens opslaat in de flexopslag sheet.
     
     Parameters
     ----------
-    book : xlwings.Book
-        Het excel bestand waarin het programma runned.
+    sheet : xlwings.Book.sheets["sheetname"]
+        sheet van excel bestand waarin het programma runned.
     
     persoonObject : Python-object
         Object waaruit gegevens gehaald worden.
@@ -694,7 +696,7 @@ def persoonOpslag(book, persoonObject):
     None : None
         Het plakt alle gegevens in de Excel sheet.
     """
-    
+   
     persopslag = []
     
     for i in range(10):
@@ -730,9 +732,13 @@ def persoonOpslag(book, persoonObject):
     persopslag[9][0] = "Rij nr"
     persopslag[9][1] = persoonObject.rijNr
     
-    book.range((6,1),(15,2)).options(ndims = 2).value = persopslag
-    book.range((6,1),(15,2)).color = (150,150,150)
-
+    #sheet unprotecten
+    #sheet.api.Unprotect(Password = wachtwoord())
+    #persoonopslag invoegen
+    sheet.range((6,1),(15,2)).options(ndims = 2).value = persopslag
+    sheet.range((6,1),(15,2)).color = (150,150,150)
+    #sheet protecten
+    #sheet.api.Protect(Password = wachtwoord())
 
 def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     """
@@ -838,10 +844,13 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     # RGB opslaan
     flexopslag[18][1] = str(flexibilisatie.pensioen.pensioenKleurHard)
     
+    #sheet unprotecten
+    #book.api.Unprotect(Password = wachtwoord())
     # Waardes in sheet plakken & celkleur instellen
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
-    
+    #sheet protecten
+    #book.api.Protect(Password = wachtwoord())
     
     # # Pensioenleeftijd wijzigen J/N
     # if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
@@ -929,12 +938,17 @@ def FlexopslagVinden(book, naamFlex = "Geen"):
         aantalPensioenen = blokkentellen(5, flexKolom, 20, flexopslag)
     return [flexKolom, zoekKolom-4, aantalPensioenen]
 
-def flexopslagLegen(book):
-    #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
-    book.sheets["Flexopslag"].clear()
-        
-    #laatste opslag is verwijderd, dus drop down legen
-    book.sheets["Vergelijken"]["B6"].value = ""
+#zelfde als functie opslagLegen
+# def flexopslagLegen(book):
+#     #sheet unprotecten
+#     #book.sheets["Flexopslag"].api.Unprotect(Password = wachtwoord())
+#     #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
+#     book.sheets["Flexopslag"].clear()
+#     #sheet protecten
+#     #book.sheets["Flexopslag"].api.Pprotect(Password = wachtwoord())
+    
+#     #laatste opslag is verwijderd, dus drop down legen
+#     book.sheets["Vergelijken"]["B6"].value = ""
 
 def UitlezenFlexopslag(book, naamFlex):
     """
@@ -1068,6 +1082,9 @@ def berekeningen_init(sheet, deelnemer, logger):
     None.
 
     """
+    #sheet unprotecten
+    #sheet.api.Unprotect(Password = wachtwoord())
+    
     logger.info("start berekenscherm init")
     # verkrijg berekeningen instellingen
     aantalpensioenen = len(deelnemer.flexibilisaties)
@@ -1204,7 +1221,12 @@ def berekeningen_init(sheet, deelnemer, logger):
                                  (max(4, instellingen["rekenblokgrootte"]), instellingen["afstandtotrekenkolom"] + i * (instellingen["rekenblokbreedte"] + instellingen["afstandtussenrekenblokken"]) + instellingen["rekenblokbreedte"] - 1))
         blokruimte.formula = rij
         blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
+        
+    #sheet protecten
+    #sheet.api.Protect(Password = wachtwoord())
+    
     logger.info("berekenscherm init afgerond")
+    
 
 def inttoletter(getal):
     """
@@ -1424,8 +1446,12 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         plt.suptitle(titel, fontweight='bold')
         plt.xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
         
+        #sheet unprotecten
+        #sheet.api.Unprotect(Password = wachtwoord())
+        #afbeelding opslaan op sheet
         sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
-        
+        #sheet protecten
+        #sheet.api.Protect(Password = wachtwoord())
 
 def vergelijken_keuzes():
     """
@@ -1485,8 +1511,13 @@ def opslagLegen(book, logger):
             except:
                 pass
         logger.info("Afbeeldingen op vergelijken sheet verwijderd")
+        #flexopslag unprotecten
+        #flexopslag.api.Unprotect(Password = wachtwoord())
         #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
         flexopslag.clear()
+        #flexopslag protecten
+        #flexopslag.api.Protect(Password = wachtwoord())
+        
         #laatste opslag is verwijderd, dus drop down legen
         vergelijken_keuzes()
         logger.info("Flexopslag is geleegd")

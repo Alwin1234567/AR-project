@@ -943,10 +943,13 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.invoerVerandering(0)
         
     def btnAndereDeelnemerClicked(self):
-        self.close()
-        self._logger.info("Flexmenu scherm gesloten")
-        self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
-        self._windowdeelnemer.show()
+        #controleren of gebruiker echt andere deelnemer wil selecteren
+        controle = functions.Mbox("Andere deelnemer selecteren", "Door een andere deelnemer te selecteren zullen de opgeslagen flexibiliseringen voor de huidige deelnemer verwijderd worden.\nU kunt deze actie niet ongedaan maken.", 1)
+        if controle == "OK Clicked":
+            self.close()
+            self._logger.info("Flexmenu scherm gesloten")
+            self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
+            self._windowdeelnemer.show()
         
     def btnVergelijkenClicked(self):
         # Sheet van vergelijkingen openen
@@ -988,6 +991,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         # if len(self.opslaanList) < 1:
         #     functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
         
+        #sheet flexopslag unprotecten
+        #self.book.sheets["Flexopslag"].api.Unprotect(Password = functions.wachtwoord())
         # ID van de flexibilisatie in Excel opslaan
         flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
                  ["AfbeeldingID",f"Vergelijking {nieuwID}"]]
@@ -997,6 +1002,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         # Flexibilisatiekeuzes opslaan in Excel
         for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
             functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,offsetID,regelingCount) 
+        #sheet flesopslag protecten
+        #self.book.sheets["Flexopslag"].api.Protect(Password = functions.wachtwoord())
         
         # Melding geven dat flexibilisatie opgeslagen is
         tekst = "Deze flexibilisatie is opgeslagen. \nU kunt nu verder flexibiliseren. \nMet de knop 'Vergelijken' kunt u uw opgeslagen flexibilisaties vergelijken."
