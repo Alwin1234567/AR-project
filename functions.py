@@ -1157,7 +1157,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         rij.append("=min(E{},B{})".format(instellingen["pensioeninfohoogte"] + i, blokhoogte + 1))
         rij.append("1")
         rij.append('=if({0}3<>"", 1-{0}3, "")'.format(inttoletter(rekenblokstart + 3)))
-        rij.append('=if({0}4<>"", (((13 - {2}) * {1}3) + (({2}) - 1) * {1}4) / 12, "")'.format(inttoletter(rekenblokstart + 2), inttoletter(rekenblokstart + 4), deelnemer.geboortedatum.month))
+        rij.append('=if({0}4<>"", (((12 - MOD( 7 - {2} - ({0}3 - TRUNC({1}3)) * 12,12)) * {1}3) + MOD( 7 - {2} - ({0}3 - TRUNC({0}3)) * 12, 12) * {1}4) / 12, "")'.format(inttoletter(rekenblokstart + 2), inttoletter(rekenblokstart + 4), deelnemer.geboortedatum.month))
         rij.append('=if({0}3<>"", (1+{1})^-{2}3, "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente / 100, inttoletter(rekenblokstart)))
         rij.append('=if({0}4<>"", (1+{1})^-({2}3 + (7 - {3}) / 12), "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente / 100, inttoletter(rekenblokstart), deelnemer.geboortedatum.month))
         rij.append("0")
@@ -1190,7 +1190,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         if flexibilisatie.pensioen.sterftetafel == "AG_2020": rij.append('=IF({0}4 <> "", ((1-@INDEX(INDIRECT("{1}"), {0}3+1, {2}3 - 2018)) *  (1 - {0}3 + TRUNC({0}3)) + (1-@INDEX(INDIRECT("{1}"), {0}3+2, {2}3 - 2018)) * ({0}3 - TRUNC({0}3))) * {3}3,"")'.format(inttoletter(rekenblokstart + 2),  flexibilisatie.pensioen.sterftetafel, inttoletter(rekenblokstart + 1), inttoletter(rekenblokstart + 3)))
         else: rij.append('=IF({0}4<>"", (INDEX(INDIRECT("{1}"),TRUNC({0}4)+1,1) * (1 - {0}4 + TRUNC({0}4)) + INDEX(INDIRECT("{1}"),TRUNC({0}4)+2,1) * ({0}4 - TRUNC({0}4))) / (INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+1,1) * (1 - ${0}$3 + TRUNC(${0}$3)) + INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+2,1) * (${0}$3 - TRUNC(${0}$3))),"")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.sterftetafel))
         rij.append('=IF({0}4<>"", 1-{0}4, "")'.format(inttoletter(rekenblokstart + 3)))
-        rij.append('=IF({0}5<>"", (((13 - {2}) * {1}4) + (({2}) - 1) * {1}5) / 12, "")'.format(inttoletter(rekenblokstart + 2), inttoletter(rekenblokstart + 4), deelnemer.geboortedatum.month))
+        rij.append('=if({0}5<>"", (((12 - MOD( 7 - {2} - ({0}4 - TRUNC({1}4)) * 12,12)) * {1}4) + MOD( 7 - {2} - ({0}4 - TRUNC({0}4)) * 12, 12) * {1}5) / 12, "")'.format(inttoletter(rekenblokstart + 2), inttoletter(rekenblokstart + 4), deelnemer.geboortedatum.month))
         rij.append('=IF({0}4<>"", (1+{1})^-{2}4, "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente / 100, inttoletter(rekenblokstart)))
         rij.append('=IF({0}5<>"", (1+{1})^-({2}4 + (7 - {3}) / 12), "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente / 100, inttoletter(rekenblokstart), deelnemer.geboortedatum.month))
         
