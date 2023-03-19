@@ -235,7 +235,6 @@ def AfbeeldingKiezen():
         #staat nog in commentaar, omdat een manier van afbeelding maken/lezen moet worden gevonden
         
         
-        labels = ["Pensioenfonds", "Vervroegen/Uitstellen?", "Pensioenleeftijd", "Nieuw OP", "Nieuw PP", "Uitruilen?", "Volgorde", "Verhouding","Hoog/Laag?", "volgorde",  "Duur", "Verhouding"]
         benodigde_indexen = [0, 1, 2, 15, 17, 4, 5, 7, 9, 10, 11, 13]
         #4 start 5, 7(8)
         #9 start 10,11,13(14) past 15(16) aan
