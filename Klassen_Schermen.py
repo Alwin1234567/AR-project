@@ -527,10 +527,9 @@ class Flexmenu(QtWidgets.QMainWindow):
         regelingenActiefKort = list() # Lijst met verkorte namen van regelingen
         
         for regeling in self.deelnemerObject.pensioenen:
-            if regeling.ouderdomsPensioen != None: # Check of deelnemer wel gespaard heeft bij een regeling
-                if regeling.ouderdomsPensioen > 0:
-                    regelingenActief.append(regeling.pensioenVolNaam) # Lange regeling naam opslaan
-                    regelingenActiefKort.append(regeling.pensioenNaam) # Korte regeling naam opslaan
+            if regeling.ouderdomsPensioen > 0 or regeling.koopsom > 0:
+                regelingenActief.append(regeling.pensioenVolNaam) # Lange regeling naam opslaan
+                regelingenActiefKort.append(regeling.pensioenNaam) # Korte regeling naam opslaan
 
         self.ui.cbRegeling.addItems(regelingenActief) # Dropdown krijgt lijst met lange namen van regelingen
         self._regelingenActiefKort = regelingenActiefKort # Wordt apart een lijst met korte namen van regelingen opgeslagen
