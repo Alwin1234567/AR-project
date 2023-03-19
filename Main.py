@@ -248,12 +248,14 @@ def AfbeeldingKiezen():
             for l in benodigde_indexen:
                 if l == 2:
                     if pensioen[1] == "Ja":
-                        if pensioen[3] == "0":
-                            antwoord = pensioen[2] + " jaar"
-                        elif pensioen[3] == "1":
-                            antwoord = pensioen[2] + " jaar en 1 maand"
-                        else:
-                            antwoord = pensioen[2] + " jaar en " + pensioen[3] + " maanden"
+                        antwoord = functions.leeftijd_notatie(pensioen[2], pensioen[3])
+                        #voor nu is dit de enige plek, maar met het verhaal en oud pensioen moet dit meer toegepast worden
+                        # if pensioen[3] == "0":
+                        #     antwoord = pensioen[2] + " jaar"
+                        # elif pensioen[3] == "1":
+                        #     antwoord = pensioen[2] + " jaar en 1 maand"
+                        # else:
+                        #     antwoord = pensioen[2] + " jaar en " + pensioen[3] + " maanden"
                     else:
                         antwoord = "oud" #oudpensioenfunctie moet nog geschreven worden
                 elif l == 15:

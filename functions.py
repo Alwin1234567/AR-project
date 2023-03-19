@@ -1610,9 +1610,30 @@ def nieuwe_pagina(pdf, halfbreedte):
     pdf.setFont("Helvetica", 11)
     
     
-    
-    
-    
+def leeftijd_notatie(jaar, maand):
+    """
+    Functie die een pensioen leeftijd mooi neerzet in taal
+
+    Parameters
+    ----------
+    jaar : str
+        Het jaar van de pensioenleeftijd
+    maand: str
+        De maand van de pensioenleeftijd
+
+    Returns
+    -------
+    str
+        In woorden wat de pensioenleeftijd van een pensioen is rekening houdend met gramatica ev/mv
+
+    """
+    if maand == "0":
+        antwoord = jaar + " jaar"
+    elif maand == "1":
+        antwoord = jaar + " jaar en 1 maand"
+    else:
+        antwoord = jaar + " jaar en " + maand + " maanden"
+    return antwoord  
     
     
     
