@@ -1658,9 +1658,10 @@ def leeftijd_notatie(jaar, maand):
         In woorden wat de pensioenleeftijd van een pensioen is rekening houdend met gramatica ev/mv
 
     """
-    if ("00" + maand)[-2] == ".":
+    if ("00" + maand)[-2] == ".": #checkt of de waarde is opgeslagen als x.0
         maand = maand[:-2]
-    jaar = jaar[:-2]
+    if ("00" + jaar)[-2] == ".":
+        jaar = jaar[:-2]
     if maand == "0":
         antwoord = jaar + " jaar"
     elif maand == "1":
