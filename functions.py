@@ -1053,16 +1053,16 @@ def flexopslagNaamNaarID(book, naamFlex):
     else: ID = str(ID)
     return ID
 
-def zoekRGB(book,regeling):
-    i = 1
-    rgb = "Geen rgb gevonden."
+# def zoekRGB(book,regeling):
+#     i = 1
+#     rgb = "Geen rgb gevonden."
     
-    while i < 11:
-        if str(book.sheets["Gegevens pensioencontracten"].range(i,2).value) == regeling:
-            rgb = str(book.sheets["Gegevens pensioencontracten"].range(i,10).value)
-        i += 1
+#     while i < 11:
+#         if str(book.sheets["Gegevens pensioencontracten"].range(i,2).value) == regeling:
+#             rgb = str(book.sheets["Gegevens pensioencontracten"].range(i,10).value)
+#         i += 1
     
-    return rgb
+#     return rgb
     
 def berekeningen_init(sheet, deelnemer, logger):
     """
@@ -1670,7 +1670,7 @@ def leeftijd_notatie(jaar, maand):
     
     
 def tekstkleurSheets(book, sheets, zicht):
-    '''
+    """
     functie die de tekstkleur van de tekst in meegegeven sheets aanpast. Hierdoor wordt de tekst onleesbaar.
 
     Parameters
@@ -1687,7 +1687,7 @@ def tekstkleurSheets(book, sheets, zicht):
     -------
     veranderd de tekstkleur van de tekst in de sheet om deze leesbaar of onleesbaar te maken.
 
-    '''
+    """
     #rgb_int definieren voor wit en zwart
     wit = 16777215
     zwart = 0
