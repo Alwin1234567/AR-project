@@ -925,6 +925,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 regelingDict["lbl_hlConstructie"].setText("H/L constructie n.v.t.")
     
     def update_samenvatting(self, lblOP, lblPP):
+        # leest de informatie uit het regelingscode object en zet het in de juiste samenvatting
         if self.regelingCode.HL_Actief: lblOP.setText("€{},-/{},-".format(self.regelingCode.ouderdomsPensioenHoog, self.regelingCode.ouderdomsPensioenLaag))
         else: lblOP.setText("€{},-".format(self.regelingCode.ouderdomsPensioenHoog))
         lblPP.setText("€{},-".format(self.regelingCode.partnerPensioen))
