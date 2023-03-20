@@ -20,14 +20,14 @@ Hier komen alle functies
 """
 @xw.sub
 def Test():
-    '''
+    """
     functie om functie van tekstkleurveranderen te testen
 
     Returns
     -------
     None.
 
-    '''
+    """
     book = xw.Book.caller()
     #testen met protected en unprotected sheet
     # sheet = book.sheets["Test Julia"]
@@ -55,6 +55,15 @@ def Test():
 
 @xw.sub
 def Schermen():
+    """
+    Functie die de logger importeerd en het keuzescherm opent
+
+    Returns
+    -------
+    None.
+
+    """
+    
     logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
     app = 0
     app = QtWidgets.QApplication(sys.argv)
@@ -555,14 +564,14 @@ def BeheerderskeuzesOpenen():
     
 @xw.sub
 def InEnUitloggen() :
-    '''
+    """
     functie om in of uit te loggen als beheerder
 
     Returns
     -------
     None.
 
-    '''
+    """
     book = xw.Book.caller()
     logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
     if functions.isBeheerder(book):
