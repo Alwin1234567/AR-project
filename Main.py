@@ -237,6 +237,21 @@ def AfbeeldingKiezen():
         deelnemer = functions.getDeelnemersbestand(book, rijNr)
         deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
         
+        #book.sheets["Sterftetafels"].cells(15, 5).value = deelnemer.achternaam
+        oudpensioen = []
+        for i in deelnemer.pensioenen:
+            pensioen = []
+            pensioen.append(i.pensioenVolNaam)
+            pensioen.append(i.pensioenleeftijd)
+            pensioen.append("0")
+            #pensioen.append()
+            pensioen.append(i.ouderdomsPensioen)
+            pensioen.append(i.partnerPensioen)
+            oudpensioen.append(pensioen)
+            
+        
+        #book.sheets["Sterftetafels"].cells(15, 5).value = oudpensioen
+        
         pdf_canvas = Canvas("test.pdf")
         pdf_canvas.setFont("Helvetica", 11)
         halfbreedte = cm*10.5
@@ -257,78 +272,78 @@ def AfbeeldingKiezen():
         #4 start 5, 7(8)
         #9 start 10,11,13(14) past 15(16) aan
         
-        nieuw_pensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
-        p = 1 # hoeveelste pensioen neergezet wordt
-        for pensioen in nieuw_pensioen:
-            labels = ["Pensioenfonds", "Vervroegen/Uitstellen?", "Pensioenleeftijd", "Nieuw OP", "Nieuw PP", "Uitruilen?", "Volgorde", pensioen[6],"Hoog/Laag?", "volgorde",  "Duur", pensioen[12]]
-            benodigdeantwoorden = []
-            for l in benodigde_indexen:
-                if l == 2:
-                    if pensioen[1] == "Ja":
-                        antwoord = functions.leeftijd_notatie(pensioen[2], pensioen[3])
-                        #voor nu is dit de enige plek, maar met het verhaal en oud pensioen moet dit meer toegepast worden
-                        # if pensioen[3] == "0":
-                        #     antwoord = pensioen[2] + " jaar"
-                        # elif pensioen[3] == "1":
-                        #     antwoord = pensioen[2] + " jaar en 1 maand"
-                        # else:
-                        #     antwoord = pensioen[2] + " jaar en " + pensioen[3] + " maanden"
-                    else:
-                        antwoord = "oud" #oudpensioenfunctie moet nog geschreven worden
-                elif l == 15:
-                    if pensioen[9] == "Ja":
-                        hoog = "€" + pensioen[l] + " hoog"
-                        laag = "€" + pensioen[l+1] + " laag"
-                        if pensioen[10] == "Hoog-laag":
-                            antwoord = hoog + " " + laag
-                        else:
-                            antwoord = laag + " " + hoog
-                    else:
-                        antwoord = "€" + pensioen[l]
+        # nieuw_pensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+        # p = 1 # hoeveelste pensioen neergezet wordt
+        # for pensioen in nieuw_pensioen:
+        #     labels = ["Pensioenfonds", "Vervroegen/Uitstellen?", "Pensioenleeftijd", "Nieuw OP", "Nieuw PP", "Uitruilen?", "Volgorde", pensioen[6],"Hoog/Laag?", "volgorde",  "Duur", pensioen[12]]
+        #     benodigdeantwoorden = []
+        #     for l in benodigde_indexen:
+        #         if l == 2:
+        #             if pensioen[1] == "Ja":
+        #                 antwoord = functions.leeftijd_notatie(pensioen[2], pensioen[3])
+        #                 #voor nu is dit de enige plek, maar met het verhaal en oud pensioen moet dit meer toegepast worden
+        #                 # if pensioen[3] == "0":
+        #                 #     antwoord = pensioen[2] + " jaar"
+        #                 # elif pensioen[3] == "1":
+        #                 #     antwoord = pensioen[2] + " jaar en 1 maand"
+        #                 # else:
+        #                 #     antwoord = pensioen[2] + " jaar en " + pensioen[3] + " maanden"
+        #             else:
+        #                 antwoord = "oud" #oudpensioenfunctie moet nog geschreven worden
+        #         elif l == 15:
+        #             if pensioen[9] == "Ja":
+        #                 hoog = "€" + pensioen[l] + " hoog"
+        #                 laag = "€" + pensioen[l+1] + " laag"
+        #                 if pensioen[10] == "Hoog-laag":
+        #                     antwoord = hoog + " " + laag
+        #                 else:
+        #                     antwoord = laag + " " + hoog
+        #             else:
+        #                 antwoord = "€" + pensioen[l]
                         
-                elif l == 5 or l == 7: #opties die alleen bij uitruilen horen
-                    if pensioen[4] == "Ja":
-                        if l == 7:
-                            if pensioen[l-1] == "Verhouding":
-                                antwoord = pensioen[l] + ":" + pensioen[l+1]
-                            else:
-                                antwoord = pensioen[l]
-                        else:
-                            antwoord = pensioen[l]
-                    else:
-                        antwoord = ""
-                elif l == 10 or l == 11 or l == 13: #opties die alleen bij hoog-laag horen
-                    if pensioen[9] == "Ja":
-                        if l == 13:
-                            if pensioen[l-1] == "Verhouding":
-                                antwoord = pensioen[l] + ":" + pensioen[l+1]
-                            else:
-                                antwoord = pensioen[l]
-                        else:
-                            antwoord = pensioen[l]
-                    else:
-                        antwoord = ""
+        #         elif l == 5 or l == 7: #opties die alleen bij uitruilen horen
+        #             if pensioen[4] == "Ja":
+        #                 if l == 7:
+        #                     if pensioen[l-1] == "Verhouding":
+        #                         antwoord = pensioen[l] + ":" + pensioen[l+1]
+        #                     else:
+        #                         antwoord = pensioen[l]
+        #                 else:
+        #                     antwoord = pensioen[l]
+        #             else:
+        #                 antwoord = ""
+        #         elif l == 10 or l == 11 or l == 13: #opties die alleen bij hoog-laag horen
+        #             if pensioen[9] == "Ja":
+        #                 if l == 13:
+        #                     if pensioen[l-1] == "Verhouding":
+        #                         antwoord = pensioen[l] + ":" + pensioen[l+1]
+        #                     else:
+        #                         antwoord = pensioen[l]
+        #                 else:
+        #                     antwoord = pensioen[l]
+        #             else:
+        #                 antwoord = ""
                 
-                else:
-                    antwoord = pensioen[l]
-                benodigdeantwoorden.append(antwoord)
+        #         else:
+        #             antwoord = pensioen[l]
+        #         benodigdeantwoorden.append(antwoord)
                 
-            #antwoorden noteren
-            if p%3 == 1:
-                pdf_canvas.showPage()
-                functions.nieuwe_pagina(pdf_canvas, halfbreedte)
-                schrijfhoogte = startschrijfhoogte
-            k = 0
-            for j in labels:
-                pdf_canvas.drawString(40, schrijfhoogte, j)
-                #antwoord = self._pensioen[self._benodigde_indexen[k]]
-                antwoord = benodigdeantwoorden[k]
-                pdf_canvas.drawString(180, schrijfhoogte, antwoord)
-                schrijfhoogte = schrijfhoogte -14
-                k+=1
-            schrijfhoogte = schrijfhoogte -25
-            p+=1
-        pdf_canvas.save()
+        #     #antwoorden noteren
+        #     if p%3 == 1:
+        #         pdf_canvas.showPage()
+        #         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
+        #         schrijfhoogte = startschrijfhoogte
+        #     k = 0
+        #     for j in labels:
+        #         pdf_canvas.drawString(40, schrijfhoogte, j)
+        #         #antwoord = self._pensioen[self._benodigde_indexen[k]]
+        #         antwoord = benodigdeantwoorden[k]
+        #         pdf_canvas.drawString(180, schrijfhoogte, antwoord)
+        #         schrijfhoogte = schrijfhoogte -14
+        #         k+=1
+        #     schrijfhoogte = schrijfhoogte -25
+        #     p+=1
+        # pdf_canvas.save()
         
     else:
         functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
