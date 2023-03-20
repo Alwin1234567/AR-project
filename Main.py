@@ -10,6 +10,8 @@ from string import ascii_uppercase
 import functions
 import Klassen_Schermen
 from logging import getLogger
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.lib.units import cm
 
 
 """
@@ -17,13 +19,53 @@ Body
 Hier komen alle functies
 """
 @xw.sub
+def Test():
+    '''
+    functie om functie van tekstkleurveranderen te testen
+
+    Returns
+    -------
+    None.
+
+    '''
+    book = xw.Book.caller()
+    #testen met protected en unprotected sheet
+    # sheet = book.sheets["Test Julia"]
+    # sterftetafel = book.sheets["Sterftetafels"]
+    # sheet.api.Protect(Password = functions.wachtwoord())
+    
+    # sterftetafel.cells(7,6).value = "sheet protected"
+    # #haal waarde uit sheet
+    # waarde = sheet.cells(6,2).value
+    # #print opgehaalde tekst
+    # sterftetafel.cells(6,6).value = waarde
+    
+    # #waarde printen in sheet
+    # sheet.api.Unprotect(Password = functions.wachtwoord())
+    # sheet.cells(9,2).value = "Test printen"
+    
+    
+    # sht = "Sterftetafels"   #"deelnemersbestand"
+    # sheets = [sht]
+    # functions.tekstkleurSheets(book, sheets, zicht = 0)
+    # sht = "deelnemersbestand"
+    #sheets = ["Sterftetafels", "AG2020", "Gegevens pensioencontracten"]
+    sheets = ["Berekeningen"]
+    functions.tekstkleurSheets(book, sheets, zicht = 1)
+
+@xw.sub
 def Schermen():
     logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
     app = 0
     app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.Functiekeus(xw.Book.caller(), logger)
-    window.show()
-    app.exec_()
+    if functions.isBeheerder(xw.Book.caller()):
+        windowBeheerder = Klassen_Schermen.Beheerderkeuzes(xw.Book.caller(), logger)
+        windowBeheerder.show()
+        app.exec_()
+    else:
+        window = Klassen_Schermen.Functiekeus(xw.Book.caller(), logger)
+        window.show()
+        app.exec_()
 
     
     
@@ -46,7 +88,8 @@ def invoer_test_klikken():
     book = xw.Book.caller()
     invoer = book.sheets["Tijdelijk invoerscherm"]
     
-
+    #unprotect sheet
+    #invoer.api.Unprotect(Password = functions.wachtwoord())
     #Berekeningskolommen leegmaken
     kolommen = invoer.range((1,8), (80,130))
     Uitkomst_kolommen = invoer.range((10,6), (20,6))
@@ -167,7 +210,8 @@ def invoer_test_klikken():
             basis_koopsom(i).value= 0
             rente.append(0)
             pensioenleeftijd.append(0)
-
+    #sheet protecten
+    #invoer.api.Protect(Password = functions.wachtwoord())
         
 @xw.sub
 def AfbeeldingKiezen():
@@ -178,12 +222,133 @@ def AfbeeldingKiezen():
     #sheets en book opslaan in variabelen
     book = xw.Book.caller()
     sheet = book.sheets["Vergelijken"]
-    #gekozen afbeelding inlezen
-    gekozenAfbeelding = sheet.cells(6,"B").value
-    #naam van gekozen afbeelding op sheet printen
-    sheet.cells(8, "M").value = gekozenAfbeelding
+    flexopslag = book.sheets["Flexopslag"]
+    if str(flexopslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
+        #gekozen afbeelding inlezen
+        gekozenAfbeelding = sheet.cells(6,"B").value
+        #naam van gekozen afbeelding op sheet printen
+        sheet.cells(8, "M").value = gekozenAfbeelding
+        
+        #Deelnemer toegevoegd zodat er gekeken kan worden naar het oude pensioen. Ik heb alleen nog geen idee hoe
+        #rijnummer deelnemer zoeken
+        rijNr = int(float(flexopslag.cells(15,"B").value))
+        
+        #deelnemerobject inladen
+        deelnemer = functions.getDeelnemersbestand(book, rijNr)
+        deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
+        
+        #book.sheets["Sterftetafels"].cells(15, 5).value = deelnemer.achternaam
+        oudpensioen = []
+        for i in deelnemer.pensioenen:
+            pensioen = []
+            pensioen.append(i.pensioenVolNaam)
+            pensioen.append(i.pensioenleeftijd)
+            pensioen.append("0")
+            #pensioen.append()
+            pensioen.append(i.ouderdomsPensioen)
+            pensioen.append(i.partnerPensioen)
+            oudpensioen.append(pensioen)
+            
+        
+        #book.sheets["Sterftetafels"].cells(15, 5).value = oudpensioen
+        
+        pdf_canvas = Canvas("test.pdf")
+        pdf_canvas.setFont("Helvetica", 11)
+        halfbreedte = cm*10.5
+        
+        functions.nieuwe_pagina(pdf_canvas, halfbreedte)
+        startschrijfhoogte = 720
+        schrijfhoogte = startschrijfhoogte
+        # oudpensioen = "pensioenplaatje.png"
+        # nieuwpensioen = "pensioenplaatje2.png"
+        
+        # pdf_canvas.drawImage(nieuwpensioen, 40, 575, 250, 193)
+        # pdf_canvas.drawImage(oudpensioen, 40 + halfbreedte, 575, 250, 193)
+        # nieuwe_pagina(pdf_canvas, halfbreedte)
+        #staat nog in commentaar, omdat een manier van afbeelding maken/lezen moet worden gevonden
+        
+        
+        benodigde_indexen = [0, 1, 2, 15, 17, 4, 5, 7, 9, 10, 11, 13]
+        #4 start 5, 7(8)
+        #9 start 10,11,13(14) past 15(16) aan
+        
+        # nieuw_pensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+        # p = 1 # hoeveelste pensioen neergezet wordt
+        # for pensioen in nieuw_pensioen:
+        #     labels = ["Pensioenfonds", "Vervroegen/Uitstellen?", "Pensioenleeftijd", "Nieuw OP", "Nieuw PP", "Uitruilen?", "Volgorde", pensioen[6],"Hoog/Laag?", "volgorde",  "Duur", pensioen[12]]
+        #     benodigdeantwoorden = []
+        #     for l in benodigde_indexen:
+        #         if l == 2:
+        #             if pensioen[1] == "Ja":
+        #                 antwoord = functions.leeftijd_notatie(pensioen[2], pensioen[3])
+        #                 #voor nu is dit de enige plek, maar met het verhaal en oud pensioen moet dit meer toegepast worden
+        #                 # if pensioen[3] == "0":
+        #                 #     antwoord = pensioen[2] + " jaar"
+        #                 # elif pensioen[3] == "1":
+        #                 #     antwoord = pensioen[2] + " jaar en 1 maand"
+        #                 # else:
+        #                 #     antwoord = pensioen[2] + " jaar en " + pensioen[3] + " maanden"
+        #             else:
+        #                 antwoord = "oud" #oudpensioenfunctie moet nog geschreven worden
+        #         elif l == 15:
+        #             if pensioen[9] == "Ja":
+        #                 hoog = "€" + pensioen[l] + " hoog"
+        #                 laag = "€" + pensioen[l+1] + " laag"
+        #                 if pensioen[10] == "Hoog-laag":
+        #                     antwoord = hoog + " " + laag
+        #                 else:
+        #                     antwoord = laag + " " + hoog
+        #             else:
+        #                 antwoord = "€" + pensioen[l]
+                        
+        #         elif l == 5 or l == 7: #opties die alleen bij uitruilen horen
+        #             if pensioen[4] == "Ja":
+        #                 if l == 7:
+        #                     if pensioen[l-1] == "Verhouding":
+        #                         antwoord = pensioen[l] + ":" + pensioen[l+1]
+        #                     else:
+        #                         antwoord = pensioen[l]
+        #                 else:
+        #                     antwoord = pensioen[l]
+        #             else:
+        #                 antwoord = ""
+        #         elif l == 10 or l == 11 or l == 13: #opties die alleen bij hoog-laag horen
+        #             if pensioen[9] == "Ja":
+        #                 if l == 13:
+        #                     if pensioen[l-1] == "Verhouding":
+        #                         antwoord = pensioen[l] + ":" + pensioen[l+1]
+        #                     else:
+        #                         antwoord = pensioen[l]
+        #                 else:
+        #                     antwoord = pensioen[l]
+        #             else:
+        #                 antwoord = ""
+                
+        #         else:
+        #             antwoord = pensioen[l]
+        #         benodigdeantwoorden.append(antwoord)
+                
+        #     #antwoorden noteren
+        #     if p%3 == 1:
+        #         pdf_canvas.showPage()
+        #         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
+        #         schrijfhoogte = startschrijfhoogte
+        #     k = 0
+        #     for j in labels:
+        #         pdf_canvas.drawString(40, schrijfhoogte, j)
+        #         #antwoord = self._pensioen[self._benodigde_indexen[k]]
+        #         antwoord = benodigdeantwoorden[k]
+        #         pdf_canvas.drawString(180, schrijfhoogte, antwoord)
+        #         schrijfhoogte = schrijfhoogte -14
+        #         k+=1
+        #     schrijfhoogte = schrijfhoogte -25
+        #     p+=1
+        # pdf_canvas.save()
+        
+    else:
+        functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
     
-
+#book.sheets["Vergelijken"].cells(2, "O").value = "Test"
 @xw.sub
 def AfbeeldingVerwijderen():
     """
@@ -192,18 +357,56 @@ def AfbeeldingVerwijderen():
     
     #sheets en book opslaan in variabelen
     book = xw.Book.caller()
-    sheet = book.sheets["Vergelijken"]
-    #gekozen afbeelding inlezen
-    gekozenAfbeelding = sheet.cells(6,"B").value
-    #naam van gekozen afbeelding op sheet printen
-    sheet.cells(11, "M").value = gekozenAfbeelding
+    Vergelijken = book.sheets["Vergelijken"]
+    Opslag = book.sheets["Flexopslag"]
+    if str(Opslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
+        #gekozen afbeelding inlezen
+        gekozenAfbeelding = Vergelijken.cells(6,"B").value
+        #vragen of echt verwijderd moet worden
+        controle = functions.Mbox("Afbeelding verwijderen", f"Wilt u de flexibilisatie '{gekozenAfbeelding}' echt verwijderen?\nU kunt deze actie niet ongedaan maken.", 4)
+        if controle == "Ja":
+            #ID van de gekozen afbeelding opzoeken
+            ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+            #Vergelijken.cells(11, "O").value = ID
+            
+            #gekozen afbeelding verwijderen
+            try:
+                Vergelijken.pictures[ID].delete()
+            except:
+                functions.Mbox("Foutmelding", f"Het verwijderen van flexibilisatie '{gekozenAfbeelding}' lukt niet.\n Het AfbeeldingID bestaat niet", 0)
+            
+            #tellen hoeveel opgeslagen flexibiliseringen en hoeveel pensioenen
+            Flexopslag = functions.FlexopslagVinden(xw.Book.caller(), gekozenAfbeelding)
+            
+            startKolom = Flexopslag[0]
+            laatsteKolom = Flexopslag[1]
+            aantalPensioenen = Flexopslag[2]
+            rijen = aantalPensioenen*20 + 4
+            #opslag sheet unprotecten
+            #Opslag.api.Unprotect(Password = functions.wachtwoord())
+            if startKolom != laatsteKolom: #er zijn meer dan 1 flexibilisaties opgeslagen
+                #verwijderen gegevens verwijderde flexibilisatie
+                Opslag.range((1,startKolom-1),(rijen,startKolom+1)).clear_contents()
+                #flexibilisaties na verwijderde blok opschuiven
+                Opslag.cells(1,startKolom-1).value = Opslag.range((1,startKolom+3),(rijen,laatsteKolom+1)).value
+            #laatste (of enige) kolom verwijderen
+            Opslag.range((1,laatsteKolom-1),(rijen,laatsteKolom+1)).clear()
+            #opslag sheet protecten
+            #Opslag.api.Protect(Password = functions.wachtwoord())
+            
+            try:
+                #drop down op vergelijkingssheet updaten
+                functions.vergelijken_keuzes()
+            except:
+                #laatste opslag is verwijderd, dus drop down legen
+                Vergelijken["B6"].value = ""
     
-    #ID van de gekozen afbeelding opzoeken
-    ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+    else: #er zijn geen flexibilisaties opgeslagen
+        #keuzecel in vergelijkingssheet legen
+        Vergelijken["B6"].value = ""
+        functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
     
-    #gekozen afbeelding verwijderen
-    sheet.pictures[ID].delete()
-
+    
 @xw.sub
 def afbeelding_aanpassen():
     """
@@ -214,82 +417,85 @@ def afbeelding_aanpassen():
     book = xw.Book.caller()
     sheet = book.sheets["Vergelijken"]
     flexopslag = book.sheets["Flexopslag"]
-    #gekozen afbeelding inlezen
-    gekozenAfbeelding = sheet.cells(6,"B").value 
-    
-    #gegevens van gekozen afbeelding inladen
-    opslag = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
-    #rijnummer deelnemer zoeken
-    rijNr = int(float(flexopslag.cells(15,"B").value))
-    
-    #deelnemerobject inladen
-    deelnemer = functions.getDeelnemersbestand(book, rijNr)
-    deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
-    
-    #lijst met pensioennamen van de deelnemer 
-    pensioennamen = []  
-    for i in opslag:
-        pensioennamen.append(i[0])
-    
-    #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegne aan flexibiliseringsobject van het deelnemersobject
-    for i,p in enumerate(pensioennamen):
-        for flexibilisatie in deelnemer.flexibilisaties:
-            #als het flexibilisatieobject bij het pensioen uit de lijst pensioennamen hoort
-            if flexibilisatie.pensioen.pensioenNaam == p:
-                #met properties flexibilisaties opslaan in objecten flexibilisatie
-                pensioengegevens = opslag[i]
-                #leeftijd aanpassen
-                if pensioengegevens[1] == "Ja":
-                    flexibilisatie.leeftijd_Actief = True
-                elif pensioengegevens[1] == "Nee":
-                    flexibilisatie.leeftijd_Actief = False
-                flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
-                flexibilisatie.leeftijdMaand = int(float(pensioengegevens[3]))
-                
-                #uitruilen
-                if pensioengegevens[4] == "Ja":
-                    flexibilisatie.OP_PP_Actief = True
-                elif pensioengegevens[4] == "Nee":
-                    flexibilisatie.OP_PP_Actief = False
-                    #volgorde
-                flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[5]
-                    #methode
-                flexibilisatie.OP_PP_Methode = pensioengegevens[6]
-                if pensioengegevens[6] == "Verhouding":
-                    flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
-                    flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
-                elif pensioengegevens[6] == "Percentage":
-                    flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
-                
-                
-                #hoog-laag-constructie
-                if pensioengegevens[9] == "Ja":
-                    flexibilisatie.HL_Actief = True
-                elif pensioengegevens[9] == "Nee":
-                    flexibilisatie.HL_Actief = False
-                    #volgorde
-                flexibilisatie.HL_Volgorde = pensioengegevens[10]
-                    #duur
-                flexibilisatie.HL_Jaar = int(float(pensioengegevens[11]))
-                    #methode
-                flexibilisatie.HL_Methode = pensioengegevens[12]
-                if pensioengegevens[12] == "Verhouding":
-                    flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
-                    flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
-                elif pensioengegevens[12] == "Verschil":
-                    flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))
-                
-                
-    
-    
-    #scherm flexmenu openen
-    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
-    app = 0
-    app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
-    window.invoerVerandering()
-    window.show()
-    app.exec_()
+    if str(flexopslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
+        #gekozen afbeelding inlezen
+        gekozenAfbeelding = sheet.cells(6,"B").value 
+        
+        #gegevens van gekozen afbeelding inladen
+        opslag = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+        #rijnummer deelnemer zoeken
+        rijNr = int(float(flexopslag.cells(15,"B").value))
+        
+        #deelnemerobject inladen
+        deelnemer = functions.getDeelnemersbestand(book, rijNr)
+        deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
+        
+        #lijst met pensioennamen van de deelnemer 
+        pensioennamen = []  
+        for i in opslag:
+            pensioennamen.append(i[0])
+        
+        #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegne aan flexibiliseringsobject van het deelnemersobject
+        for i,p in enumerate(pensioennamen):
+            for flexibilisatie in deelnemer.flexibilisaties:
+                #als het flexibilisatieobject bij het pensioen uit de lijst pensioennamen hoort
+                if flexibilisatie.pensioen.pensioenNaam == p:
+                    #met properties flexibilisaties opslaan in objecten flexibilisatie
+                    pensioengegevens = opslag[i]
+                    #leeftijd aanpassen
+                    if pensioengegevens[1] == "Ja":
+                        flexibilisatie.leeftijd_Actief = True
+                    elif pensioengegevens[1] == "Nee":
+                        flexibilisatie.leeftijd_Actief = False
+                    flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
+                    flexibilisatie.leeftijdMaand = int(float(pensioengegevens[3]))
+                    
+                    #uitruilen
+                    if pensioengegevens[4] == "Ja":
+                        flexibilisatie.OP_PP_Actief = True
+                    elif pensioengegevens[4] == "Nee":
+                        flexibilisatie.OP_PP_Actief = False
+                        #volgorde
+                    flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[5]
+                        #methode
+                    flexibilisatie.OP_PP_Methode = pensioengegevens[6]
+                    if pensioengegevens[6] == "Verhouding":
+                        flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
+                        flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
+                    elif pensioengegevens[6] == "Percentage":
+                        flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
+                    
+                    
+                    #hoog-laag-constructie
+                    if pensioengegevens[9] == "Ja":
+                        flexibilisatie.HL_Actief = True
+                    elif pensioengegevens[9] == "Nee":
+                        flexibilisatie.HL_Actief = False
+                        #volgorde
+                    flexibilisatie.HL_Volgorde = pensioengegevens[10]
+                        #duur
+                    flexibilisatie.HL_Jaar = int(float(pensioengegevens[11]))
+                        #methode
+                    flexibilisatie.HL_Methode = pensioengegevens[12]
+                    if pensioengegevens[12] == "Verhouding":
+                        flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
+                        flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
+                    elif pensioengegevens[12] == "Verschil":
+                        flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))
+                    
+                    
+        
+        
+        #scherm flexmenu openen
+        logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+        app = 0
+        app = QtWidgets.QApplication(sys.argv)
+        window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
+        window.invoerVerandering(num = 0)
+        window.show()
+        app.exec_()
+    else:
+        functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
     
 @xw.sub
 def NieuweFlexibilisatie():
@@ -300,36 +506,38 @@ def NieuweFlexibilisatie():
     #sheet en book opslaan in variabelen
     book = xw.Book.caller()
     flexopslag = book.sheets["Flexopslag"]
-    
-    #rijnummer deelnemer zoeken
-    rijNr = int(float(flexopslag.cells(15,"B").value))
-    #deelnemerobject inladen
-    deelnemer = functions.getDeelnemersbestand(book, rijNr)
-    deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
-    
-    #scherm flexmenu openen
-    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
-    app = 0
-    app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
-    window.invoerVerandering()
-    window.show()
-    app.exec_()
+    if str(flexopslag.cells(15,"B").value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
+        #rijnummer deelnemer zoeken
+        rijNr = int(float(flexopslag.cells(15,"B").value))
+        #deelnemerobject inladen
+        deelnemer = functions.getDeelnemersbestand(book, rijNr)
+        deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
+        
+        #scherm flexmenu openen
+        logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+        app = 0
+        app = QtWidgets.QApplication(sys.argv)
+        window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
+        
+        window.show()
+        app.exec_()
+    else:
+        functions.Mbox("foutmelding", "Er is geen deelnemer opgeslagen. \nGelieve eerst een deelnemer te selecteren via de knop 'Andere deelnemer'.", 0)
         
 @xw.sub
 def AndereDeelnemer():
     """
     Functie die het deelnemerselectie scherm opent
     """
-    
-    #scherm Deelnemerselectie openen
-    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
-    app = 0
-    app = QtWidgets.QApplication(sys.argv)
-    window = Klassen_Schermen.Deelnemerselectie(xw.Book.caller(), logger)
-    window.show()
-    app.exec_()
-    print("deelnemerselectie openen")
+    controle = functions.Mbox("Andere deelnemer selecteren", "Door een andere deelnemer te selecteren zullen de huidige gegevens op de vergelijken sheet verwijderd worden.\nU kunt deze actie niet ongedaan maken.", 1)
+    if controle == "OK Clicked":
+        #scherm Deelnemerselectie openen
+        logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+        app = 0
+        app = QtWidgets.QApplication(sys.argv)
+        window = Klassen_Schermen.Deelnemerselectie(xw.Book.caller(), logger)
+        window.show()
+        app.exec_()
     
 @xw.sub
 def BeheerderskeuzesOpenen():
@@ -344,8 +552,37 @@ def BeheerderskeuzesOpenen():
     windowBeheerder = Klassen_Schermen.Beheerderkeuzes(xw.Book.caller(), logger)
     windowBeheerder.show()
     app.exec_()
-    print("Beheerderskeuzes openen")
-                  
+    
+@xw.sub
+def InEnUitloggen() :
+    '''
+    functie om in of uit te loggen als beheerder
+
+    Returns
+    -------
+    None.
+
+    '''
+    book = xw.Book.caller()
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+    if functions.isBeheerder(book):
+        #beheerder is ingelogd, dus wil uitloggen
+        controle = functions.Mbox("Uitloggen", "Weet u zeker dat u wilt uitloggen?",4)
+        if controle == "Ja":
+            app = 0
+            app = QtWidgets.QApplication(sys.argv)
+            windowBeheerder = Klassen_Schermen.Beheerderkeuzes(xw.Book.caller(), logger)
+            windowBeheerder.btnUitloggenClicked()
+            app.exec_()
+        
+    else:
+        #beheerder is niet ingelogd, dus wil inloggen
+        app = 0
+        app = QtWidgets.QApplication(sys.argv)
+        windowInloggen = Klassen_Schermen.Inloggen(xw.Book.caller(), logger)
+        windowInloggen.show()
+        app.exec_()
+                 
 @xw.sub
 def flexibilisaties_testen():
    book = xw.Book.caller()
