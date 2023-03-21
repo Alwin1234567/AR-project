@@ -1429,8 +1429,8 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         ax.set_title(titel, fontweight='bold')
     
     if sheet != None:
-        locatieTop = int(12 + (i%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
-        locatieLeft = int(2 + ((i - i%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
+        locatieTop = int(12 + (ID%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
+        locatieLeft = int(2 + ((ID - i%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
         locatie = sheet.range((locatieTop,locatieLeft))
         afbeelding = plt.figure()
         for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
