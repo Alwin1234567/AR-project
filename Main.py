@@ -287,7 +287,7 @@ def AfbeeldingKiezen():
         for i in oudpensioen:
             totPPoud = totPPoud + int(i[4])
         
-        PPoudverhaal = "Als u stierf had uw partner €" + str(totPPoud) + " hadden ontvangen"
+        PPoudverhaal = "Uw oude partner pensioen was €" + str(totPPoud) + " per jaar"
         pdf_canvas.drawString(40 + halfbreedte, verhaallijn-14, PPoudverhaal)
         
         verhaallijn = verhaalstart
@@ -297,8 +297,15 @@ def AfbeeldingKiezen():
         totOPnieuw = 0
         for i in eenperjaarnieuw:
             totOPnieuw = totOPnieuw + i[1]
-            nieuwverhaal = "ontvangt u vanaf  "+ i[0]+ " €" + str(totOPnieuw)+ " per jaar aan OP"
-            pdf_canvas.drawString(40, verhaallijn, nieuwverhaal)
+            if "maand" in i[0]:
+                nieuwverhaal = "ontvangt u vanaf  "+ i[0] 
+                pdf_canvas.drawString(40, verhaallijn, nieuwverhaal)
+                verhaallijn -= 14
+                nieuwverhaal = "€" + str(totOPnieuw)+ " per jaar aan OP"
+                pdf_canvas.drawString(120, verhaallijn, nieuwverhaal)
+            else:
+                nieuwverhaal = "ontvangt u vanaf  "+ i[0]+ " €" + str(totOPnieuw)+ " per jaar aan OP"
+                pdf_canvas.drawString(40, verhaallijn, nieuwverhaal)
             verhaallijn -= 14
         
         
@@ -306,7 +313,7 @@ def AfbeeldingKiezen():
         for i in nieuwpensioen:
             totPPnieuw = totPPnieuw + int(float(i[17]))
         
-        PPnieuwverhaal = "Als u sterft ontvangt uw partner €" + str(totPPnieuw)
+        PPnieuwverhaal = "Uw nieuwe partner pensioen is €" + str(totPPnieuw) + " per jaar"
         pdf_canvas.drawString(40, verhaallijn-14, PPnieuwverhaal)
         
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
@@ -342,20 +349,20 @@ def AfbeeldingKiezen():
                         # else:
                         #     antwoord = pensioen[2] + " jaar en " + pensioen[3] + " maanden"
                     else:
-                        antwoord =  functions.leeftijd_notatie(oudpensioen[p][1], "0")
+                        antwoord =  functions.leeftijd_notatie(oudpensioen[p-1][1], "0")
                         
                 elif l == 15:
                     if pensioen[9] == "Ja":
-                        hoog = "€" + pensioen[l] + " hoog"
-                        laag = "€" + pensioen[l+1] + " laag"
+                        hoog = "€" + str(int(float(pensioen[l]))) + " hoog"
+                        laag = "€" + str(int(float(pensioen[l+1]))) + " laag"
                         if pensioen[10] == "Hoog-laag":
                             antwoord = hoog + " " + laag
                         else:
                             antwoord = laag + " " + hoog
                     else:
-                        antwoord = "€" + pensioen[l]
+                        antwoord = "€" + str(int(float(pensioen[l])))
                 elif l == 17:
-                    antwoord = "€" + pensioen[l]
+                    antwoord = "€" + str(int(float(pensioen[l])))
                         
                 elif l == 5 or l == 7: #opties die alleen bij uitruilen horen
                     if pensioen[4] == "Ja":
@@ -393,17 +400,17 @@ def AfbeeldingKiezen():
             for j in labels:
                 if k == 0: # fonds
                     pdf_canvas.drawString(40 + halfbreedte, schrijfhoogte, j)
-                    pdf_canvas.drawString(180 + halfbreedte, schrijfhoogte, oudpensioen[p][0])
+                    pdf_canvas.drawString(180 + halfbreedte, schrijfhoogte, oudpensioen[p-1][0])
                 elif k == 2: #leeftijd
                     pdf_canvas.drawString(40 + halfbreedte, schrijfhoogte, j)
-                    oud_leeftijd = functions.leeftijd_notatie(oudpensioen[p][1], "0")
+                    oud_leeftijd = functions.leeftijd_notatie(oudpensioen[p-1][1], "0")
                     pdf_canvas.drawString(180 + halfbreedte, schrijfhoogte, oud_leeftijd)
                 elif k == 3: #OP
                     pdf_canvas.drawString(40 + halfbreedte, schrijfhoogte, "Oud OP")
-                    pdf_canvas.drawString(180 + halfbreedte, schrijfhoogte, "€" + str(oudpensioen[p][3]))
+                    pdf_canvas.drawString(180 + halfbreedte, schrijfhoogte, "€" + str(oudpensioen[p-1][3]))
                 elif k == 4: #PP
                     pdf_canvas.drawString(40 + halfbreedte, schrijfhoogte, "Oud PP")
-                    pdf_canvas.drawString(180 + halfbreedte, schrijfhoogte, "€" + str(oudpensioen[p][4]))
+                    pdf_canvas.drawString(180 + halfbreedte, schrijfhoogte, "€" + str(oudpensioen[p-1][4]))
                 pdf_canvas.drawString(40, schrijfhoogte, j)
                 #antwoord = self._pensioen[self._benodigde_indexen[k]]
                 antwoord = benodigdeantwoorden[k]
