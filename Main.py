@@ -259,10 +259,10 @@ def AfbeeldingKiezen():
             
         nieuwpensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
         
-        #eenperjaar = functions.geld_per_leeftijd(oudpensioen, nieuwpensioen)
+        eenperjaar = functions.geld_per_leeftijd(oudpensioen, nieuwpensioen)
         
-        # eenperjaaroud = eenperjaar[0]
-        # eenperjaarnieuw = eenperjaar[1]
+        eenperjaaroud = eenperjaar[0]
+        eenperjaarnieuw = eenperjaar[1]
         
         verhaalstart = 536
         verhaallijn = verhaalstart
@@ -276,44 +276,44 @@ def AfbeeldingKiezen():
         halfbreedte = cm*10.5
         
         totOPoud = 0
-        # pdf_canvas.drawString(40+halfbreedte, 550, "Met uw oude pensioen")
-        # for i in eenperjaaroud:
-        #     totOPoud = totOPoud + i[1]
-        #     oudverhaal = "ontving u vanaf  "+ i[0]+ " €" + str(totOPoud)+ " per jaar aan OP"
-        #     pdf_canvas.drawString(40+halfbreedte, verhaallijn, oudverhaal)
-        #     verhaallijn -= 14
+        pdf_canvas.drawString(40+halfbreedte, 550, "Met uw oude pensioen")
+        for i in eenperjaaroud:
+            totOPoud = totOPoud + i[1]
+            oudverhaal = "ontving u vanaf  "+ i[0]+ " €" + str(totOPoud)+ " per jaar aan OP"
+            pdf_canvas.drawString(40+halfbreedte, verhaallijn, oudverhaal)
+            verhaallijn -= 14
             
-        # totPPoud = 0
-        # for i in oudpensioen:
-        #     totPPoud = totPPoud + int(i[4])
+        totPPoud = 0
+        for i in oudpensioen:
+            totPPoud = totPPoud + int(i[4])
         
-        # PPoudverhaal = "Als u stierf had uw partner €" + str(totPPoud) + " hadden ontvangen"
-        # pdf_canvas.drawString(40 + halfbreedte, verhaallijn-14, PPoudverhaal)
+        PPoudverhaal = "Als u stierf had uw partner €" + str(totPPoud) + " hadden ontvangen"
+        pdf_canvas.drawString(40 + halfbreedte, verhaallijn-14, PPoudverhaal)
         
-        # verhaallijn = verhaalstart
+        verhaallijn = verhaalstart
         
-        # pdf_canvas.drawString(40, 550, "Met uw nieuwe pensioen")
+        pdf_canvas.drawString(40, 550, "Met uw nieuwe pensioen")
         
-        # totOPnieuw = 0
-        # for i in eenperjaarnieuw:
-        #     totOPnieuw = totOPnieuw + i[1]
-        #     nieuwverhaal = "ontvangt u vanaf  "+ i[0]+ " €" + str(totOPnieuw)+ " per jaar aan OP"
-        #     pdf_canvas.drawString(40, verhaallijn, nieuwverhaal)
-        #     verhaallijn -= 14
+        totOPnieuw = 0
+        for i in eenperjaarnieuw:
+            totOPnieuw = totOPnieuw + i[1]
+            nieuwverhaal = "ontvangt u vanaf  "+ i[0]+ " €" + str(totOPnieuw)+ " per jaar aan OP"
+            pdf_canvas.drawString(40, verhaallijn, nieuwverhaal)
+            verhaallijn -= 14
         
         
-        # totPPnieuw = 0
-        # for i in nieuwpensioen:
-        #     totPPnieuw = totPPnieuw + int(i[17])
+        totPPnieuw = 0
+        for i in nieuwpensioen:
+            totPPnieuw = totPPnieuw + int(float(i[17]))
         
-        # PPnieuwverhaal = "Als u sterft ontvangt uw partner €" + str(totPPnieuw)
-        # pdf_canvas.drawString(40, verhaallijn-14, PPnieuwverhaal)
+        PPnieuwverhaal = "Als u sterft ontvangt uw partner €" + str(totPPnieuw)
+        pdf_canvas.drawString(40, verhaallijn-14, PPnieuwverhaal)
         
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
         startschrijfhoogte = 720
         schrijfhoogte = startschrijfhoogte
-        # oudpensioen = "pensioenplaatje.png"
-        # nieuwpensioen = "pensioenplaatje2.png"
+        # oudpensioenimg = "pensioenplaatje.png"
+        # nieuwpensioenimg = "pensioenplaatje2.png"
         
         # pdf_canvas.drawImage(nieuwpensioen, 40, 575, 250, 193)
         # pdf_canvas.drawImage(oudpensioen, 40 + halfbreedte, 575, 250, 193)
@@ -343,7 +343,7 @@ def AfbeeldingKiezen():
                         #     antwoord = pensioen[2] + " jaar en " + pensioen[3] + " maanden"
                     else:
                         antwoord =  functions.leeftijd_notatie(oudpensioen[p][1], "0")
-                            #oudpensioenfunctie moet nog geschreven worden
+                        
                 elif l == 15:
                     if pensioen[9] == "Ja":
                         hoog = "€" + pensioen[l] + " hoog"

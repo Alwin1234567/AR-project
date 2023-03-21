@@ -1706,21 +1706,21 @@ def geld_per_leeftijd(oud_pensioen, nieuw_pensioen):
             startmaand = "0"
         
         if i[9] == "Ja": #hooglaag staat aan
-            duur = int(i[11])
+            duur = int(float(i[11]))
             hl_jaar = str(int(startjaar) + duur)
             datum1 = leeftijd_notatie(startjaar, startmaand)
             datum2 = leeftijd_notatie(hl_jaar, startmaand)
             if i[10] == "Hoog-laag":
-                OP2 = int(i[16]) - int(i[15]) #op tweede gedeelte hl
+                OP2 = int(float(i[16])) - int(float(i[15])) #op tweede gedeelte hl
             else:
-                OP2 = int(i[15]) - int(i[16]) 
-            OP1 = int(i[15]) #op eerste gedeelte hl
+                OP2 = int(float(i[15])) - int(float(i[16])) 
+            OP1 = int(float(i[15])) #op eerste gedeelte hl
             datum_en_geldnieuw.append([datum1, OP1])
             datum_en_geldnieuw.append([datum2, OP2])
             
         else:
             datum = leeftijd_notatie(startjaar, startmaand)
-            geld = int(i[15])
+            geld = int(float(i[15]))
             datum_en_geldnieuw.append([datum, geld])
         p += 1            
                     
