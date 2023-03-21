@@ -198,7 +198,9 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         
         #afbeelding huidige pensioen op vergelijken sheet plaatsen
         try: functions.maak_afbeelding(deelnemer, sheet = self.book.sheets["Vergelijken"], ID = 0, titel = "0 - Originele pensioen")
-        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
+        except Exception as e: 
+            self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
+            self.book.sheets["Vergelijken"].range((4,20)).value = "fout bij originele pensioen afbeelding maken"
         
     def btnTerugClicked(self):
         self.close()
@@ -1047,7 +1049,7 @@ class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
     
     def btnGegevensWijzigenClicked(self):
         if self.ui.lwKeuzes.currentRow() == -1: 
-            self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren voordat u gaat flexibiliseren")
+            self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren om de gegevens te wijzigen")
             return
         
         #nieuwe deelnemer aanmaken
@@ -1267,7 +1269,7 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                     #self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                     functions.ToevoegenDeelnemer(gegevens, regel = self.rijNr)
                     #self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
-                    self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
+                    self._logger.info("Deelnemersgegevens zijn gewijzigd in het deelnemersbestand")
                 except Exception as e:
                     self._logger.exception("Er is iets fout gegaan bij het wijzigen van een deelnemer in het deelnemersbestand")
                 
