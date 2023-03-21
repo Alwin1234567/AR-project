@@ -257,13 +257,57 @@ def AfbeeldingKiezen():
             pensioen.append(i.partnerPensioen)          #4
             oudpensioen.append(pensioen)            
             
-        nieuw_pensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+        nieuwpensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+        
+        #eenperjaar = functions.geld_per_leeftijd(oudpensioen, nieuwpensioen)
+        
+        # eenperjaaroud = eenperjaar[0]
+        # eenperjaarnieuw = eenperjaar[1]
+        
+        verhaalstart = 536
+        verhaallijn = verhaalstart
+        
+        
         
         #book.sheets["Sterftetafels"].cells(15, 5).value = oudpensioen
         
         pdf_canvas = Canvas("test.pdf")
         pdf_canvas.setFont("Helvetica", 11)
         halfbreedte = cm*10.5
+        
+        totOPoud = 0
+        # pdf_canvas.drawString(40+halfbreedte, 550, "Met uw oude pensioen")
+        # for i in eenperjaaroud:
+        #     totOPoud = totOPoud + i[1]
+        #     oudverhaal = "ontving u vanaf  "+ i[0]+ " €" + str(totOPoud)+ " per jaar aan OP"
+        #     pdf_canvas.drawString(40+halfbreedte, verhaallijn, oudverhaal)
+        #     verhaallijn -= 14
+            
+        # totPPoud = 0
+        # for i in oudpensioen:
+        #     totPPoud = totPPoud + int(i[4])
+        
+        # PPoudverhaal = "Als u stierf had uw partner €" + str(totPPoud) + " hadden ontvangen"
+        # pdf_canvas.drawString(40 + halfbreedte, verhaallijn-14, PPoudverhaal)
+        
+        # verhaallijn = verhaalstart
+        
+        # pdf_canvas.drawString(40, 550, "Met uw nieuwe pensioen")
+        
+        # totOPnieuw = 0
+        # for i in eenperjaarnieuw:
+        #     totOPnieuw = totOPnieuw + i[1]
+        #     nieuwverhaal = "ontvangt u vanaf  "+ i[0]+ " €" + str(totOPnieuw)+ " per jaar aan OP"
+        #     pdf_canvas.drawString(40, verhaallijn, nieuwverhaal)
+        #     verhaallijn -= 14
+        
+        
+        # totPPnieuw = 0
+        # for i in nieuwpensioen:
+        #     totPPnieuw = totPPnieuw + int(i[17])
+        
+        # PPnieuwverhaal = "Als u sterft ontvangt uw partner €" + str(totPPnieuw)
+        # pdf_canvas.drawString(40, verhaallijn-14, PPnieuwverhaal)
         
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
         startschrijfhoogte = 720
@@ -283,7 +327,7 @@ def AfbeeldingKiezen():
         
         
         p = 1 # hoeveelste pensioen neergezet wordt
-        for pensioen in nieuw_pensioen:
+        for pensioen in nieuwpensioen:
             labels = ["Pensioenfonds", "Vervroegen/Uitstellen?", "Pensioenleeftijd", "Nieuw OP", "Nieuw PP", "Uitruilen?", "Volgorde", pensioen[6],"Hoog/Laag?", "volgorde",  "Duur", pensioen[12]]
             benodigdeantwoorden = []
             for l in benodigde_indexen:
@@ -310,6 +354,8 @@ def AfbeeldingKiezen():
                             antwoord = laag + " " + hoog
                     else:
                         antwoord = "€" + pensioen[l]
+                elif l == 17:
+                    antwoord = "€" + pensioen[l]
                         
                 elif l == 5 or l == 7: #opties die alleen bij uitruilen horen
                     if pensioen[4] == "Ja":

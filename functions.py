@@ -1672,7 +1672,89 @@ def leeftijd_notatie(jaar, maand):
     return antwoord  
     
     
+def geld_per_leeftijd(oud_pensioen, nieuw_pensioen):
+    """
+    Functie die per leeftijd aangeeft hoeveel geld erbij of af gaat
+
+    Parameters
+    ----------
+    oud_pensioen : list
+        Lijst met lijsten van oud pensioen. 
     
+    nieuw_pensioen: list
+        Lijst met lijsten van oud pensioen.
+
+    Returns
+    -------
+    list
+        Een lijst met de lijst van oud en nieuw pensioen. 
+        oud en nieuwpensioen zijn beide een lijst met lijsten van 2 lang 
+        bestaande uit de pensioen leeftijd en het verschil in bedrag met de leeftijd ervoor. 
+        Deze lijst is van jong naar oud gesoorteerd.
+        In deze lijst staan geen dubbele leeftijden meer.
+        
+    """
+    datum_en_geldnieuw = []
+    
+    p = 1 #hoeveelste pensioen
+    for i in nieuw_pensioen:
+        if i[1] == "Ja": #pensioenleeftijd aanpassen
+            startjaar = i[2]
+            startmaand = i[3]
+        else:
+            startjaar = str(oud_pensioen[p][1])
+            startmaand = "0"
+        
+        if i[9] == "Ja": #hooglaag staat aan
+            duur = int(i[11])
+            hl_jaar = str(int(startjaar) + duur)
+            datum1 = leeftijd_notatie(startjaar, startmaand)
+            datum2 = leeftijd_notatie(hl_jaar, startmaand)
+            if i[10] == "Hoog-laag":
+                OP2 = int(i[16]) - int(i[15]) #op tweede gedeelte hl
+            else:
+                OP2 = int(i[15]) - int(i[16]) 
+            OP1 = int(i[15]) #op eerste gedeelte hl
+            datum_en_geldnieuw.append([datum1, OP1])
+            datum_en_geldnieuw.append([datum2, OP2])
+            
+        else:
+            datum = leeftijd_notatie(startjaar, startmaand)
+            geld = int(i[15])
+            datum_en_geldnieuw.append([datum, geld])
+        p += 1            
+                    
+            
+    datum_en_geldoud = []
+    oud_pensioen.pop(0) #voor nu nog even gedaan omdat AOW er nog niet goed in lijkt te staan
+    for i in oud_pensioen:
+        datum = leeftijd_notatie(i[1], "0")
+        geld = i[3]
+        datum_en_geldoud.append([datum, geld])
+    
+    datum_en_geld = [datum_en_geldoud, datum_en_geldnieuw]
+    
+    oud_en_nieuw = [] #een lijst waar de enkellijsten van een oud en nieuw pensioen komen
+                        #met oud op index 0 en nieuw op index 1
+    
+    for lijst in datum_en_geld:
+        enkellijst = [["",""]]
+        dubbel = 0
+        for i in lijst:
+            for j in range(len(enkellijst)):
+                if i[0] == enkellijst[j][0]:
+                    enkellijst[j] = [enkellijst[j][0], enkellijst[j][1]+ i[1]]
+                    dubbel = 1
+            if dubbel == 0:
+                enkellijst.append(i)
+            dubbel = 0
+            
+        enkellijst.pop(0)
+        enkellijst.sort()
+        
+        oud_en_nieuw.append(enkellijst)
+        
+    return oud_en_nieuw
     
 def tekstkleurSheets(book, sheets, zicht):
     """
