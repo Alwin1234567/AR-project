@@ -50,8 +50,71 @@ def Test():
     # functions.tekstkleurSheets(book, sheets, zicht = 0)
     # sht = "deelnemersbestand"
     #sheets = ["Sterftetafels", "AG2020", "Gegevens pensioencontracten"]
-    sheets = ["Berekeningen"]
-    functions.tekstkleurSheets(book, sheets, zicht = 1)
+    # sheets = ["Berekeningen"]
+    # functions.tekstkleurSheets(book, sheets, zicht = 1)
+    
+    
+    
+    
+    vergelijken = book.sheets["Vergelijken"]
+    flexopslag = book.sheets["Flexopslag"]
+    #keuzeCel = "J13"
+    rijNr = int(float(flexopslag.cells(15,"B").value))
+    
+    #deelnemerobject inladen
+    deelnemer = functions.getDeelnemersbestand(book, rijNr)
+    deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
+    
+    afbeeldingen = []
+    for cel in ["J13"]:
+        #gekozen afbeelding inlezen
+        gekozenAfbeelding = vergelijken[cel].value 
+        ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+        afbeeldingen.append(ID)
+    
+    vlakken = [vergelijken.range((14,10))]
+    
+    vlak = vergelijken.range((14,10))
+    gekozenAfbeelding = vergelijken["J13"].value 
+    ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+    
+    #functions.maak_afbeelding(deelnemer, ID = ID, titel = f"{ID} - Een super coole title")
+    
+    # for pic in vergelijken.pictures:
+    #     for vlak, i in enumerate(vlakken):
+    #         if pic.top == vlak.top and pic.left == vlak.left:
+    #             #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
+    #             if pic.name != afbeeldingen[i]:
+    #                 #afbeelding terugverplaatsen
+    #                 teller = afbeeldingen[i].split()[-1]-1
+    #                 rij = int(12 + (teller%4)*22)
+    #                 kolom = int(17 + ((teller - teller%4)/4)*8)
+    #                 afbeelding = vergelijken.pictures[pic.name]
+    #                 afbeelding.top = vergelijken.range((rij,kolom)).top
+    #                 afbeelding.left = vergelijken.range((rij,kolom)).left
+                    
+    #         #juiste afbeelding op vlak zetten
+    #         afbeelding = vergelijken.pictures[afbeeldingen[i]]
+    #         afbeelding.top = vlak.top
+    #         afbeelding.left = vlak.left
+    
+    for pic in vergelijken.pictures:
+        if pic.top == vlak.top and pic.left == vlak.left:
+            #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
+            if pic.name != ID:
+                #afbeelding terugverplaatsen
+                
+                teller = int(pic.name.split()[-1])-1
+                rij = int(12 + (teller%4)*22)
+                kolom = int(17 + ((teller - teller%4)/4)*8)
+                afbeelding = vergelijken.pictures[pic.name]
+                afbeelding.top = vergelijken.range((rij,kolom)).top
+                afbeelding.left = vergelijken.range((rij,kolom)).left
+                
+        #juiste afbeelding op vlak zetten
+        afbeelding = vergelijken.pictures[ID]
+        afbeelding.top = vlak.top
+        afbeelding.left = vlak.left
 
 @xw.sub
 def Schermen():

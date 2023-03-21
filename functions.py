@@ -1451,6 +1451,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         plt.suptitle(titel, fontweight='bold')
         plt.xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
         
+        
         #sheet unprotecten
         #sheet.api.Unprotect(Password = wachtwoord())
         #afbeelding opslaan op sheet
