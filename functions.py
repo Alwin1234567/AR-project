@@ -1429,8 +1429,9 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         ax.set_title(titel, fontweight='bold')
     
     if sheet != None:
-        locatieHoogte = 12 + 21*int(ID)
-        locatie = sheet.range((locatieHoogte,2))
+        locatieTop = int(12 + (i%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
+        locatieLeft = int(2 + ((i - i%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
+        locatie = sheet.range((locatieTop,locatieLeft))
         afbeelding = plt.figure()
         for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
         
@@ -1489,7 +1490,7 @@ def vergelijken_keuzes():
     else:   #geen flexibilisaties opgeslagen
         #verwijder bestaande datavalidatie uit cel
         uitvoer[keuzeCel].api.Validation.Delete()
-        #vul keuzeveld met eerste opties uit pensioenlist
+        #maak keuzeveld leeg
         uitvoer[keuzeCel].value = ""
         #voeg nieuwe datavalidatie toe aan cel
         uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
