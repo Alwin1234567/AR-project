@@ -1429,9 +1429,13 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         ax.set_title(titel, fontweight='bold')
     
     if sheet != None:
-        locatieTop = int(12 + (ID%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
-        locatieLeft = int(2 + ((ID - i%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
-        locatie = sheet.range((locatieTop,locatieLeft))
+        if ID == 0:
+            locatie = sheet.range((14,2))
+        else:
+            teller = ID-1
+            locatieTop = int(12 + (teller%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
+            locatieLeft = int(17 + ((teller - teller%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
+            locatie = sheet.range((locatieTop,locatieLeft))
         afbeelding = plt.figure()
         for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
         
@@ -1453,11 +1457,20 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         #sheet protecten
         #sheet.api.Protect(Password = wachtwoord())
+        
 
 def vergelijken_keuzes():
     """
     functie die de drop down list in de vergelijkingssheet vult met de namen van de opgeslagen afbeeldingen
 
+    Parameters
+    ----------
+    box : integer
+        0 - alle drie de keuzecellen updaten
+        1 - 1e keuzecel updaten
+        2 - linker vergelijken keuzecel updaten
+        3 - rechter vergelijken keuzecel updaten
+        
     Returns
     -------
     drop down list gevuld met namen uit de flexopslag
@@ -1471,8 +1484,12 @@ def vergelijken_keuzes():
     #list maken waarin de opgeslagen pensioenen worden bijgehouden
     pensioenlist = []
     celKolom = 5 
-    #cel met de drop down datavalisatie
-    keuzeCel = "B6"
+    #cellen met de drop down datavalisatie
+    # keuzeCel1 = "B6"
+    # keuzeCel2 = "J13"
+    # keuzeCel3 = "B37"
+    # keuzeCel4 = "J37"
+    keuzecellen = ["B6", "J13", "B37", "J37"]
     if str(invoer.cells(2,celKolom).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
         #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenlist
         while str(invoer.cells(2,celKolom).value) != "None":
@@ -1481,19 +1498,21 @@ def vergelijken_keuzes():
             celKolom += 4
         #lijst omzetten naar string, gescheiden door komma
         pensioenopties = ','.join(pensioenlist)
-        #verwijder bestaande datavalidatie uit cel
-        uitvoer[keuzeCel].api.Validation.Delete()
-        #voeg nieuwe datavalidatie toe aan cel
-        uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
-        #vul keuzeveld met eerste opties uit pensioenlist
-        uitvoer[keuzeCel].value = pensioenlist[0]
+        for cel in keuzecellen:
+            #verwijder bestaande datavalidatie uit cel
+            uitvoer[cel].api.Validation.Delete()
+            #voeg nieuwe datavalidatie toe aan cel
+            uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
+        #vul keuzeveld1 met eerste opties uit pensioenlist
+        uitvoer[keuzecellen[0]].value = pensioenlist[0]
     else:   #geen flexibilisaties opgeslagen
-        #verwijder bestaande datavalidatie uit cel
-        uitvoer[keuzeCel].api.Validation.Delete()
-        #maak keuzeveld leeg
-        uitvoer[keuzeCel].value = ""
-        #voeg nieuwe datavalidatie toe aan cel
-        uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
+        for cel in keuzecellen:
+            #verwijder bestaande datavalidatie uit cel
+            uitvoer[cel].api.Validation.Delete()
+            #maak keuzeveld leeg
+            uitvoer[cel].value = ""
+            #voeg nieuwe datavalidatie toe aan cel
+            uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
    
 def opslagLegen(book, logger):
     flexopslag = book.sheets["Flexopslag"]
