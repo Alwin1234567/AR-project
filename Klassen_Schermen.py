@@ -200,7 +200,6 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         try: functions.maak_afbeelding(deelnemer, sheet = self.book.sheets["Vergelijken"], ID = 0, titel = "0 - Originele pensioen")
         except Exception as e: 
             self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
-            self.book.sheets["Vergelijken"].range((4,20)).value = "fout bij originele pensioen afbeelding maken"
         
     def btnTerugClicked(self):
         self.close()

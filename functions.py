@@ -1483,7 +1483,7 @@ def vergelijken_keuzes():
     invoer = book.sheets["Flexopslag"]
     uitvoer = book.sheets["Vergelijken"]
     #list maken waarin de opgeslagen pensioenen worden bijgehouden
-    pensioenlist = []
+    pensioenlist = ["-"]
     celKolom = 5 
     #cellen met de drop down datavalisatie
     # keuzeCel1 = "B6"
@@ -1498,14 +1498,23 @@ def vergelijken_keuzes():
             pensioenlist.append(naam)
             celKolom += 4
         #lijst omzetten naar string, gescheiden door komma
+        pensioenopties = ','.join(pensioenlist[1:])
+        #keuzeveld1
+        #verwijder bestaande datavalidatie uit cel
+        uitvoer[keuzecellen[0]].api.Validation.Delete()
+        #voeg nieuwe datavalidatie toe aan cel
+        uitvoer[keuzecellen[0]].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
+        #vul keuzeveld1 met eerste opties uit pensioenlist
+        uitvoer[keuzecellen[0]].value = pensioenlist[1]
+        #lege optie toevoegne aan pensioenopties
         pensioenopties = ','.join(pensioenlist)
-        for cel in keuzecellen:
+        for cel in keuzecellen[1:]:
             #verwijder bestaande datavalidatie uit cel
             uitvoer[cel].api.Validation.Delete()
             #voeg nieuwe datavalidatie toe aan cel
             uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
         #vul keuzeveld1 met eerste opties uit pensioenlist
-        uitvoer[keuzecellen[0]].value = pensioenlist[0]
+        #uitvoer[keuzecellen[0]].value = pensioenlist[0]
     else:   #geen flexibilisaties opgeslagen
         for cel in keuzecellen:
             #verwijder bestaande datavalidatie uit cel
