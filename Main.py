@@ -29,6 +29,14 @@ def Test():
 
     """
     book = xw.Book.caller()
+    flexopslag = book.sheets["Flexopslag"]
+    vergelijken = book.sheets["Vergelijken"]
+    # vormen= []
+    # for i in flexopslag.shapes:
+    #     vormen.append(i.name)
+    # #vergelijken.range((2,15)).value = vormen
+    
+    
     #testen met protected en unprotected sheet
     # sheet = book.sheets["Test Julia"]
     # sterftetafel = book.sheets["Sterftetafels"]
@@ -56,65 +64,65 @@ def Test():
     
     
     
-    vergelijken = book.sheets["Vergelijken"]
-    flexopslag = book.sheets["Flexopslag"]
-    #keuzeCel = "J13"
-    rijNr = int(float(flexopslag.cells(15,"B").value))
+    # vergelijken = book.sheets["Vergelijken"]
+    # flexopslag = book.sheets["Flexopslag"]
+    # #keuzeCel = "J13"
+    # rijNr = int(float(flexopslag.cells(15,"B").value))
     
-    #deelnemerobject inladen
-    deelnemer = functions.getDeelnemersbestand(book, rijNr)
-    deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
+    # #deelnemerobject inladen
+    # deelnemer = functions.getDeelnemersbestand(book, rijNr)
+    # deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
     
-    afbeeldingen = []
-    for cel in ["J13"]:
-        #gekozen afbeelding inlezen
-        gekozenAfbeelding = vergelijken[cel].value 
-        ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
-        afbeeldingen.append(ID)
+    # afbeeldingen = []
+    # for cel in ["J13"]:
+    #     #gekozen afbeelding inlezen
+    #     gekozenAfbeelding = vergelijken[cel].value 
+    #     ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+    #     afbeeldingen.append(ID)
     
-    vlakken = [vergelijken.range((14,10))]
+    # vlakken = [vergelijken.range((14,10))]
     
-    vlak = vergelijken.range((14,10))
-    gekozenAfbeelding = vergelijken["J13"].value 
-    ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+    # vlak = vergelijken.range((14,10))
+    # gekozenAfbeelding = vergelijken["J13"].value 
+    # ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
     
-    #functions.maak_afbeelding(deelnemer, ID = ID, titel = f"{ID} - Een super coole title")
+    # #functions.maak_afbeelding(deelnemer, ID = ID, titel = f"{ID} - Een super coole title")
+    
+    # # for pic in vergelijken.pictures:
+    # #     for vlak, i in enumerate(vlakken):
+    # #         if pic.top == vlak.top and pic.left == vlak.left:
+    # #             #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
+    # #             if pic.name != afbeeldingen[i]:
+    # #                 #afbeelding terugverplaatsen
+    # #                 teller = afbeeldingen[i].split()[-1]-1
+    # #                 rij = int(12 + (teller%4)*22)
+    # #                 kolom = int(17 + ((teller - teller%4)/4)*8)
+    # #                 afbeelding = vergelijken.pictures[pic.name]
+    # #                 afbeelding.top = vergelijken.range((rij,kolom)).top
+    # #                 afbeelding.left = vergelijken.range((rij,kolom)).left
+                    
+    # #         #juiste afbeelding op vlak zetten
+    # #         afbeelding = vergelijken.pictures[afbeeldingen[i]]
+    # #         afbeelding.top = vlak.top
+    # #         afbeelding.left = vlak.left
     
     # for pic in vergelijken.pictures:
-    #     for vlak, i in enumerate(vlakken):
-    #         if pic.top == vlak.top and pic.left == vlak.left:
-    #             #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
-    #             if pic.name != afbeeldingen[i]:
-    #                 #afbeelding terugverplaatsen
-    #                 teller = afbeeldingen[i].split()[-1]-1
-    #                 rij = int(12 + (teller%4)*22)
-    #                 kolom = int(17 + ((teller - teller%4)/4)*8)
-    #                 afbeelding = vergelijken.pictures[pic.name]
-    #                 afbeelding.top = vergelijken.range((rij,kolom)).top
-    #                 afbeelding.left = vergelijken.range((rij,kolom)).left
-                    
-    #         #juiste afbeelding op vlak zetten
-    #         afbeelding = vergelijken.pictures[afbeeldingen[i]]
-    #         afbeelding.top = vlak.top
-    #         afbeelding.left = vlak.left
-    
-    for pic in vergelijken.pictures:
-        if pic.top == vlak.top and pic.left == vlak.left:
-            #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
-            if pic.name != ID:
-                #afbeelding terugverplaatsen
+    #     if pic.top == vlak.top and pic.left == vlak.left:
+    #         #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
+    #         if pic.name != ID:
+    #             #afbeelding terugverplaatsen
                 
-                teller = int(pic.name.split()[-1])-1
-                rij = int(12 + (teller%4)*22)
-                kolom = int(17 + ((teller - teller%4)/4)*8)
-                afbeelding = vergelijken.pictures[pic.name]
-                afbeelding.top = vergelijken.range((rij,kolom)).top
-                afbeelding.left = vergelijken.range((rij,kolom)).left
+    #             teller = int(pic.name.split()[-1])-1
+    #             rij = int(12 + (teller%4)*22)
+    #             kolom = int(17 + ((teller - teller%4)/4)*8)
+    #             afbeelding = vergelijken.pictures[pic.name]
+    #             afbeelding.top = vergelijken.range((rij,kolom)).top
+    #             afbeelding.left = vergelijken.range((rij,kolom)).left
                 
-        #juiste afbeelding op vlak zetten
-        afbeelding = vergelijken.pictures[ID]
-        afbeelding.top = vlak.top
-        afbeelding.left = vlak.left
+    #     #juiste afbeelding op vlak zetten
+    #     afbeelding = vergelijken.pictures[ID]
+    #     afbeelding.top = vlak.top
+    #     afbeelding.left = vlak.left
 
 @xw.sub
 def Schermen():
@@ -141,17 +149,13 @@ def Schermen():
 
     
     
-@xw.sub
-def delimage():
-    book = xw.Book.caller()
-    uitvoer = book.sheets["Vergelijken"]
-    print(uitvoer.pictures["testnaam"].height)
-    uitvoer.pictures["testnaam"].api.Delete()
+# @xw.sub
+# def delimage():
+#     book = xw.Book.caller()
+#     uitvoer = book.sheets["Vergelijken"]
+#     print(uitvoer.pictures["testnaam"].height)
+#     uitvoer.pictures["testnaam"].api.Delete()
     
-    
-
-
-
 
 @xw.sub
 #Idee voor berekeningen uitvoeren: Functies schrijven
@@ -293,15 +297,12 @@ def AfbeeldingVerplaatsen(vak):
     if vak == 1:
         vlak = vergelijken.range((14,10))
         keuzecel = "J13"
-        #gekozenAfbeelding = vergelijken["J13"].value
     elif vak == 2:
         vlak = vergelijken.range((38,2))
         keuzecel = "B37"
-        #gekozenAfbeelding = vergelijken["B37"].value
     else: #vak == 3 of iets anders
         vlak = vergelijken.range((38,10))
         keuzecel = "J37"
-        #gekozenAfbeelding = vergelijken["J37"].value
     
     try:
         gekozenAfbeelding = vergelijken[keuzecel].value
@@ -309,6 +310,7 @@ def AfbeeldingVerplaatsen(vak):
     except:
         ID = "-"
         vergelijken["M2"].value == "ID is leeg of -" 
+    #vergelijken sheet unprotecten
     vergelijken.api.Unprotect(Password = functions.wachtwoord())
     for pic in vergelijken.pictures:
         if pic.top == vlak.top and pic.left == vlak.left: #als er een afbeelding al in staat
@@ -327,7 +329,8 @@ def AfbeeldingVerplaatsen(vak):
             afbeelding = vergelijken.pictures[ID]
             afbeelding.top = vlak.top
             afbeelding.left = vlak.left
-    vergelijken.api.Protect(Password = functions.wachtwoord())
+    #vergelijken sheet protecten
+    vergelijken.api.Protect(Password=functions.wachtwoord(), Contents=False)
        
 @xw.sub
 def AfbeeldingKiezen():
@@ -342,8 +345,8 @@ def AfbeeldingKiezen():
     if str(flexopslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
         #gekozen afbeelding inlezen
         gekozenAfbeelding = sheet.cells(6,"B").value
-        #naam van gekozen afbeelding op sheet printen
-        sheet.cells(8, "M").value = gekozenAfbeelding
+        # #naam van gekozen afbeelding op sheet printen
+        # sheet.cells(8, "M").value = gekozenAfbeelding
         
         #Deelnemer toegevoegd zodat er gekeken kan worden naar het oude pensioen. Ik heb alleen nog geen idee hoe
         #rijnummer deelnemer zoeken
@@ -550,13 +553,17 @@ def AfbeeldingVerwijderen():
         if controle == "Ja":
             #ID van de gekozen afbeelding opzoeken
             ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
-            #Vergelijken.cells(11, "O").value = ID
             
+            #vergelijken sheet unprotecten
+            Vergelijken.api.Unprotect(Password = functions.wachtwoord())
             #gekozen afbeelding verwijderen
             try:
                 Vergelijken.pictures[ID].delete()
             except:
-                functions.Mbox("Foutmelding", f"Het verwijderen van flexibilisatie '{gekozenAfbeelding}' lukt niet.\n Het AfbeeldingID bestaat niet", 0)
+                pass
+                #functions.Mbox("Foutmelding", f"Het verwijderen van flexibilisatie '{gekozenAfbeelding}' lukt niet.\n Het AfbeeldingID bestaat niet", 0)
+            #vergelijken sheet protecten
+            Vergelijken.api.Protect(Password = functions.wachtwoord(), Contents=False)
             
             #tellen hoeveel opgeslagen flexibiliseringen en hoeveel pensioenen
             Flexopslag = functions.FlexopslagVinden(xw.Book.caller(), gekozenAfbeelding)

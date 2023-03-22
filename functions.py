@@ -1457,7 +1457,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         #afbeelding opslaan op sheet
         sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         #sheet protecten
-        sheet.api.Protect(Password = wachtwoord())
+        sheet.api.Protect(Password = wachtwoord(), Contents=False)
         
 
 def vergelijken_keuzes():
@@ -1491,7 +1491,8 @@ def vergelijken_keuzes():
     # keuzeCel3 = "B37"
     # keuzeCel4 = "J37"
     #sheet unprotecten
-    #uitvoer.api.Unprotect(Password = wachtwoord())
+    uitvoer.api.Unprotect(Password = wachtwoord())
+    
     
     keuzecellen = ["B6", "J13", "B37", "J37"]
     if str(invoer.cells(2,celKolom).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
@@ -1502,6 +1503,7 @@ def vergelijken_keuzes():
             celKolom += 4
         #lijst omzetten naar string, gescheiden door komma
         pensioenopties = ','.join(pensioenlist[1:])
+        
         #keuzeveld1
         #verwijder bestaande datavalidatie uit cel
         uitvoer[keuzecellen[0]].api.Validation.Delete()
@@ -1527,7 +1529,7 @@ def vergelijken_keuzes():
             #voeg nieuwe datavalidatie toe aan cel
             uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
     #sheet protecten
-    #uitvoer.api.Protect(Password = wachtwoord())
+    uitvoer.api.Protect(Password=wachtwoord(), Contents=False)
    
 def opslagLegen(book, logger):
     flexopslag = book.sheets["Flexopslag"]
@@ -1538,6 +1540,8 @@ def opslagLegen(book, logger):
         kolomLaatsteOpslag = FlexopslagVinden(book)[1]
         IDLaatsteOpslag = flexopslag.cells(3, kolomLaatsteOpslag).value
         stopNummer = int(IDLaatsteOpslag.split()[-1])
+        #vergelijken sheet unprotecten
+        vergelijken.api.Unprotect(Password=wachtwoord())
         #alle ID's tot laatste ID afgaan om (mogelijke) afbeelding te verwijderen
         for i in range(0,stopNummer+1):
             ID = f"Vergelijking {i}"
@@ -1545,6 +1549,8 @@ def opslagLegen(book, logger):
                 vergelijken.pictures[ID].delete()
             except:
                 pass
+        #vergelijken sheet protecten
+        vergelijken.api.Protect(Password=wachtwoord(), Contents=False)
         logger.info("Afbeeldingen op vergelijken sheet verwijderd")
         #flexopslag unprotecten
         flexopslag.api.Unprotect(Password = wachtwoord())
@@ -1816,9 +1822,13 @@ def tekstkleurSheets(book, sheets, zicht):
         sheet = book.sheets[sheetnaam]
         #mogelijk maken om sheet te wijzigen
         sheet.api.Unprotect(Password = wachtwoord())
-        #grootte van gegevensblok inlezen
-        aantalRegels = len(sheet.cells(1,1).expand().value) + 1
-        aantalKolommen = len(sheet.cells(1,1).expand().value[0]) + 1
+        try:
+            #grootte van gegevensblok inlezen
+            aantalRegels = len(sheet.cells(1,1).expand().value) + 1
+            aantalKolommen = len(sheet.cells(1,1).expand().value[0]) + 1
+        except:
+            aantalRegels = 1
+            aantalKolommen = 1
         
         if zicht == 0:  #tekstkleur zelfde als achtegrondkleur -> onleesbaar maken
             if sheetnaam == "Sterftetafels":
@@ -1843,13 +1853,19 @@ def tekstkleurSheets(book, sheets, zicht):
             elif sheetnaam == "Berekeningen": 
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = True
             
+            elif sheetnaam  == "Flexopslag":
+                sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = True
+            
             #sheet weer beveiligen, omdat gebruiker gegevens niet mag zien
-            book.sheets[sheet].api.Protect(Password = wachtwoord())
+            if sheetnaam != "Vergelijken":
+                book.sheets[sheet].api.Protect(Password = wachtwoord())
+            else:
+                book.sheets[sheet].api.Protect(Password = wachtwoord(), Contents=False)
         
         elif zicht == 1:    #tekstkleur zwart maken -> leesbaar maken
             if sheetnaam in ["Sterftetafels", "AG2020", "deelnemersbestand", "Gegevens pensioencontracten"]:
                 sheet.range((1,1),(aantalRegels,aantalKolommen)).api.Font.Color = zwart
-            elif sheetnaam == "Berekeningen":
+            elif sheetnaam in ["Berekeningen", "Flexopslag"]:
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = False
             
             
