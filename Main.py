@@ -161,7 +161,7 @@ def invoer_test_klikken():
     invoer = book.sheets["Tijdelijk invoerscherm"]
     
     #unprotect sheet
-    #invoer.api.Unprotect(Password = functions.wachtwoord())
+    invoer.api.Unprotect(Password = functions.wachtwoord())
     #Berekeningskolommen leegmaken
     kolommen = invoer.range((1,8), (80,130))
     Uitkomst_kolommen = invoer.range((10,6), (20,6))
@@ -283,7 +283,7 @@ def invoer_test_klikken():
             rente.append(0)
             pensioenleeftijd.append(0)
     #sheet protecten
-    #invoer.api.Protect(Password = functions.wachtwoord())
+    invoer.api.Protect(Password = functions.wachtwoord())
  
 @xw.sub
 def AfbeeldingVerplaatsen(vak):
@@ -309,7 +309,7 @@ def AfbeeldingVerplaatsen(vak):
     except:
         ID = "-"
         vergelijken["M2"].value == "ID is leeg of -" 
-    
+    vergelijken.api.Unprotect(Password = functions.wachtwoord())
     for pic in vergelijken.pictures:
         if pic.top == vlak.top and pic.left == vlak.left: #als er een afbeelding al in staat
             
@@ -327,7 +327,7 @@ def AfbeeldingVerplaatsen(vak):
             afbeelding = vergelijken.pictures[ID]
             afbeelding.top = vlak.top
             afbeelding.left = vlak.left
-
+    vergelijken.api.Protect(Password = functions.wachtwoord())
        
 @xw.sub
 def AfbeeldingKiezen():
@@ -566,7 +566,7 @@ def AfbeeldingVerwijderen():
             aantalPensioenen = Flexopslag[2]
             rijen = aantalPensioenen*20 + 4
             #opslag sheet unprotecten
-            #Opslag.api.Unprotect(Password = functions.wachtwoord())
+            Opslag.api.Unprotect(Password = functions.wachtwoord())
             if startKolom != laatsteKolom: #er zijn meer dan 1 flexibilisaties opgeslagen
                 #verwijderen gegevens verwijderde flexibilisatie
                 Opslag.range((1,startKolom-1),(rijen,startKolom+1)).clear_contents()
@@ -575,7 +575,7 @@ def AfbeeldingVerwijderen():
             #laatste (of enige) kolom verwijderen
             Opslag.range((1,laatsteKolom-1),(rijen,laatsteKolom+1)).clear()
             #opslag sheet protecten
-            #Opslag.api.Protect(Password = functions.wachtwoord())
+            Opslag.api.Protect(Password = functions.wachtwoord())
             
             try:
                 #drop down op vergelijkingssheet updaten

@@ -441,11 +441,11 @@ def ToevoegenDeelnemer(gegevens, regel = 0):
         aantalDeelnemers = len(deelnemersbestand.cells(1,1).expand().value)
         regel = aantalDeelnemers + 1
     #sheet unprotecten
-    #deelnemersbestand.api.Unprotect(Password = wachtwoord())
+    deelnemersbestand.api.Unprotect(Password = wachtwoord())
     #gegevens deelnemer invullen in de lege regel
     deelnemersbestand.cells(regel, 1).value = gegevens
     #sheet protecten
-    #deelnemersbestand.api.Protect(Password = wachtwoord())
+    deelnemersbestand.api.Protect(Password = wachtwoord())
 
 def Mbox(title, text, style):
     """
@@ -733,12 +733,12 @@ def persoonOpslag(sheet, persoonObject):
     persopslag[9][1] = persoonObject.rijNr
     
     #sheet unprotecten
-    #sheet.api.Unprotect(Password = wachtwoord())
+    sheet.api.Unprotect(Password = wachtwoord())
     #persoonopslag invoegen
     sheet.range((6,1),(15,2)).options(ndims = 2).value = persopslag
     sheet.range((6,1),(15,2)).color = (150,150,150)
     #sheet protecten
-    #sheet.api.Protect(Password = wachtwoord())
+    sheet.api.Protect(Password = wachtwoord())
 
 def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     """
@@ -845,12 +845,12 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[18][1] = str(flexibilisatie.pensioen.pensioenKleurHard)
     
     #sheet unprotecten
-    #book.api.Unprotect(Password = wachtwoord())
+    book.api.Unprotect(Password = wachtwoord())
     # Waardes in sheet plakken & celkleur instellen
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
     #sheet protecten
-    #book.api.Protect(Password = wachtwoord())
+    book.api.Protect(Password = wachtwoord())
     
     # # Pensioenleeftijd wijzigen J/N
     # if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
@@ -945,7 +945,7 @@ def FlexopslagVinden(book, naamFlex = "Geen"):
 #     #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
 #     book.sheets["Flexopslag"].clear()
 #     #sheet protecten
-#     #book.sheets["Flexopslag"].api.Pprotect(Password = wachtwoord())
+#     #book.sheets["Flexopslag"].api.Protect(Password = wachtwoord())
     
 #     #laatste opslag is verwijderd, dus drop down legen
 #     book.sheets["Vergelijken"]["B6"].value = ""
@@ -1083,7 +1083,7 @@ def berekeningen_init(sheet, deelnemer, logger):
 
     """
     #sheet unprotecten
-    #sheet.api.Unprotect(Password = wachtwoord())
+    sheet.api.Unprotect(Password = wachtwoord())
     
     logger.info("start berekenscherm init")
     # verkrijg berekeningen instellingen
@@ -1223,7 +1223,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
         
     #sheet protecten
-    #sheet.api.Protect(Password = wachtwoord())
+    sheet.api.Protect(Password = wachtwoord())
     
     logger.info("berekenscherm init afgerond")
     
@@ -1453,11 +1453,11 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         
         
         #sheet unprotecten
-        #sheet.api.Unprotect(Password = wachtwoord())
+        sheet.api.Unprotect(Password = wachtwoord())
         #afbeelding opslaan op sheet
         sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         #sheet protecten
-        #sheet.api.Protect(Password = wachtwoord())
+        sheet.api.Protect(Password = wachtwoord())
         
 
 def vergelijken_keuzes():
@@ -1490,6 +1490,9 @@ def vergelijken_keuzes():
     # keuzeCel2 = "J13"
     # keuzeCel3 = "B37"
     # keuzeCel4 = "J37"
+    #sheet unprotecten
+    #uitvoer.api.Unprotect(Password = wachtwoord())
+    
     keuzecellen = ["B6", "J13", "B37", "J37"]
     if str(invoer.cells(2,celKolom).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
         #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenlist
@@ -1523,6 +1526,8 @@ def vergelijken_keuzes():
             uitvoer[cel].value = ""
             #voeg nieuwe datavalidatie toe aan cel
             uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
+    #sheet protecten
+    #uitvoer.api.Protect(Password = wachtwoord())
    
 def opslagLegen(book, logger):
     flexopslag = book.sheets["Flexopslag"]
@@ -1542,11 +1547,11 @@ def opslagLegen(book, logger):
                 pass
         logger.info("Afbeeldingen op vergelijken sheet verwijderd")
         #flexopslag unprotecten
-        #flexopslag.api.Unprotect(Password = wachtwoord())
+        flexopslag.api.Unprotect(Password = wachtwoord())
         #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
         flexopslag.clear()
         #flexopslag protecten
-        #flexopslag.api.Protect(Password = wachtwoord())
+        flexopslag.api.Protect(Password = wachtwoord())
         
         #laatste opslag is verwijderd, dus drop down legen
         vergelijken_keuzes()
@@ -1839,7 +1844,7 @@ def tekstkleurSheets(book, sheets, zicht):
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = True
             
             #sheet weer beveiligen, omdat gebruiker gegevens niet mag zien
-            #book.sheets[sheet].api.Protect(Password = wachtwoord())
+            book.sheets[sheet].api.Protect(Password = wachtwoord())
         
         elif zicht == 1:    #tekstkleur zwart maken -> leesbaar maken
             if sheetnaam in ["Sterftetafels", "AG2020", "deelnemersbestand", "Gegevens pensioencontracten"]:

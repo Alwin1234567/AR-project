@@ -62,7 +62,7 @@ class Inloggen(QtWidgets.QMainWindow):
         self.setWindowTitle("Inloggen als beheerder")
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
         self.ui.btnInloggen.clicked.connect(self.btnInloggenClicked)
-        self._Wachtwoord = "wachtwoord"
+        self._Wachtwoord = functions.wachtwoord()
 
         
     def btnInloggenClicked(self):
@@ -117,11 +117,12 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
         #beveiliging sheets ongedaan maken
-        # for i in self.sheets:
-        #     self.book.sheets[i].api.Unprotect(Password = "wachtwoord")
-        #     self.book.sheets[i].visible = True
-        # #sheets leesbaar maken
-        # functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
+        for i in self.sheets:
+            self.book.sheets[i].api.Unprotect(Password = functions.wachtwoord())
+            self.book.sheets[i].visible = True
+        self.vergelijken.api.Unprotect(Password = functions.wachtwoord())
+        #sheets leesbaar maken
+        functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
                 
     def btnAdviserenClicked(self):
         self.close()
@@ -137,11 +138,11 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.beheerder.visible = False
         self.close()
         #sheets onleesbaar maken
-        # functions.tekstkleurSheets(self.book, self.sheets, zicht = 0)
-        # #sheets beveiligen en hidden
-        # for i in self.sheets:
-        #     self.book.sheets[i].api.Protect(Password = functions.wachtwoord())
-        #     self.book.sheets[i].visible = False
+        functions.tekstkleurSheets(self.book, self.sheets, zicht = 0)
+        #sheets beveiligen en hidden
+        for i in self.sheets:
+            self.book.sheets[i].api.Protect(Password = functions.wachtwoord())
+            self.book.sheets[i].visible = False
         
         self._logger.info("Beheerderkeuzes scherm gesloten")
         self._windowkeus = Functiekeus(self.book, self._logger)
@@ -375,9 +376,9 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                     if gegevens[7] != "": 
                         gegevens[7] = float(gegevens[7])/100
                     try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
-                        #self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
+                        self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                         functions.ToevoegenDeelnemer(gegevens)
-                        #self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
+                        self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
                         self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
                     except Exception as e:
                         self._logger.exception("Er is iets fout gegaan bij het toevoegen van een deelnemer aan het deelnemersbestand")
@@ -994,7 +995,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         #     functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
         
         #sheet flexopslag unprotecten
-        #self.book.sheets["Flexopslag"].api.Unprotect(Password = functions.wachtwoord())
+        self.book.sheets["Flexopslag"].api.Unprotect(Password = functions.wachtwoord())
         # ID van de flexibilisatie in Excel opslaan
         flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
                  ["AfbeeldingID",f"Vergelijking {nieuwID}"]]
@@ -1005,7 +1006,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
             functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,offsetID,regelingCount) 
         #sheet flesopslag protecten
-        #self.book.sheets["Flexopslag"].api.Protect(Password = functions.wachtwoord())
+        self.book.sheets["Flexopslag"].api.Protect(Password = functions.wachtwoord())
         
         # Melding geven dat flexibilisatie opgeslagen is
         tekst = "Deze flexibilisatie is opgeslagen. \nU kunt nu verder flexibiliseren. \nMet de knop 'Vergelijken' kunt u uw opgeslagen flexibilisaties vergelijken."
@@ -1265,9 +1266,9 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                 if gegevens[7] != "": 
                     gegevens[7] = float(gegevens[7])/100
                 try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
-                    #self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
+                    self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                     functions.ToevoegenDeelnemer(gegevens, regel = self.rijNr)
-                    #self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
+                    self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
                     self._logger.info("Deelnemersgegevens zijn gewijzigd in het deelnemersbestand")
                 except Exception as e:
                     self._logger.exception("Er is iets fout gegaan bij het wijzigen van een deelnemer in het deelnemersbestand")
