@@ -284,7 +284,43 @@ def invoer_test_klikken():
             pensioenleeftijd.append(0)
     #sheet protecten
     #invoer.api.Protect(Password = functions.wachtwoord())
-        
+ 
+@xw.sub
+def AfbeeldingVerplaatsen(vak):
+    book = xw.Book.caller()
+    vergelijken = book.sheets["Vergelijken"]
+    
+    if vak == 1:
+        vlak = vergelijken.range((14,10))
+        gekozenAfbeelding = vergelijken["J13"].value
+    elif vak == 2:
+        vlak = vergelijken.range((38,2))
+        gekozenAfbeelding = vergelijken["B37"].value
+    else: #vak == 3 of iets anders
+        vlak = vergelijken.range((38,10))
+        gekozenAfbeelding = vergelijken["J37"].value
+    
+    ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+    
+    for pic in vergelijken.pictures:
+        if pic.top == vlak.top and pic.left == vlak.left: #als er een afbeelding al in staat
+            
+            if pic.name != ID: #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
+                #afbeelding terugverplaatsen
+                
+                teller = int(pic.name.split()[-1])-1
+                rij = int(12 + (teller%4)*22)
+                kolom = int(17 + ((teller - teller%4)/4)*8)
+                afbeelding = vergelijken.pictures[pic.name]
+                afbeelding.top = vergelijken.range((rij,kolom)).top
+                afbeelding.left = vergelijken.range((rij,kolom)).left
+                
+        #juiste afbeelding op vlak zetten
+        afbeelding = vergelijken.pictures[ID]
+        afbeelding.top = vlak.top
+        afbeelding.left = vlak.left
+
+       
 @xw.sub
 def AfbeeldingKiezen():
     """
