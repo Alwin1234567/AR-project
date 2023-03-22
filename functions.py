@@ -1838,7 +1838,7 @@ def tekstkleurSheets(book, sheets, zicht):
             elif sheetnaam == "Berekeningen":
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = False
             
-            
+def rentesort(flex): return flex[1].pensioen.rente
         
         
         

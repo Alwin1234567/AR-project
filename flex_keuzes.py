@@ -57,6 +57,10 @@ class Flexibilisering:
         self._OP_Laag = self._pensioen.ouderdomsPensioen
         self._PP = self._pensioen.partnerPensioen
         
+        # aanvullen AOW
+        self._AOWJaar = 60
+        self.AOWMaand = 0
+        
         
         
     @property
@@ -241,3 +245,20 @@ class Flexibilisering:
     
     @partnerPensioen.setter
     def partnerPensioen(self, PP): self._PP = PP
+    
+    # --- AOW waardes ---
+    
+    # >>> aow jaar
+    @property
+    def AOWJaar(self): return self._AOWJaar
+    
+    @AOWJaar.setter
+    def AOWJaar(self, jaar): self._AOWJaar = jaar
+    
+    # >>> aow maand
+    @property
+    def AOWMaand(self): return self._AOWMaand
+    
+    @AOWMaand.setter
+    def AOWMaand(self, maand): self._AOWMaand = maand
+    
