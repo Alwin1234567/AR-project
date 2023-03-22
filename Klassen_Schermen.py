@@ -657,7 +657,10 @@ class Flexmenu(QtWidgets.QMainWindow):
             True als invoer klopt. False als invoer fout is.
         
         """
-        
+        # limietList = functions.leesLimietMeldingen(self.book.sheets["Berekeningen"], 
+        #                                            self.deelnemerObject.flexibilisaties, 
+        #                                            self.regelingCode.pensioen.pensioenNaam)
+
         if num == 1 or num == 0: # Check of invoer klopt van leeftijd blok
             if int(self.ui.sbJaar.value()) > (self.AOWjaar+5):
                 self.ui.sbJaar.setValue(self.AOWjaar+5)
@@ -680,6 +683,13 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                     self.ui.txtUVerhoudingOP.text(),
                                                     self.ui.txtUVerhoudingPP.text())
             
+            if OK and str(self.ui.cbUMethode.currentText()) == "Percentage":
+                # Check of maximum in sheet gebruikt wordt.
+                pass
+            elif OK and str(self.ui.cbUMethode.currentText()) == "Verhouding":
+                # Check of maximum in sheet gebruikt wordt.
+                pass
+            
             self.ui.lblFoutmeldingUitruilen.setText(melding)
             return OK
    
@@ -689,6 +699,13 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                     self.ui.txtHLVerschil.text(),
                                                     self.ui.txtHLVerhoudingHoog.text(),
                                                     self.ui.txtHLVerhoudingLaag.text())
+            
+            if OK and str(self.ui.cbHLMethode.currentText()) == "Verschil":
+                # Check of maximum in sheet gebruikt wordt.
+                pass
+            elif OK and str(self.ui.cbHLMethode.currentText()) == "Verhouding":
+                # Check of maximum in sheet gebruikt wordt.
+                pass
             
             self.ui.lblFoutmeldingHoogLaag.setText(melding)
             return OK

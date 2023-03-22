@@ -1308,8 +1308,43 @@ def leesOPPP(sheet, flexibilisaties):
         flexibilisatie.partnerPensioen = PP
         flexibilisatie.ouderdomsPensioenHoog = OPH
         flexibilisatie.ouderdomsPensioenLaag = OPL
-    
+               
+def leesLimietMeldingen(sheet, flexibilisaties, huidigRegelingNaam):
+    """
+    leest de flexibilisaties uit de rekensheet en slaat eventuele andere gehanteerde waardes op
+    Bijvoorbeeld als een OP naar PP percentage te hoog was, dan wordt het nieuw gehanteerde percentage opgeslagen.
 
+    Parameters
+    ----------
+    sheet : Book.Sheet
+        Berekeningen sheet.
+    flexibilisaties : flex_keuzes
+        object met alle flexibilisatie eigenschappen.
+    limietMelding : bool
+        True als er gecheckt moet worden of er een limiet is bereikt.
+
+    Returns
+    -------
+    Lijst met per regeling de gehanteerde limieten.
+    """
+
+    instellingen = berekeningen_instellingen()
+    for i, flexibilisatie in enumerate(flexibilisaties):
+        if huidigRegelingNaam == flexibilisatie.pensioen.pensioenNaam:
+            blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
+            bereik = sheet.range((blokhoogte + 2, 2), (blokhoogte + 5, 3)).options(ndims = 2, numbers = int).value
+            
+            methodeOPPP = str(bereik[0][0])
+            try: limietOPPP = float(bereik[1][1])
+            except: limietOPPP = 0
+            
+            methodeHL = str(bereik[2][0])
+            try: limietHL = float(bereik[3][1])
+            except: limietHL = 0
+    
+            return methodeOPPP,limietOPPP,methodeHL,limietHL
+
+        
 def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een super coole title"):
     """
     Maakt de afbeelding in het flexscherm.
