@@ -934,7 +934,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                                  (blokhoogte + 5, 3))
             try: updaterange.value = blok
             except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
-        self.AOWberekenen(overbruggingen)
+        if len(overbruggingen) > 0: self.AOWberekenen(overbruggingen)
        
         
     def samenvattingUpdate(self):
