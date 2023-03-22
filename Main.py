@@ -292,15 +292,23 @@ def AfbeeldingVerplaatsen(vak):
     
     if vak == 1:
         vlak = vergelijken.range((14,10))
-        gekozenAfbeelding = vergelijken["J13"].value
+        keuzecel = "J13"
+        #gekozenAfbeelding = vergelijken["J13"].value
     elif vak == 2:
         vlak = vergelijken.range((38,2))
-        gekozenAfbeelding = vergelijken["B37"].value
+        keuzecel = "B37"
+        #gekozenAfbeelding = vergelijken["B37"].value
     else: #vak == 3 of iets anders
         vlak = vergelijken.range((38,10))
-        gekozenAfbeelding = vergelijken["J37"].value
+        keuzecel = "J37"
+        #gekozenAfbeelding = vergelijken["J37"].value
     
-    ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+    try:
+        gekozenAfbeelding = vergelijken[keuzecel].value
+        ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
+    except:
+        ID = "-"
+        vergelijken["M2"].value == "ID is leeg of -" 
     
     for pic in vergelijken.pictures:
         if pic.top == vlak.top and pic.left == vlak.left: #als er een afbeelding al in staat
@@ -314,11 +322,11 @@ def AfbeeldingVerplaatsen(vak):
                 afbeelding = vergelijken.pictures[pic.name]
                 afbeelding.top = vergelijken.range((rij,kolom)).top
                 afbeelding.left = vergelijken.range((rij,kolom)).left
-                
-        #juiste afbeelding op vlak zetten
-        afbeelding = vergelijken.pictures[ID]
-        afbeelding.top = vlak.top
-        afbeelding.left = vlak.left
+        if ID != "-":
+            #juiste afbeelding op vlak zetten
+            afbeelding = vergelijken.pictures[ID]
+            afbeelding.top = vlak.top
+            afbeelding.left = vlak.left
 
        
 @xw.sub
