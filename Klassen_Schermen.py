@@ -377,7 +377,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                     try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
                         self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                         functions.ToevoegenDeelnemer(gegevens)
-                        self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
+                        functions.ProtectBeheer(self.book.sheets["deelnemersbestand"]) #.api.Protect(Password = functions.wachtwoord())
                         self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
                     except Exception as e:
                         self._logger.exception("Er is iets fout gegaan bij het toevoegen van een deelnemer aan het deelnemersbestand")
@@ -1075,7 +1075,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
             functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,offsetID,regelingCount) 
         #sheet flesopslag protecten
-        self.book.sheets["Flexopslag"].api.Protect(Password = functions.wachtwoord())
+        #self.book.sheets["Flexopslag"].api.Protect(Password = functions.wachtwoord())
+        functions.ProtectBeheer(self.book.sheets["Flexopslag"])
         
         # Melding geven dat flexibilisatie opgeslagen is
         tekst = "Deze flexibilisatie is opgeslagen. \nU kunt nu verder flexibiliseren. \nMet de knop 'Vergelijken' kunt u uw opgeslagen flexibilisaties vergelijken."
@@ -1337,7 +1338,7 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                 try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
                     self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                     functions.ToevoegenDeelnemer(gegevens, regel = self.rijNr)
-                    self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
+                    functions.ProtectBeheer(self.book.sheets["deelnemersbestand"]) #.api.Protect(Password = functions.wachtwoord())
                     self._logger.info("Deelnemersgegevens zijn gewijzigd in het deelnemersbestand")
                 except Exception as e:
                     self._logger.exception("Er is iets fout gegaan bij het wijzigen van een deelnemer in het deelnemersbestand")
