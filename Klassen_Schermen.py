@@ -31,14 +31,23 @@ class Functiekeus(QtWidgets.QMainWindow):
         self.setWindowTitle("Kies uw functie")
         self.ui.btnAdviseur.clicked.connect(self.btnAdviseurClicked)
         self.ui.btnBeheerder.clicked.connect(self.btnBeheerderClicked)
-        
-        
+        #voorkom dat scherm gesloten kan worden met kruisje
+        self._want_to_close = False
+    
+    def closeEvent(self, event):
+        if self._want_to_close == False:
+            event.ignore()
+            
     def btnAdviseurClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Functiekeus scherm gesloten")
         self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
         self._windowdeelnemer.show()
     def btnBeheerderClicked(self): 
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Functiekeus scherm gesloten")
         if functions.isBeheerder(self.book):
@@ -63,11 +72,18 @@ class Inloggen(QtWidgets.QMainWindow):
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
         self.ui.btnInloggen.clicked.connect(self.btnInloggenClicked)
         self._Wachtwoord = functions.wachtwoord()
-
+        #voorkom dat scherm gesloten kan worden met kruisje
+        self._want_to_close = False
         
+    def closeEvent(self, event):
+        if self._want_to_close == False:
+            event.ignore()
+            
     def btnInloggenClicked(self):
         if self.ui.txtBeheerderscode.text() == self._Wachtwoord:
             self._logger.info("Inloggen scherm gesloten")
+            #scherm sluiten
+            self._want_to_close = True
             self.close()
             #Aangeven dat beheerder ingelogd is
             beheerder = self.book.sheets["Beheerder"]
@@ -80,6 +96,8 @@ class Inloggen(QtWidgets.QMainWindow):
         else:
             self.ui.lblFoutmeldingInlog.setText("Wachtwoord incorrrect")
     def btnTerugClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Inloggen scherm gesloten")
         self._windowkeus = Functiekeus(self.book, self._logger)
@@ -100,20 +118,31 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.ui.btnBeheren.clicked.connect(self.btnBeherenClicked)
         self.ui.btnAdviseren.clicked.connect(self.btnAdviserenClicked)
         self.ui.btnUitloggen.clicked.connect(self.btnUitloggenClicked)
+        #voorkom dat scherm gesloten kan worden met kruisje
+        self._want_to_close = False
         
         #sheets definieren
         self.sheets = ["Sterftetafels", "AG2020", "Berekeningen", "deelnemersbestand", "Gegevens pensioencontracten", "Flexopslag", "Flexopslag"]
         self.vergelijken = self.book.sheets["Vergelijken"]
         #self.flexopslag = self.book.sheets["Flexopslag"]
         self.beheerder = self.book.sheets["Beheerder"]
-        
+    
+    def closeEvent(self, event):
+        if self._want_to_close == False:
+            event.ignore()
+    
     def btnGegevensWijzigenClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
         self._windowWijzigen = DeelnemerselectieBeheerder(self.book, self._logger)
         self._windowWijzigen.show()
+        
     
     def btnBeherenClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
         #beveiliging sheets ongedaan maken
@@ -126,6 +155,8 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
                 
     def btnAdviserenClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
         self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
@@ -137,6 +168,8 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.beheerder.cells(1, 1).value = ""
         self.beheerder.api.Protect(Password = functions.wachtwoord())
         self.beheerder.visible = False
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         #sheets onleesbaar maken
         functions.tekstkleurSheets(self.book, self.sheets, zicht = 0)
@@ -175,9 +208,16 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self.ui.txtAchternaam.textChanged.connect(lambda: self.onChange(False))
         self.ui.cbGeslacht.currentTextChanged.connect(lambda: self.onChange(False))
         self.ui.lwKeuzes.currentItemChanged.connect(self.clearError)
+        #voorkom dat scherm gesloten kan worden met kruisje
+        self._want_to_close = False
         
-        
+    def closeEvent(self, event):
+        if self._want_to_close == False:
+            event.ignore()
+            
     def btnDeelnemerToevoegenClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Deelnemerselectie scherm gesloten")
         self._windowtoevoeg = Deelnemertoevoegen(self.book, self._logger)
@@ -193,6 +233,8 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         #nieuwe deelnemer aanmaken
         deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
         deelnemer.activeerFlexibilisatie()
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Deelnemerselectie scherm gesloten")
         self._windowflex = Flexmenu(self.book, deelnemer, self._logger)
@@ -204,6 +246,8 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
             self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
         
     def btnTerugClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Deelnemerselectie scherm gesloten")
         #controleren of beheerder is ingelogd
@@ -259,8 +303,16 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         for i in [self.ui.txtFulltimeLoon, self.ui.txtOPAegon65, self.ui.txtOPAegon67, self.ui.txtOPNN65, self.ui.txtOPNN67, 
                   self.ui.txtOPVLC68, self.ui.txtOPZL, self.ui.txtPPNN65, self.ui.txtPPNN67, self.ui.txtPPVLC68]:
             i.setPlaceholderText("500,00")
+        #voorkom dat scherm gesloten kan worden met kruisje
+        self._want_to_close = False
         
+    def closeEvent(self, event):
+        if self._want_to_close == False:
+            event.ignore()
+            
     def btnTerugClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Deelnemer toevoegen scherm gesloten")
         self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
@@ -370,6 +422,8 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                 controle = functions.gegevenscontrole(gegevens)
                 if controle == "correct":
                     #window sluiten
+                    #scherm sluiten
+                    self._want_to_close = True
                     self.close()
                     self._logger.info("Deelnemer toevoegen scherm gesloten")
                     
@@ -419,6 +473,9 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.opslaanCount = 0 #Teller voor aantal opgeslagen flexibilisaties.
         self.opslaanList = list()
         self.zoekFlexibilisaties()
+        
+        #voorkom dat scherm gesloten kan worden met kruisje
+        self._want_to_close = False
         
         # Setup AOW-leeftijd knop
         self.AOWjaar = 60 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
@@ -488,6 +545,10 @@ class Flexmenu(QtWidgets.QMainWindow):
             functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
             self._logger.info("Persoonsgegevens deelnemer opgeslagen in flexopslag")
     
+    def closeEvent(self, event):
+        if self._want_to_close == False:
+            event.ignore()
+            
     def blokkeerSignalen(self, actief):
         """
         Een verandering in een invoervakje geeft een 'signaal'.
@@ -1032,6 +1093,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         #controleren of gebruiker echt andere deelnemer wil selecteren
         controle = functions.Mbox("Andere deelnemer selecteren", "Door een andere deelnemer te selecteren zullen de opgeslagen flexibiliseringen voor de huidige deelnemer verwijderd worden.\nU kunt deze actie niet ongedaan maken.", 1)
         if controle == "OK Clicked":
+            #scherm sluiten
+            self._want_to_close = True
             self.close()
             self._logger.info("Flexmenu scherm gesloten")
             self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
@@ -1039,6 +1102,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         
     def btnVergelijkenClicked(self):
         # Sheet van vergelijkingen openen
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Flexmenu scherm gesloten")
         
@@ -1129,8 +1194,13 @@ class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
         self.ui.txtAchternaam.textChanged.connect(lambda: self.onChange(False))
         self.ui.cbGeslacht.currentTextChanged.connect(lambda: self.onChange(False))
         self.ui.lwKeuzes.currentItemChanged.connect(self.clearError)
-        
+        #voorkom dat scherm gesloten kan worden met kruisje
+        self._want_to_close = False
     
+    def closeEvent(self, event):
+        if self._want_to_close == False:
+            event.ignore()
+            
     def btnGegevensWijzigenClicked(self):
         if self.ui.lwKeuzes.currentRow() == -1: 
             self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren om de gegevens te wijzigen")
@@ -1139,6 +1209,8 @@ class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
         #nieuwe deelnemer aanmaken
         deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
         deelnemer.activeerFlexibilisatie()
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("DeelnemerselectieBeheerder scherm gesloten")
         self._windowWijzigen = DeelnemerWijzigen(self.book, self._logger, deelnemer)
@@ -1146,6 +1218,8 @@ class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
         
         
     def btnTerugClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("DeelnemerselectieBeheerder scherm gesloten")
         #controleren of beheerder is ingelogd
@@ -1194,6 +1268,8 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
         self.ui.sbMaand.valueChanged.connect(self.onChange)
         self.ui.sbJaar.valueChanged.connect(self.onChange)
         self._30maand = [4,6,9,11]
+        #voorkom dat scherm gesloten kan worden met kruisje
+        self._want_to_close = False
         #voeg schaduwtekst toe aan de invoervelden
         self.ui.txtVoorletters.setPlaceholderText("A.B.")
         self.ui.txtTussenvoegsel.setPlaceholderText("van")
@@ -1236,7 +1312,13 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
         
         self.rijNr = deelnemer.rijNr
         
+    def closeEvent(self, event):
+        if self._want_to_close == False:
+            event.ignore()
+            
     def btnTerugClicked(self):
+        #scherm sluiten
+        self._want_to_close = True
         self.close()
         self._logger.info("Deelnemer wijzigen scherm gesloten")
         self._windowdeelnemer = DeelnemerselectieBeheerder(self.book, self._logger)
@@ -1342,7 +1424,8 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
             self._logger.info("Ingevulde gegevens worden getoont voor controle")
             controle = functions.gegevenscontrole(gegevens)
             if controle == "correct":
-                #window sluiten
+                #scherm sluiten
+                self._want_to_close = True
                 self.close()
                 self._logger.info("Deelnemer toevoegen scherm gesloten")
                 
