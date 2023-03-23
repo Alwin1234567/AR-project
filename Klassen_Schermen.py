@@ -570,9 +570,14 @@ class Flexmenu(QtWidgets.QMainWindow):
         # --- Leeftijd velden ---
         self._logger.info("Leeftijdvelden wijzigen...")
         try:
-            self.ui.CheckLeeftijdWijzigen.setChecked(self.regelingCode.leeftijd_Actief)
-            self.ui.sbJaar.setValue(int(self.regelingCode.leeftijdJaar))
-            self.ui.sbMaand.setValue(int(self.regelingCode.leeftijdMaand))
+            if self.regelingCode.HL_Actief == True and self.regelingCode.HL_Methode == "Opvullen AOW":
+                self.ui.CheckLeeftijdWijzigen.setChecked(True)
+                self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
+                self.ui.sbMaand.setValue(self.AOWmaand)
+            else:
+                self.ui.CheckLeeftijdWijzigen.setChecked(self.regelingCode.leeftijd_Actief)
+                self.ui.sbJaar.setValue(int(self.regelingCode.leeftijdJaar))
+                self.ui.sbMaand.setValue(int(self.regelingCode.leeftijdMaand))
             
         except Exception as e:
             self._logger.exception("Probleem bij het wijzigen van leeftijdvelden.")
@@ -740,11 +745,13 @@ class Flexmenu(QtWidgets.QMainWindow):
                 self.blokkeerSignalen(True)
                 if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
                     try:
+                        self.ui.CheckLeeftijdWijzigen.setChecked(True)
                         self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
-                        self.ui.sbMaand.setValue(self.regelingCode.AOWMaand)
+                        self.ui.sbMaand.setValue(self.AOWmaand)
                     except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
                 else:
                     try:
+                        self.ui.CheckLeeftijdWijzigen.setChecked(self.regelingCode.leeftijd_Actief)
                         self.ui.sbJaar.setValue(self.regelingCode.leeftijdJaar)
                         self.ui.sbMaand.setValue(self.regelingCode.leeftijdMaand)
                     except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
@@ -950,8 +957,8 @@ class Flexmenu(QtWidgets.QMainWindow):
                     blok.append(["", ""])
                     blok.append(["", ""])
             else:
-                blok.append("Verhouding", "Laag-hoog")
-                blok.append(self.AOWjaar - flexibilisatie.AOWJaar, 3 / 4)
+                blok.append(["Verhouding", "Laag-hoog"])
+                blok.append([self.AOWjaar - flexibilisatie.AOWJaar, 3 / 4])
             updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 1, 2),\
                                                                  (blokhoogte + 5, 3))
             try: updaterange.value = blok
