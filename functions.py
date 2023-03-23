@@ -1358,7 +1358,9 @@ def leesLimietMeldingen(sheet, flexibilisaties, huidigRegelingNaam):
     for i, flexibilisatie in enumerate(flexibilisaties):
         if huidigRegelingNaam == flexibilisatie.pensioen.pensioenNaam:
             blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
-            bereik = sheet.range((blokhoogte + 2, 2), (blokhoogte + 5, 3)).options(ndims = 2, numbers = int).value
+            bereik = sheet.range((blokhoogte + 0, 1), (blokhoogte + 5, 5)).options(ndims = 2, numbers = float).value
+            
+            print(bereik)
             
             methodeOPPP = str(bereik[0][0])
             try: limietOPPP = float(bereik[1][1])

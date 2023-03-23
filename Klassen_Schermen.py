@@ -672,9 +672,14 @@ class Flexmenu(QtWidgets.QMainWindow):
             True als invoer klopt. False als invoer fout is.
         
         """
-        # limietList = functions.leesLimietMeldingen(self.book.sheets["Berekeningen"], 
-        #                                            self.deelnemerObject.flexibilisaties, 
-        #                                            self.regelingCode.pensioen.pensioenNaam)
+        for flexibilisatie in self.deelnemerObject.flexibilisaties:
+            if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
+                self.regelingCode = flexibilisatie
+                break
+        
+        limietList = functions.leesLimietMeldingen(self.book.sheets["Berekeningen"], 
+                                                    self.deelnemerObject.flexibilisaties, 
+                                                    self.regelingCode.pensioen.pensioenNaam)
 
         if num == 1 or num == 0: # Check of invoer klopt van leeftijd blok
             if int(self.ui.sbJaar.value()) > (self.AOWjaar+5):
@@ -754,7 +759,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         """
             
-
+        
         if self.invoerCheck(num):
             #self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
             self.flexkeuzesOpslaan(num) # Sla flex keuzes op
