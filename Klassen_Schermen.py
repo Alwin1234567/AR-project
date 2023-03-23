@@ -102,9 +102,9 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.ui.btnUitloggen.clicked.connect(self.btnUitloggenClicked)
         
         #sheets definieren
-        self.sheets = ["Sterftetafels", "AG2020", "Berekeningen", "deelnemersbestand", "Gegevens pensioencontracten", "Flexopslag"]
+        self.sheets = ["Sterftetafels", "AG2020", "Berekeningen", "deelnemersbestand", "Gegevens pensioencontracten", "Flexopslag", "Flexopslag"]
         self.vergelijken = self.book.sheets["Vergelijken"]
-        self.flexopslag = self.book.sheets["Flexopslag"]
+        #self.flexopslag = self.book.sheets["Flexopslag"]
         self.beheerder = self.book.sheets["Beheerder"]
         
     def btnGegevensWijzigenClicked(self):
@@ -120,6 +120,8 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         for i in self.sheets:
             self.book.sheets[i].api.Unprotect(Password = functions.wachtwoord())
             self.book.sheets[i].visible = True
+        #vergelijken unprotecten
+        self.vergelijken.api.Unprotect(Password = functions.wachtwoord())
         #sheets leesbaar maken
         functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
                 
@@ -377,7 +379,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                     try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
                         self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                         functions.ToevoegenDeelnemer(gegevens)
-                        self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
+                        functions.ProtectBeheer(self.book.sheets["deelnemersbestand"]) #.api.Protect(Password = functions.wachtwoord())
                         self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
                     except Exception as e:
                         self._logger.exception("Er is iets fout gegaan bij het toevoegen van een deelnemer aan het deelnemersbestand")
@@ -418,18 +420,20 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.opslaanList = list()
         self.zoekFlexibilisaties()
         
+        # Deelnemer
+        self.deelnemerObject = deelnemer
+        
         # Setup AOW-leeftijd knop
         self.AOWjaar = 60 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
         self.AOWmaand = 0 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
-        self.getAOWleeftijd()
+        self.AOW = None
+        self.getAOWinformatie()
+        
         
         # Setup van UI
         self.ui = Ui_MainWindow5()
         self.ui.setupUi(self)
         self.setWindowTitle("Flexibilisatie menu") #Het moet na de setup, daarom staat het nu even hier
-        
-        # Deelnemer
-        self.deelnemerObject = deelnemer
         
         # Regeling selectie
         self._regelingenActiefKort = list()
@@ -465,6 +469,10 @@ class Flexmenu(QtWidgets.QMainWindow):
 
         # Aanpassing: Regeling
         self.ui.cbRegeling.activated.connect(self.wijzigVelden)
+        
+        # Aanpassing: Titel
+        self.ui.txtTitel.textEdited.connect(lambda: self.invoerVerandering(4))
+        self._titel = ""
         
         # Laatste UI update
         self.ui.sbMaand.setValue(0)
@@ -535,19 +543,19 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.cbRegeling.addItems(regelingenActief) # Dropdown krijgt lijst met lange namen van regelingen
         self._regelingenActiefKort = regelingenActiefKort # Wordt apart een lijst met korte namen van regelingen opgeslagen
     
-    def getAOWleeftijd(self):
+    def getAOWinformatie(self):
         """
         Deze functie zorgt ervoor dat er niet elke keer bij het klikken op de AOW knop opnieuw de 
         AOW leeftijd ingeladen moet worden, dit vergt namelijk veel tijd. In de __init__ wordt deze
         functie opgeroepen zodat het maar 1 keer opgeslagen hoeft te worden.
         """
         
-        functions.getPensioeninformatie(self.book)
 
-        for pensioenV in functions.getPensioeninformatie(self.book):
+        for pensioenV in self.deelnemerObject.pensioenen:
             if pensioenV.pensioenNaam == "AOW":
                 self.AOWjaar = int(pensioenV.pensioenleeftijd)
                 self.AOWmaand = int(round((pensioenV.pensioenleeftijd-self.AOWjaar)*12))
+                self.AOW = pensioenV
         
     def wijzigVelden(self):
         """
@@ -561,6 +569,10 @@ class Flexmenu(QtWidgets.QMainWindow):
 
         self._logger.info("Veldwijziging geïnitialiseerd.")
         
+        self.ui.lblFoutmeldingLeeftijd.setText("")
+        self.ui.lblFoutmeldingUitruilen.setText("")
+        self.ui.lblFoutmeldingHoogLaag.setText("")
+        
         # Zoek flexibilisatie-object die hoort bij huidig geselecteerde regeling in flexmenu dropdown.
         for flexibilisatie in self.deelnemerObject.flexibilisaties:
             if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
@@ -570,9 +582,14 @@ class Flexmenu(QtWidgets.QMainWindow):
         # --- Leeftijd velden ---
         self._logger.info("Leeftijdvelden wijzigen...")
         try:
-            self.ui.CheckLeeftijdWijzigen.setChecked(self.regelingCode.leeftijd_Actief)
-            self.ui.sbJaar.setValue(int(self.regelingCode.leeftijdJaar))
-            self.ui.sbMaand.setValue(int(self.regelingCode.leeftijdMaand))
+            if self.regelingCode.HL_Actief == True and self.regelingCode.HL_Methode == "Opvullen AOW":
+                self.ui.CheckLeeftijdWijzigen.setChecked(True)
+                self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
+                self.ui.sbMaand.setValue(self.AOWmaand)
+            else:
+                self.ui.CheckLeeftijdWijzigen.setChecked(self.regelingCode.leeftijd_Actief)
+                self.ui.sbJaar.setValue(int(self.regelingCode.leeftijdJaar))
+                self.ui.sbMaand.setValue(int(self.regelingCode.leeftijdMaand))
             
         except Exception as e:
             self._logger.exception("Probleem bij het wijzigen van leeftijdvelden.")
@@ -610,6 +627,8 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             if self.regelingCode.HL_Methode == "Opvullen AOW":
                 self.ui.cbHLMethode.setCurrentIndex(0)
+                if self.regelingCode.HL_Actief == True:
+                    self.ui.lblFoutmeldingHoogLaag.setText("Leeftijd staat nu ingesteld op leeftijd voor AOW opvullen.")
             elif self.regelingCode.HL_Methode == "Verhouding":
                 self.ui.cbHLMethode.setCurrentIndex(1)
             elif self.regelingCode.HL_Methode == "Verschil":
@@ -699,15 +718,26 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                     self.ui.txtHLVerschil.text(),
                                                     self.ui.txtHLVerhoudingHoog.text(),
                                                     self.ui.txtHLVerhoudingLaag.text())
-            
+
+            if (OK and self.ui.cbHLMethode.currentText() == "Opvullen AOW" 
+                and self.ui.CheckHoogLaag.isChecked() == True):
+                meldingAOW = "Leeftijd staat nu ingesteld op leeftijd voor AOW opvullen."
+            else:
+                meldingAOW = ""
+                
             if OK and str(self.ui.cbHLMethode.currentText()) == "Verschil":
-                # Check of maximum in sheet gebruikt wordt.
+                meldingMax = ""
                 pass
             elif OK and str(self.ui.cbHLMethode.currentText()) == "Verhouding":
-                # Check of maximum in sheet gebruikt wordt.
+                meldingMax = ""
                 pass
+            else:
+                meldingMax = ""
             
-            self.ui.lblFoutmeldingHoogLaag.setText(melding)
+            totMelding = melding + " " + meldingAOW + " " + meldingMax
+            
+            self.ui.lblFoutmeldingHoogLaag.setText(totMelding)
+            
             return OK
         
     def invoerVerandering(self, num, methode = False):
@@ -722,42 +752,46 @@ class Flexmenu(QtWidgets.QMainWindow):
             1 voor verandering bij leeftijd
             2 voor verandering bij OP/PP
             3 voor verandering bij Hoog/Laag
+            4 voor verandering bij Titel
         
         methode : bool
             True betekent dat de HL methode gewijzigd is
         
         """
-            
 
-        if self.invoerCheck(num):
-            #self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
-            self.flexkeuzesOpslaan(num) # Sla flex keuzes op
-            self.berekeningenDoorvoeren()
-            functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
-        
-            # set leeftijd op juiste variabele
-            if methode:
-                self.blokkeerSignalen(True)
-                if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
-                    try:
-                        self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
-                        self.ui.sbMaand.setValue(self.regelingCode.AOWMaand)
-                    except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
-                else:
-                    try:
-                        self.ui.sbJaar.setValue(self.regelingCode.leeftijdJaar)
-                        self.ui.sbMaand.setValue(self.regelingCode.leeftijdMaand)
-                    except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
-                self.blokkeerSignalen(False)
+        if num != 4:
+            if self.invoerCheck(num):
+                #self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
+                self.flexkeuzesOpslaan(num) # Sla flex keuzes op
+                self.berekeningenDoorvoeren()
+                functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
             
-            self.samenvattingUpdate() # Update de samenvatting
-            
-        
-            
+                # set leeftijd op juiste variabele
+                if methode:
+                    self.blokkeerSignalen(True)
+                    if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
+                        try:
+                            self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
+                            self.ui.sbMaand.setValue(self.regelingCode.AOWMaand)
+                        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+                    else:
+                        try:
+                            self.ui.sbJaar.setValue(self.regelingCode.leeftijdJaar)
+                            self.ui.sbMaand.setValue(self.regelingCode.leeftijdMaand)
+                        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+                    self.blokkeerSignalen(False)
+                
+                self.samenvattingUpdate() # Update de samenvatting
+                
+        else:
+            self._titel = str(self.ui.txtTitel.text())
+            print(self._titel)
+                
         try: # probeer een nieuwe afbeelding te maken
-            functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax)
+            functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax, titel = self._titel)
             self.ui.wdt_pltAfbeelding.canvas.draw()
         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+            
     
 
     def zoekFlexibilisaties(self):
@@ -801,10 +835,17 @@ class Flexmenu(QtWidgets.QMainWindow):
         if num == 1 or num == 0: # Leeftijd wijziging opslaan
             if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
                 try:
+                    self.blokkeerSignalen(True)
+                    if self.ui.sbJaar.value() > (self.AOWjaar-2):
+                        self.ui.sbJaar.setValue(int(self.AOWjaar-1))
+                    self.ui.sbMaand.setValue(int(self.AOWmaand))
+                    self.blokkeerSignalen(False)
+                    
                     self.ui.CheckLeeftijdWijzigen.setChecked(True)
                     jaar = int(self.ui.sbJaar.value())
                     maand = int(self.ui.sbMaand.value())
                     self.deelnemerObject.setAOWLeeftijf(jaar, maand)
+                    
                 except Exception as e: self._logger.exception("Er gaat iets fout bij het opslaan van de pensioenleeftijd in flexmenu.ui")
             else:
                 try:
@@ -892,26 +933,36 @@ class Flexmenu(QtWidgets.QMainWindow):
             except Exception as e: self._logger.exception("Huidig geselecteerde hoog/laag flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
     
     def AOWberekenen(self, overbruggingen):
-        pass
-        # krijg lijst flexibilisaties met AOW gat opvullen
-        
-        # bepaal prioriteit
-        
-        # set hoog laag op laag hoog met jaren goed en verhouding 0.75
-        
-        # loop:
-            # lees factoren
-            # bereken verhouding
-            # set verhouding
-            # bereken nieuw verschil
-        
+        for flexcombo in overbruggingen:
+            instellingen = functions.berekeningen_instellingen()
+            blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(self.deelnemerObject.flexibilisaties) + flexcombo[0] * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
+            factoren = self.book.sheets["Berekeningen"].range((blokhoogte + 12, 2), (blokhoogte + 16, 2)).value
+            if self.deelnemerObject.burgelijkeStaat == "Samenwonend": bedrag = self.AOW.samenwondendAOW
+            else: bedrag = self.AOW.alleenstaandAOW
+            for combo in overbruggingen:
+                if combo == flexcombo: continue
+                bedrag += combo[1].ouderdomsPensioenHoog
+                bedrag -= combo[1].ouderdomsPensioenLaag
+            self.book.sheets["Berekeningen"].range((blokhoogte + 1, 2)).value = flexcombo[1].AOWJaar + flexcombo[1].AOWMaand / 12
+            blok = list()
+            if bedrag < 0 :
+                flexcombo[1].HL_Volgorde = "Laag-hoog"
+                blok.append(["Verschil", "Laag-hoog"])
+                blok.append([self.AOWjaar - flexcombo[1].AOWJaar, -bedrag])
+            else: 
+                flexcombo[1].HL_Volgorde = "Hoog-laag"
+                blok.append(["Verschil", "Hoog-laag"])
+                blok.append([self.AOWjaar - flexcombo[1].AOWJaar, bedrag])
+            updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 4, 2),\
+                                                                 (blokhoogte + 5, 3))
+            try: updaterange.value = blok
+            except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")    
 
     def berekeningenDoorvoeren(self):
         instellingen = functions.berekeningen_instellingen()
         overbruggingen = list()
         for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
-            if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW":
-                overbruggingen.append(i, flexibilisatie)
+            if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": overbruggingen.append((i, flexibilisatie))
         
         overbruggingen.sort(key = functions.rentesort)
         
@@ -945,8 +996,9 @@ class Flexmenu(QtWidgets.QMainWindow):
                     blok.append(["", ""])
                     blok.append(["", ""])
             else:
-                blok.append("Verhouding", "Laag-hoog")
-                blok.append(self.AOWjaar - flexibilisatie.AOWJaar, 3 / 4)
+                blok.append(["Verschil", "Laag-hoog"])
+                blok.append([self.AOWjaar - flexibilisatie.AOWJaar, flexibilisatie.ouderdomsPensioenHoog])
+
             updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 1, 2),\
                                                                  (blokhoogte + 5, 3))
             try: updaterange.value = blok
@@ -978,7 +1030,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 
                 if self.regelingCode.leeftijd_Actief: regelingDict["lbl_pLeeftijd"].setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
                 else:
-                    regelingDict["lbl_pLeeftijd"].setText("Leeftijd nog bepalen.")
+                    regelingDict["lbl_pLeeftijd"].setText(str(int(self.regelingCode.pensioen.pensioenleeftijd)) + " jaar en " + str(0) + " maanden")
                 
                 if self.regelingCode.OP_PP_Actief: regelingDict["lbl_OP_PP"].setText(str(self.regelingCode.OP_PP_UitruilenVan))
                 else: regelingDict["lbl_OP_PP"].setText("OP/PP uitruiling n.v.t.")
@@ -1075,7 +1127,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
             functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,offsetID,regelingCount) 
         #sheet flesopslag protecten
-        self.book.sheets["Flexopslag"].api.Protect(Password = functions.wachtwoord())
+        #self.book.sheets["Flexopslag"].api.Protect(Password = functions.wachtwoord())
+        functions.ProtectBeheer(self.book.sheets["Flexopslag"])
         
         # Melding geven dat flexibilisatie opgeslagen is
         tekst = "Deze flexibilisatie is opgeslagen. \nU kunt nu verder flexibiliseren. \nMet de knop 'Vergelijken' kunt u uw opgeslagen flexibilisaties vergelijken."
@@ -1337,7 +1390,7 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                 try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
                     self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                     functions.ToevoegenDeelnemer(gegevens, regel = self.rijNr)
-                    self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
+                    functions.ProtectBeheer(self.book.sheets["deelnemersbestand"]) #.api.Protect(Password = functions.wachtwoord())
                     self._logger.info("Deelnemersgegevens zijn gewijzigd in het deelnemersbestand")
                 except Exception as e:
                     self._logger.exception("Er is iets fout gegaan bij het wijzigen van een deelnemer in het deelnemersbestand")
