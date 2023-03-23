@@ -929,7 +929,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         if num == 1 or num == 0: # Leeftijd wijziging opslaan
             if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
-                try:
+                try: # Hier worden de spinboxes eerst naar de juiste waardes gezet voordat ze opgeslagen kunnen worden.
                     self.blokkeerSignalen(True)
                     if self.ui.sbJaar.value() > (self.AOWjaar-2):
                         self.ui.sbJaar.setValue(int(self.AOWjaar-1))
@@ -939,9 +939,9 @@ class Flexmenu(QtWidgets.QMainWindow):
                     self.ui.CheckLeeftijdWijzigen.setChecked(True)
                     jaar = int(self.ui.sbJaar.value())
                     maand = int(self.ui.sbMaand.value())
-                    self.deelnemerObject.setAOWLeeftijf(jaar, maand)
+                    self.deelnemerObject.setAOWLeeftijd(jaar, maand)
                     
-                except Exception as e: self._logger.exception("Er gaat iets fout bij het opslaan van de pensioenleeftijd in flexmenu.ui")
+                except Exception as e: self._logger.exception("Er gaat iets fout bij het corrigeren van de leeftijd spinboxes voor AOW opvullen in flexmenu.ui")
             else:
                 try:
                     self.regelingCode.leeftijd_Actief = self.ui.CheckLeeftijdWijzigen.isChecked()

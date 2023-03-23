@@ -622,9 +622,9 @@ def setup_logger(name):
     logger.info("Setup logger is done")
     return logger
 
-def isNotInteger(veldInput):
+def isNotFloat(veldInput):
     try:
-        veldInput = int(veldInput)
+        veldInput = float(veldInput)
         return False
     except ValueError:
         return True
@@ -637,63 +637,63 @@ def checkVeldInvoer(soort,methode,veld1,veld2,veld3):
     
     if str(methode) == "Percentage" or str(methode) == "Verschil":
         if str(veld1) == "": emptyProblem = True
-        elif isNotInteger(veld1): intProblem = True
+        elif isNotFloat(veld1): intProblem = True
         
         if str(veld2) == "": pass
-        elif isNotInteger(veld2): intProblem = True
+        elif isNotFloat(veld2): intProblem = True
             
         if str(veld3) == "": pass
-        elif isNotInteger(veld3): intProblem = True  
+        elif isNotFloat(veld3): intProblem = True  
         
     elif str(methode) == "Verhouding":
         if str(veld1) == "": pass
-        elif isNotInteger(veld1): intProblem = True
+        elif isNotFloat(veld1): intProblem = True
 
         if str(veld2) == "": emptyProblem = True
-        elif isNotInteger(veld2): intProblem = True
+        elif isNotFloat(veld2): intProblem = True
             
         if str(veld3) == "": emptyProblem = True
-        elif isNotInteger(veld3): intProblem = True
+        elif isNotFloat(veld3): intProblem = True
     
     elif str(methode) == "Opvullen AOW":
-        if isNotInteger(veld1): intProblem = True
+        if isNotFloat(veld1): intProblem = True
 
-        if isNotInteger(veld2): intProblem = True
+        if isNotFloat(veld2): intProblem = True
 
-        if isNotInteger(veld3): intProblem = True
+        if isNotFloat(veld3): intProblem = True
 
     if intProblem == True and emptyProblem == True: # Er zijn letters ingevuld & er zijn lege vakjes
         return ["Er is foute invoer en missende invoer.",False]
     elif intProblem == True and emptyProblem == False: # Er zijn letters ingevuld
-        return ["Invoer mag alleen een positief geheel getal zijn.",False]
+        return ["Invoer mag alleen een positief getal zijn.",False]
     elif intProblem == False and emptyProblem == True: # Er zijn lege vakjes
         return ["Er is missende invoer.",False]
     elif intProblem == False and emptyProblem == False: # Alle vakjes zijn met gehele getallen ingevuld
         if soort == "OP-PP":
             if str(methode) == "Verhouding":
-                if int(veld2) < 0 or int(veld3) < 0: # Getallen mogen niet negatief zijn
+                if float(veld2) < 0 or float(veld3) < 0: # Getallen mogen niet negatief zijn
                     message = "Getallen mogen niet negatief zijn."
                     OK = False
-                elif int(veld3)/int(veld2) > 0.70: # Verhouding moet voldoen aan PP max. 70% van OP regel
+                elif float(veld3)/float(veld2) > 0.70: # Verhouding moet voldoen aan PP max. 70% van OP regel
                     message = "Verhouding ongeldig (PP maximaal 70% van OP)"
                     OK = False
             elif str(methode) == "Percentage":
-                if int(veld1) < 0: # Getallen mogen niet negatief zijn
+                if float(veld1) < 0: # Getallen mogen niet negatief zijn
                     message = "Getallen mogen niet negatief zijn."
                     OK = False
-                elif int(veld1) > 100: # Percentage kan niet hoger dan 100% zijn
+                elif float(veld1) > 100: # Percentage kan niet hoger dan 100% zijn
                     message = "Percentage ongeldig (kan niet hoger dan 100%)"
                     OK = False
         elif soort == "hoog-laag":
             if str(methode) == "Verhouding":
-                if int(veld2) < 0 and int(veld3) < 0: # Getallen mogen niet negatief zijn
+                if float(veld2) < 0 and int(veld3) < 0: # Getallen mogen niet negatief zijn
                     message = "Getallen mogen niet negatief zijn."
                     OK = False
-                elif int(veld3)/int(veld2) < 0.75 or int(veld3)/int(veld2) > 1: # Verhouding moet voldoen aan hoog-laag 4:3 regel
+                elif float(veld3)/float(veld2) < 0.75 or float(veld3)/float(veld2) > 1: # Verhouding moet voldoen aan hoog-laag 4:3 regel
                     message = "Verhouding ongeldig (3:4 regel)"
                     OK = False
             elif str(methode) == "Verschil":
-                if int(veld1) < 0: # Getallen mogen niet negatief zijn
+                if float(veld1) < 0: # Getallen mogen niet negatief zijn
                     message = "Getallen mogen niet negatief zijn."
                     OK = False
             
@@ -826,8 +826,13 @@ def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
     else: flexopslag[2][1] = "Nee"
     
     # Pensioenleeftijd: Jaar & Maand
-    flexopslag[3][1] = flexibilisatie.leeftijdJaar
-    flexopslag[3][2] = flexibilisatie.leeftijdMaand
+    if flexibilisatie.HL_Methode == "Opvullen AOW":
+        flexopslag[2][1] = "Ja"
+        flexopslag[3][1] = flexibilisatie.AOWJaar
+        flexopslag[3][2] = flexibilisatie.AOWMaand
+    else:
+        flexopslag[3][1] = flexibilisatie.leeftijdJaar
+        flexopslag[3][2] = flexibilisatie.leeftijdMaand
     
     # OP/PP Uitruilen wijzigen J/N
     if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "Ja"
