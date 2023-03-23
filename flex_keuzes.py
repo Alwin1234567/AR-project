@@ -41,6 +41,7 @@ class Flexibilisering:
         self._OP_PP_Verhouding_OP = 100
         self._OP_PP_Verhouding_PP = 70
         self._OP_PP_Percentage = 0
+        self._OP_PP_PercentageMax = 0
         
         # Hoog/laag constructie
         self._HL_Actief = False
@@ -49,6 +50,7 @@ class Flexibilisering:
         self._HL_Verhouding_Hoog = 100
         self._HL_Verhouding_Laag = 75
         self._HL_Verschil = 0
+        self._HL_VerschilMax = 0
         self._HL_Jaar = 5
         self._HL_Maand = 0
         
@@ -155,6 +157,14 @@ class Flexibilisering:
     def OP_PP_Percentage(self, OP_PP_Percentage):
         self._OP_PP_Percentage = OP_PP_Percentage
     
+    @property
+    def OP_PP_PercentageMax(self):
+        return self._OP_PP_PercentageMax
+    
+    @OP_PP_PercentageMax.setter
+    def OP_PP_PercentageMax(self,OP_PP_PercentageMax):
+        self._OP_PP_PercentageMax = OP_PP_PercentageMax
+    
     # --- Hoog/laag constructie ---
     
     # >>> Actief
@@ -211,6 +221,14 @@ class Flexibilisering:
     @HL_Verschil.setter
     def HL_Verschil(self, HL_Verschil):
         self._HL_Verschil = HL_Verschil
+    
+    @property
+    def HL_VerschilMax(self):
+        return self._HL_VerschilMax
+    
+    @HL_VerschilMax.setter
+    def HL_VerschilMax(self,HL_VerschilMax):
+        self._HL_VerschilMax = HL_VerschilMax
     
     # >>> Aantal jaren eerste periode
     @property

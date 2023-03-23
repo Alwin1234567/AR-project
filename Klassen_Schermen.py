@@ -709,7 +709,9 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         self.blokkeerSignalen(False)
         
-    def invoerCheck(self,num):
+        self.invoerVerandering(0)
+        
+    def invoerCheck(self,num,checkMax=False):
         """
         Deze functie checkt voor de volgende velden of de invoer klopt:
             - OP verhouding
@@ -744,9 +746,10 @@ class Flexmenu(QtWidgets.QMainWindow):
                 self.regelingCode = flexibilisatie
                 break
         
-        limietList = functions.leesLimietMeldingen(self.book.sheets["Berekeningen"], 
-                                                    self.deelnemerObject.flexibilisaties, 
-                                                    self.regelingCode.pensioen.pensioenNaam)
+        if checkMax:
+            limietList = functions.leesLimietMeldingen(self.book.sheets["Berekeningen"], 
+                                                        self.deelnemerObject.flexibilisaties, 
+                                                        self.regelingCode.pensioen.pensioenNaam)
 
         if num == 1 or num == 0: # Check of invoer klopt van leeftijd blok
             if int(self.ui.sbJaar.value()) > (self.AOWjaar+5):
@@ -761,7 +764,9 @@ class Flexmenu(QtWidgets.QMainWindow):
                     self.ui.lblFoutmeldingLeeftijd.setText("")
             else:
                 self.ui.lblFoutmeldingLeeftijd.setText("")
-            return True
+            
+            if num == 1:
+                return True
         
         if num == 2 or num == 0: # Check of invoer klopt van OP/PP blok
             melding, OK = functions.checkVeldInvoer("OP-PP",
@@ -770,15 +775,26 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                     self.ui.txtUVerhoudingOP.text(),
                                                     self.ui.txtUVerhoudingPP.text())
             
-            if OK and str(self.ui.cbUMethode.currentText()) == "Percentage":
-                # Check of maximum in sheet gebruikt wordt.
-                pass
-            elif OK and str(self.ui.cbUMethode.currentText()) == "Verhouding":
-                # Check of maximum in sheet gebruikt wordt.
-                pass
+            meldingMax = ""
+            if OK and str(self.ui.cbUMethode.currentText()) == "Percentage" and checkMax:
+                try:
+                    if float(limietList[0][1]) > float(limietList[0][3]):
+                        if float(limietList[0][3]) > 0:
+                            meldingMax = f"Percentage te hoog, {round(100*limietList[0][3],2)}% wordt gehanteerd."
+                            self.regelingCode.OP_PP_PercentageMax = 100*limietList[0][3]
+                        elif float(limietList[0][3]) <= 0:
+                            meldingMax = f"OP kan niet verder uitgeruild worden naar PP."
+                except:
+                    pass
+
+            totMelding = melding + " " + meldingMax
             
-            self.ui.lblFoutmeldingUitruilen.setText(melding)
-            return OK
+            self.ui.lblFoutmeldingUitruilen.setText(totMelding)
+            
+            if num == 2:
+                return OK
+            else:
+                OK_OPPP = OK
    
         if num == 3 or num == 0: # Check of invoer klopt van Hoog/Laag blok
             melding, OK = functions.checkVeldInvoer("hoog-laag",
@@ -786,27 +802,37 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                     self.ui.txtHLVerschil.text(),
                                                     self.ui.txtHLVerhoudingHoog.text(),
                                                     self.ui.txtHLVerhoudingLaag.text())
-
+            
+            meldingAOW = ""
             if (OK and self.ui.cbHLMethode.currentText() == "Opvullen AOW" 
                 and self.ui.CheckHoogLaag.isChecked() == True):
                 meldingAOW = "Leeftijd staat nu ingesteld op leeftijd voor AOW opvullen."
-            else:
-                meldingAOW = ""
-                
-            if OK and str(self.ui.cbHLMethode.currentText()) == "Verschil":
-                meldingMax = ""
-                pass
-            elif OK and str(self.ui.cbHLMethode.currentText()) == "Verhouding":
-                meldingMax = ""
-                pass
-            else:
-                meldingMax = ""
             
+            meldingMax = ""
+            if OK and str(self.ui.cbHLMethode.currentText()) == "Verschil" and checkMax:
+                try:
+                    if float(limietList[2][2]) > float(limietList[2][3]):
+                        if float(limietList[2][3]) > 0:
+                            meldingMax = f"Verschil te groot, {round(float(limietList[2][3]),2)} wordt gehanteerd."
+                            self.regelingCode.HL_VerschilMax = float(limietList[2][3])
+                except:
+                    pass
+
             totMelding = melding + " " + meldingAOW + " " + meldingMax
             
             self.ui.lblFoutmeldingHoogLaag.setText(totMelding)
             
-            return OK
+            if num == 3:
+                return OK
+            else:
+                OK_HL = OK
+        
+        if num == 0:
+            if OK_OPPP and OK_HL:
+                return True
+            else:
+                return False
+                
         
     def invoerVerandering(self, num, methode = False):
         """ 
@@ -861,7 +887,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             self.ui.wdt_pltAfbeelding.canvas.draw()
         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
             
-    
+        self.invoerCheck(num,True)
 
     def zoekFlexibilisaties(self):
         self.opslaanList = self.book.sheets["Flexopslag"].range("3:3")[1:500].value # Zoekt maximaal tot 500 anders wordt het langzaam
@@ -936,10 +962,10 @@ class Flexmenu(QtWidgets.QMainWindow):
                     if str(self.ui.txtUPercentage.text()) == "":
                         self.regelingCode.OP_PP_Percentage = 0
                     else:
-                        self.regelingCode.OP_PP_Percentage = int(self.ui.txtUPercentage.text())
+                        self.regelingCode.OP_PP_Percentage = float(self.ui.txtUPercentage.text())
                 
                 elif str(self.ui.cbUMethode.currentText()) == "Percentage":
-                    self.regelingCode.OP_PP_Percentage = int(self.ui.txtUPercentage.text())
+                    self.regelingCode.OP_PP_Percentage = float(self.ui.txtUPercentage.text())
                     
                     if str(self.ui.txtUVerhoudingOP.text()) == "":
                         self.regelingCode.OP_PP_Verhouding_OP = 0
@@ -968,10 +994,10 @@ class Flexmenu(QtWidgets.QMainWindow):
                     if str(self.ui.txtHLVerhoudingHoog.text()) == "":
                         self.regelingCode.HL_Verhouding_Hoog = 0
                     else:
-                        self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
+                        self.regelingCode.HL_Verschil = float(self.ui.txtHLVerschil.text())
                     
                 elif str(self.ui.cbHLMethode.currentText()) == "Verschil":
-                    self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
+                    self.regelingCode.HL_Verschil = float(self.ui.txtHLVerschil.text())
                     
                     if str(self.ui.txtHLVerhoudingHoog.text()) == "":
                         self.regelingCode.HL_Verhouding_Hoog = 0
@@ -987,7 +1013,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                     if str(self.ui.txtHLVerhoudingHoog.text()) == "":
                         self.regelingCode.HL_Verhouding_Hoog = 0
                     else:
-                        self.regelingCode.HL_Verschil = int(self.ui.txtHLVerschil.text())
+                        self.regelingCode.HL_Verschil = float(self.ui.txtHLVerschil.text())
                         
                     if str(self.ui.txtHLVerhoudingHoog.text()) == "":
                         self.regelingCode.HL_Verhouding_Hoog = 0

@@ -842,6 +842,8 @@ def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
         flexopslag[8][2] = flexibilisatie.OP_PP_Verhouding_PP
     elif flexibilisatie.OP_PP_Methode == "Percentage":
         flexopslag[8][1] = flexibilisatie.OP_PP_Percentage
+        if flexibilisatie.OP_PP_Percentage > flexibilisatie.OP_PP_PercentageMax:
+            flexopslag[8][2] = flexibilisatie.OP_PP_PercentageMax
     #else: logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
     
     # Hoog/Laag constructie opslaan
@@ -858,6 +860,9 @@ def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
         flexopslag[14][2] = flexibilisatie.HL_Verhouding_Laag
     elif flexibilisatie.HL_Methode == "Verschil":
         flexopslag[14][1] = flexibilisatie.HL_Verschil
+        
+        if flexibilisatie.HL_Verschil > flexibilisatie.HL_VerschilMax:
+            flexopslag[14][2] = flexibilisatie.HL_VerschilMax
     #else: logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
     
     # Nieuwe OP en PP opslaan
@@ -1331,16 +1336,8 @@ def leesLimietMeldingen(sheet, flexibilisaties, huidigRegelingNaam):
             bereik = sheet.range((blokhoogte + 3, 1), (blokhoogte + 5, 4)).options(ndims = 2, numbers = float).value
             
             print(bereik)
-            
-            methodeOPPP = str(bereik[0][0])
-            try: limietOPPP = float(bereik[1][1])
-            except: limietOPPP = 0
-            
-            methodeHL = str(bereik[2][0])
-            try: limietHL = float(bereik[3][1])
-            except: limietHL = 0
     
-            return methodeOPPP,limietOPPP,methodeHL,limietHL
+            return bereik
 
         
 def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
