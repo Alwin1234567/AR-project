@@ -1015,36 +1015,6 @@ def UitlezenFlexopslag(book, naamFlex):
         flexgegevens.append(pensioen)
         #rij ophogen met 20 -> naar volgende blok
         rij += 20
-        
-    # flexgegevens = []
-    # rij = 0
-    # while rij < aantalPensioenen*20:
-    #     #lijst met gegevens van 1 pensioen aanmaken
-    #     #pensioen = [pensioenfonds, wijzigen, leeftijd-jaar, leeftijd-maand, uitruilen, volgorde, methode, verhouding/percentage,
-    #     #hoog/laag, volgorde, duur, methode, vers/verh/opvullen, OP, PP, kleur]
-    #     pensioen = [] #list(range(18))
-    #     pensioen.append(str(flexopslag.cells(rij+5 ,flexKolom).value))       #0  pensioenfonds
-    #     pensioen.append(str(flexopslag.cells(rij+7 ,flexKolom).value))       #1  wijzigen J/N
-    #     pensioen.append(str(flexopslag.cells(rij+8 ,flexKolom).value))       #2  pensioenleeftijd-jaar
-    #     pensioen.append(str(flexopslag.cells(rij+8 ,flexKolom + 1).value))   #3  pensioenleeftijd-maand
-    #     pensioen.append(str(flexopslag.cells(rij+10,flexKolom).value))       #4  uitruilen
-    #     pensioen.append(str(flexopslag.cells(rij+11,flexKolom).value))       #5  volgorde PP/OP OP/PP
-    #     pensioen.append(str(flexopslag.cells(rij+12,flexKolom).value))       #6  methode Verh/Perc
-    #     pensioen.append(str(flexopslag.cells(rij+13,flexKolom).value))       #7  verhouding/percentage 
-    #     pensioen.append(str(flexopslag.cells(rij+13,flexKolom+1).value))     #8  verhouding/percentage (leeg bij percentage)
-    #     pensioen.append(str(flexopslag.cells(rij+15,flexKolom).value))       #9  hoog/laag J/N
-    #     pensioen.append(str(flexopslag.cells(rij+16,flexKolom).value))       #10 volgorde Hoog/Laag Laag/Hoog
-    #     pensioen.append(str(flexopslag.cells(rij+17,flexKolom).value))       #11 duur
-    #     pensioen.append(str(flexopslag.cells(rij+18,flexKolom).value))       #12 methode Vers/Verh/Opv
-    #     pensioen.append(str(flexopslag.cells(rij+19,flexKolom).value))       #13 Vers/Verh/Opv
-    #     pensioen.append(str(flexopslag.cells(rij+19,flexKolom+1).value))     #14 Vers/Verh/Opv (leeg bij vers en opv)
-    #     pensioen.append(str(flexopslag.cells(rij+21,flexKolom).value))       #15 OP
-    #     pensioen.append(str(flexopslag.cells(rij+21,flexKolom+1).value))     #16 PP
-    #     pensioen.append(str(flexopslag.cells(rij+23,flexKolom).value))       #17 kleur (rgb)
-    #     #pensioensgegevens toevoegen aan lijst met totale flexibilisatiegegevens
-    #     flexgegevens.append(pensioen)
-    #     #rij ophogen met 20 -> naar volgende blok
-    #     rij += 20
     
     return flexgegevens
 
