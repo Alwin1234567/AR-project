@@ -561,6 +561,10 @@ class Flexmenu(QtWidgets.QMainWindow):
 
         self._logger.info("Veldwijziging geïnitialiseerd.")
         
+        self.ui.lblFoutmeldingLeeftijd.setText("")
+        self.ui.lblFoutmeldingUitruilen.setText("")
+        self.ui.lblFoutmeldingHoogLaag.setText("")
+        
         # Zoek flexibilisatie-object die hoort bij huidig geselecteerde regeling in flexmenu dropdown.
         for flexibilisatie in self.deelnemerObject.flexibilisaties:
             if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
@@ -615,6 +619,8 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             if self.regelingCode.HL_Methode == "Opvullen AOW":
                 self.ui.cbHLMethode.setCurrentIndex(0)
+                if self.regelingCode.HL_Actief == True:
+                    self.ui.lblFoutmeldingHoogLaag.setText("Leeftijd staat nu ingesteld op leeftijd voor AOW opvullen.")
             elif self.regelingCode.HL_Methode == "Verhouding":
                 self.ui.cbHLMethode.setCurrentIndex(1)
             elif self.regelingCode.HL_Methode == "Verschil":
