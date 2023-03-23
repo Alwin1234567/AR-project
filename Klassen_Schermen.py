@@ -730,7 +730,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             
 
         if self.invoerCheck(num):
-            self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
+            #self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
             self.flexkeuzesOpslaan(num) # Sla flex keuzes op
             self.berekeningenDoorvoeren()
             functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
