@@ -809,6 +809,8 @@ class Flexmenu(QtWidgets.QMainWindow):
             if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
                 try:
                     self.blokkeerSignalen(True)
+                    if self.ui.sbJaar.value() > (self.AOWjaar-2):
+                        self.ui.sbJaar.setValue(int(self.AOWjaar-1))
                     self.ui.sbMaand.setValue(int(self.AOWmaand))
                     self.blokkeerSignalen(False)
                     
