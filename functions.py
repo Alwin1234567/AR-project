@@ -1398,7 +1398,8 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
     allejaren = set()
     if AOW != None: allejaren.add(AOW.pensioenleeftijd)
     for flexibilisatie in deelnemer.flexibilisaties:
-        if flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12)
+        if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": allejaren.add(flexibilisatie.AOWJaar + flexibilisatie.AOWMaand / 12)
+        elif flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12)
         else: allejaren.add(flexibilisatie.pensioen.pensioenleeftijd)
         if flexibilisatie.HL_Actief: 
             if flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12 + flexibilisatie.HL_Jaar)
@@ -1438,11 +1439,13 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
     # De flexibilisaties toevoegen
     for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
         if AOW != None: i += 1
-        if flexibilisatie.leeftijd_Actief: startjaar = flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12
+        if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW" and AOW != None: startjaar = flexibilisatie.AOWJaar + flexibilisatie.AOWMaand / 12
+        elif flexibilisatie.leeftijd_Actief: startjaar = flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12
         else: startjaar = flexibilisatie.pensioen.pensioenleeftijd
         aanspraakHoog = flexibilisatie.ouderdomsPensioenHoog
         aanspraakLaag = flexibilisatie.ouderdomsPensioenLaag
-        HoogLaagjaren = flexibilisatie.HL_Jaar
+        if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW" and AOW != None: HoogLaagjaren = AOW.pensioenleeftijd
+        else: HoogLaagjaren = flexibilisatie.HL_Jaar
         HoogLaagVolgorde = flexibilisatie.HL_Volgorde
         
         hoogtes.append(list())
@@ -1931,7 +1934,9 @@ def tekstkleurSheets(book, sheets, zicht):
             elif sheetnaam in ["Berekeningen", "Flexopslag"]:
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = False
             
-def rentesort(flex): return flex[1].pensioen.rente
+def rentesort(flex): 
+    print(flex[1].pensioen.rente)
+    return flex[1].pensioen.rente
         
         
         
