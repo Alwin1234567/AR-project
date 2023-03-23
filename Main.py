@@ -31,6 +31,7 @@ def Test():
     book = xw.Book.caller()
     flexopslag = book.sheets["Flexopslag"]
     vergelijken = book.sheets["Vergelijken"]
+    
     # vormen= []
     # for i in flexopslag.shapes:
     #     vormen.append(i.name)
@@ -40,7 +41,7 @@ def Test():
     #testen met protected en unprotected sheet
     # sheet = book.sheets["Test Julia"]
     # sterftetafel = book.sheets["Sterftetafels"]
-    # sheet.api.Protect(Password = functions.wachtwoord())
+    # functions.ProtectBeheer(sheet) #.api.Protect(Password = functions.wachtwoord())
     
     # sterftetafel.cells(7,6).value = "sheet protected"
     # #haal waarde uit sheet
@@ -287,7 +288,7 @@ def invoer_test_klikken():
             rente.append(0)
             pensioenleeftijd.append(0)
     #sheet protecten
-    invoer.api.Protect(Password = functions.wachtwoord())
+    functions.ProtectBeheer(invoer) #.api.Protect(Password = functions.wachtwoord())
  
 @xw.sub
 def AfbeeldingVerplaatsen(vak):
@@ -330,7 +331,7 @@ def AfbeeldingVerplaatsen(vak):
             afbeelding.top = vlak.top
             afbeelding.left = vlak.left
     #vergelijken sheet protecten
-    vergelijken.api.Protect(Password=functions.wachtwoord(), Contents=False)
+    functions.ProtectBeheer(vergelijken) #.api.Protect(Password=functions.wachtwoord(), Contents=False)
        
 @xw.sub
 def AfbeeldingKiezen():
@@ -563,7 +564,7 @@ def AfbeeldingVerwijderen():
                 pass
                 #functions.Mbox("Foutmelding", f"Het verwijderen van flexibilisatie '{gekozenAfbeelding}' lukt niet.\n Het AfbeeldingID bestaat niet", 0)
             #vergelijken sheet protecten
-            Vergelijken.api.Protect(Password = functions.wachtwoord(), Contents=False)
+            functions.ProtectBeheer(Vergelijken) #.api.Protect(Password = functions.wachtwoord(), Contents=False)
             
             #tellen hoeveel opgeslagen flexibiliseringen en hoeveel pensioenen
             Flexopslag = functions.FlexopslagVinden(xw.Book.caller(), gekozenAfbeelding)
@@ -582,7 +583,7 @@ def AfbeeldingVerwijderen():
             #laatste (of enige) kolom verwijderen
             Opslag.range((1,laatsteKolom-1),(rijen,laatsteKolom+1)).clear()
             #opslag sheet protecten
-            Opslag.api.Protect(Password = functions.wachtwoord())
+            functions.ProtectBeheer(Opslag) #.api.Protect(Password = functions.wachtwoord())
             
             try:
                 #drop down op vergelijkingssheet updaten
