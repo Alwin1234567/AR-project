@@ -420,6 +420,9 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.opslaanList = list()
         self.zoekFlexibilisaties()
         
+        # Deelnemer
+        self.deelnemerObject = deelnemer
+        
         # Setup AOW-leeftijd knop
         self.AOWjaar = 60 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
         self.AOWmaand = 0 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
@@ -431,9 +434,6 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow5()
         self.ui.setupUi(self)
         self.setWindowTitle("Flexibilisatie menu") #Het moet na de setup, daarom staat het nu even hier
-        
-        # Deelnemer
-        self.deelnemerObject = deelnemer
         
         # Regeling selectie
         self._regelingenActiefKort = list()
@@ -918,32 +918,26 @@ class Flexmenu(QtWidgets.QMainWindow):
                 if combo == flexcombo: continue
                 bedrag += combo[1].ouderdomsPensioenHoog
                 bedrag -= combo[1].ouderdomsPensioenLaag
+            self.book.sheets["Berekeningen"].range((blokhoogte + 1, 2)).value = flexcombo[1].AOWJaar + flexcombo[1].AOWMaand / 12
             blok = list()
             if bedrag < 0 :
+                flexcombo[1].HL_Volgorde = "Laag-hoog"
                 blok.append(["Verschil", "Laag-hoog"])
                 blok.append([self.AOWjaar - flexcombo[1].AOWJaar, -bedrag])
             else: 
+                flexcombo[1].HL_Volgorde = "Hoog-laag"
                 blok.append(["Verschil", "Hoog-laag"])
                 blok.append([self.AOWjaar - flexcombo[1].AOWJaar, bedrag])
             updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 4, 2),\
                                                                  (blokhoogte + 5, 3))
             try: updaterange.value = blok
-            except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
-            
-        
-        # loop:
-            # lees factoren
-            # bereken verhouding
-            # set verhouding
-            # bereken nieuw verschil
-        
+            except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")    
 
     def berekeningenDoorvoeren(self):
         instellingen = functions.berekeningen_instellingen()
         overbruggingen = list()
         for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
-            if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW":
-                overbruggingen.append((i, flexibilisatie))
+            if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": overbruggingen.append((i, flexibilisatie))
         
         overbruggingen.sort(key = functions.rentesort)
         
