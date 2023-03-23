@@ -469,7 +469,7 @@ def ToevoegenDeelnemer(gegevens, regel = 0):
     #gegevens deelnemer invullen in de lege regel
     deelnemersbestand.cells(regel, 1).value = gegevens
     #sheet protecten
-    functions.ProtectBeheer(deelnemersbestand) #.api.Protect(Password = wachtwoord())
+    ProtectBeheer(deelnemersbestand) #.api.Protect(Password = wachtwoord())
 
 def Mbox(title, text, style):
     """
