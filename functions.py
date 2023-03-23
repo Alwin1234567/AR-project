@@ -855,7 +855,7 @@ def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[13][1] = flexibilisatie.HL_Methode
     if flexibilisatie.HL_Methode == "Verhouding":
         flexopslag[14][1] = flexibilisatie.HL_Verhouding_Hoog
-        flexopslag[15][2] = flexibilisatie.HL_Verhouding_Laag
+        flexopslag[14][2] = flexibilisatie.HL_Verhouding_Laag
     elif flexibilisatie.HL_Methode == "Verschil":
         flexopslag[14][1] = flexibilisatie.HL_Verschil
     #else: logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
@@ -1328,7 +1328,9 @@ def leesLimietMeldingen(sheet, flexibilisaties, huidigRegelingNaam):
     for i, flexibilisatie in enumerate(flexibilisaties):
         if huidigRegelingNaam == flexibilisatie.pensioen.pensioenNaam:
             blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
-            bereik = sheet.range((blokhoogte + 2, 2), (blokhoogte + 5, 3)).options(ndims = 2, numbers = int).value
+            bereik = sheet.range((blokhoogte + 3, 1), (blokhoogte + 5, 4)).options(ndims = 2, numbers = float).value
+            
+            print(bereik)
             
             methodeOPPP = str(bereik[0][0])
             try: limietOPPP = float(bereik[1][1])

@@ -739,9 +739,14 @@ class Flexmenu(QtWidgets.QMainWindow):
             True als invoer klopt. False als invoer fout is.
         
         """
-        # limietList = functions.leesLimietMeldingen(self.book.sheets["Berekeningen"], 
-        #                                            self.deelnemerObject.flexibilisaties, 
-        #                                            self.regelingCode.pensioen.pensioenNaam)
+        for flexibilisatie in self.deelnemerObject.flexibilisaties:
+            if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
+                self.regelingCode = flexibilisatie
+                break
+        
+        limietList = functions.leesLimietMeldingen(self.book.sheets["Berekeningen"], 
+                                                    self.deelnemerObject.flexibilisaties, 
+                                                    self.regelingCode.pensioen.pensioenNaam)
 
         if num == 1 or num == 0: # Check of invoer klopt van leeftijd blok
             if int(self.ui.sbJaar.value()) > (self.AOWjaar+5):
@@ -834,18 +839,19 @@ class Flexmenu(QtWidgets.QMainWindow):
                     self.blokkeerSignalen(True)
                     if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
                         try:
+                            self.ui.CheckLeeftijdWijzigen.setChecked(True)
                             self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
-                            self.ui.sbMaand.setValue(self.regelingCode.AOWMaand)
+                            self.ui.sbMaand.setValue(self.AOWmaand)
                         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
                     else:
                         try:
+                            self.ui.CheckLeeftijdWijzigen.setChecked(self.regelingCode.leeftijd_Actief)
                             self.ui.sbJaar.setValue(self.regelingCode.leeftijdJaar)
                             self.ui.sbMaand.setValue(self.regelingCode.leeftijdMaand)
                         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
                     self.blokkeerSignalen(False)
                 
                 self.samenvattingUpdate() # Update de samenvatting
-                
         else:
             self._titel = str(self.ui.txtTitel.text())
             print(self._titel)
