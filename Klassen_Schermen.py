@@ -704,15 +704,26 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                     self.ui.txtHLVerschil.text(),
                                                     self.ui.txtHLVerhoudingHoog.text(),
                                                     self.ui.txtHLVerhoudingLaag.text())
-            
+
+            if (OK and self.ui.cbHLMethode.currentText() == "Opvullen AOW" 
+                and self.ui.CheckHoogLaag.isChecked() == True):
+                meldingAOW = "Leeftijd staat nu ingesteld op leeftijd voor AOW opvullen."
+            else:
+                meldingAOW = ""
+                
             if OK and str(self.ui.cbHLMethode.currentText()) == "Verschil":
-                # Check of maximum in sheet gebruikt wordt.
+                meldingMax = ""
                 pass
             elif OK and str(self.ui.cbHLMethode.currentText()) == "Verhouding":
-                # Check of maximum in sheet gebruikt wordt.
+                meldingMax = ""
                 pass
+            else:
+                meldingMax = ""
             
-            self.ui.lblFoutmeldingHoogLaag.setText(melding)
+            totMelding = melding + " " + meldingAOW + " " + meldingMax
+            
+            self.ui.lblFoutmeldingHoogLaag.setText(totMelding)
+            
             return OK
         
     def invoerVerandering(self, num, methode = False):
