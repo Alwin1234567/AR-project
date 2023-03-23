@@ -801,10 +801,15 @@ class Flexmenu(QtWidgets.QMainWindow):
         if num == 1 or num == 0: # Leeftijd wijziging opslaan
             if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
                 try:
+                    self.blokkeerSignalen(True)
+                    self.ui.sbMaand.setValue(int(self.AOWmaand))
+                    self.blokkeerSignalen(False)
+                    
                     self.ui.CheckLeeftijdWijzigen.setChecked(True)
                     jaar = int(self.ui.sbJaar.value())
                     maand = int(self.ui.sbMaand.value())
                     self.deelnemerObject.setAOWLeeftijf(jaar, maand)
+                    
                 except Exception as e: self._logger.exception("Er gaat iets fout bij het opslaan van de pensioenleeftijd in flexmenu.ui")
             else:
                 try:
