@@ -1302,9 +1302,11 @@ def leesOPPP(sheet, flexibilisaties):
     for i, flexibilisatie in enumerate(flexibilisaties):
         blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
         bereik = sheet.range((blokhoogte + 9, 2), (blokhoogte + 10, 3)).options(ndims = 2, numbers = int).value
+        OPU = bereik[0][0]
         PP = bereik[0][1]
         OPH = bereik[1][0]
         OPL = bereik[1][1]
+        flexibilisatie.ouderdomsPensioenUitruilen = OPU
         flexibilisatie.partnerPensioen = PP
         flexibilisatie.ouderdomsPensioenHoog = OPH
         flexibilisatie.ouderdomsPensioenLaag = OPL
