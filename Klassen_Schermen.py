@@ -423,7 +423,9 @@ class Flexmenu(QtWidgets.QMainWindow):
         # Setup AOW-leeftijd knop
         self.AOWjaar = 60 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
         self.AOWmaand = 0 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
-        self.getAOWleeftijd()
+        self.AOW = None
+        self.getAOWinformatie()
+        
         
         # Setup van UI
         self.ui = Ui_MainWindow5()
@@ -537,19 +539,19 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.cbRegeling.addItems(regelingenActief) # Dropdown krijgt lijst met lange namen van regelingen
         self._regelingenActiefKort = regelingenActiefKort # Wordt apart een lijst met korte namen van regelingen opgeslagen
     
-    def getAOWleeftijd(self):
+    def getAOWinformatie(self):
         """
         Deze functie zorgt ervoor dat er niet elke keer bij het klikken op de AOW knop opnieuw de 
         AOW leeftijd ingeladen moet worden, dit vergt namelijk veel tijd. In de __init__ wordt deze
         functie opgeroepen zodat het maar 1 keer opgeslagen hoeft te worden.
         """
         
-        functions.getPensioeninformatie(self.book)
 
-        for pensioenV in functions.getPensioeninformatie(self.book):
+        for pensioenV in self.deelnemerObject.pensioenen:
             if pensioenV.pensioenNaam == "AOW":
                 self.AOWjaar = int(pensioenV.pensioenleeftijd)
                 self.AOWmaand = int(round((pensioenV.pensioenleeftijd-self.AOWjaar)*12))
+                self.AOW = pensioenV
         
     def wijzigVelden(self):
         """
@@ -906,12 +908,28 @@ class Flexmenu(QtWidgets.QMainWindow):
             except Exception as e: self._logger.exception("Huidig geselecteerde hoog/laag flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
     
     def AOWberekenen(self, overbruggingen):
-        pass
-        # krijg lijst flexibilisaties met AOW gat opvullen
-        
-        # bepaal prioriteit
-        
-        # set hoog laag op laag hoog met jaren goed en verhouding 0.75
+        for flexcombo in overbruggingen:
+            instellingen = functions.berekeningen_instellingen()
+            blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(self.deelnemerObject.flexibilisaties) + flexcombo[0] * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
+            factoren = self.book.sheets["Berekeningen"].range((blokhoogte + 12, 2), (blokhoogte + 16, 2)).value
+            if self.deelnemerObject.burgelijkeStaat == "Samenwonend": bedrag = self.AOW.samenwondendAOW
+            else: bedrag = self.AOW.alleenstaandAOW
+            for combo in overbruggingen:
+                if combo == flexcombo: continue
+                bedrag += combo[1].ouderdomsPensioenHoog
+                bedrag -= combo[1].ouderdomsPensioenLaag
+            blok = list()
+            if bedrag < 0 :
+                blok.append(["Verschil", "Laag-hoog"])
+                blok.append([self.AOWjaar - flexcombo[1].AOWJaar, -bedrag])
+            else: 
+                blok.append(["Verschil", "Hoog-laag"])
+                blok.append([self.AOWjaar - flexcombo[1].AOWJaar, bedrag])
+            updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 4, 2),\
+                                                                 (blokhoogte + 5, 3))
+            try: updaterange.value = blok
+            except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
+            
         
         # loop:
             # lees factoren
@@ -959,8 +977,9 @@ class Flexmenu(QtWidgets.QMainWindow):
                     blok.append(["", ""])
                     blok.append(["", ""])
             else:
-                blok.append(["Verhouding", "Laag-hoog"])
-                blok.append([self.AOWjaar - flexibilisatie.AOWJaar, 3 / 4])
+                blok.append(["Verschil", "Laag-hoog"])
+                blok.append([self.AOWjaar - flexibilisatie.AOWJaar, flexibilisatie.ouderdomsPensioenHoog])
+
             updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 1, 2),\
                                                                  (blokhoogte + 5, 3))
             try: updaterange.value = blok
