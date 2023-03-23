@@ -102,9 +102,9 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.ui.btnUitloggen.clicked.connect(self.btnUitloggenClicked)
         
         #sheets definieren
-        self.sheets = ["Sterftetafels", "AG2020", "Berekeningen", "deelnemersbestand", "Gegevens pensioencontracten", "Flexopslag"]
+        self.sheets = ["Sterftetafels", "AG2020", "Berekeningen", "deelnemersbestand", "Gegevens pensioencontracten", "Flexopslag", "Flexopslag"]
         self.vergelijken = self.book.sheets["Vergelijken"]
-        self.flexopslag = self.book.sheets["Flexopslag"]
+        #self.flexopslag = self.book.sheets["Flexopslag"]
         self.beheerder = self.book.sheets["Beheerder"]
         
     def btnGegevensWijzigenClicked(self):
@@ -120,6 +120,8 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         for i in self.sheets:
             self.book.sheets[i].api.Unprotect(Password = functions.wachtwoord())
             self.book.sheets[i].visible = True
+        #vergelijken unprotecten
+        self.vergelijken.api.Unprotect(Password = functions.wachtwoord())
         #sheets leesbaar maken
         functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
                 
