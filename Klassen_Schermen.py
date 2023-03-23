@@ -565,6 +565,10 @@ class Flexmenu(QtWidgets.QMainWindow):
 
         self._logger.info("Veldwijziging geïnitialiseerd.")
         
+        self.ui.lblFoutmeldingLeeftijd.setText("")
+        self.ui.lblFoutmeldingUitruilen.setText("")
+        self.ui.lblFoutmeldingHoogLaag.setText("")
+        
         # Zoek flexibilisatie-object die hoort bij huidig geselecteerde regeling in flexmenu dropdown.
         for flexibilisatie in self.deelnemerObject.flexibilisaties:
             if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
@@ -619,6 +623,8 @@ class Flexmenu(QtWidgets.QMainWindow):
             
             if self.regelingCode.HL_Methode == "Opvullen AOW":
                 self.ui.cbHLMethode.setCurrentIndex(0)
+                if self.regelingCode.HL_Actief == True:
+                    self.ui.lblFoutmeldingHoogLaag.setText("Leeftijd staat nu ingesteld op leeftijd voor AOW opvullen.")
             elif self.regelingCode.HL_Methode == "Verhouding":
                 self.ui.cbHLMethode.setCurrentIndex(1)
             elif self.regelingCode.HL_Methode == "Verschil":
@@ -708,15 +714,26 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                     self.ui.txtHLVerschil.text(),
                                                     self.ui.txtHLVerhoudingHoog.text(),
                                                     self.ui.txtHLVerhoudingLaag.text())
-            
+
+            if (OK and self.ui.cbHLMethode.currentText() == "Opvullen AOW" 
+                and self.ui.CheckHoogLaag.isChecked() == True):
+                meldingAOW = "Leeftijd staat nu ingesteld op leeftijd voor AOW opvullen."
+            else:
+                meldingAOW = ""
+                
             if OK and str(self.ui.cbHLMethode.currentText()) == "Verschil":
-                # Check of maximum in sheet gebruikt wordt.
+                meldingMax = ""
                 pass
             elif OK and str(self.ui.cbHLMethode.currentText()) == "Verhouding":
-                # Check of maximum in sheet gebruikt wordt.
+                meldingMax = ""
                 pass
+            else:
+                meldingMax = ""
             
-            self.ui.lblFoutmeldingHoogLaag.setText(melding)
+            totMelding = melding + " " + meldingAOW + " " + meldingMax
+            
+            self.ui.lblFoutmeldingHoogLaag.setText(totMelding)
+            
             return OK
         
     def invoerVerandering(self, num, methode = False):
@@ -813,6 +830,8 @@ class Flexmenu(QtWidgets.QMainWindow):
             if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
                 try:
                     self.blokkeerSignalen(True)
+                    if self.ui.sbJaar.value() > (self.AOWjaar-2):
+                        self.ui.sbJaar.setValue(int(self.AOWjaar-1))
                     self.ui.sbMaand.setValue(int(self.AOWmaand))
                     self.blokkeerSignalen(False)
                     
