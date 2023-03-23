@@ -1107,7 +1107,7 @@ def berekeningen_init(sheet, deelnemer, logger):
 
     """
     #sheet unprotecten
-    sheet.api.Unprotect(Password = wachtwoord())
+    #sheet.api.Unprotect(Password = wachtwoord())
     
     logger.info("start berekenscherm init")
     # verkrijg berekeningen instellingen
@@ -1247,7 +1247,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
         
     #sheet protecten
-    ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord())
+    #ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord())
     
     logger.info("berekenscherm init afgerond")
     

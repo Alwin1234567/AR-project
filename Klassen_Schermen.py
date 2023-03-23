@@ -479,6 +479,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         #voorkom dat scherm gesloten kan worden met kruisje
         self._want_to_close = False
+        #berekeningen sheet unprotecten
+        self.book.sheets["Berekeningen"].api.Unprotect(Password = functions.wachtwoord())
         
         # Setup AOW-leeftijd knop
         self.AOWjaar = 60 # Deze wordt aangepast naar echte AOW leeftijd met functie self.getAOWleeftijd()
@@ -1134,6 +1136,8 @@ class Flexmenu(QtWidgets.QMainWindow):
             #scherm sluiten
             self._want_to_close = True
             self.close()
+            #berekeningensheet protecten (als geen beheerder is ingelogd)
+            functions.ProtectBeheer(self.book.sheets["Berekeningen"])
             self._logger.info("Flexmenu scherm gesloten")
             self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
             self._windowdeelnemer.show()
@@ -1143,6 +1147,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         #scherm sluiten
         self._want_to_close = True
         self.close()
+        #berekeningensheet protecten (als geen beheerder is ingelogd)
+        functions.ProtectBeheer(self.book.sheets["Berekeningen"])
         self._logger.info("Flexmenu scherm gesloten")
         
         # Drop down op vergelijkingssheet updaten
