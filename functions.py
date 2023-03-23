@@ -441,11 +441,11 @@ def ToevoegenDeelnemer(gegevens, regel = 0):
         aantalDeelnemers = len(deelnemersbestand.cells(1,1).expand().value)
         regel = aantalDeelnemers + 1
     #sheet unprotecten
-    #deelnemersbestand.api.Unprotect(Password = wachtwoord())
+    deelnemersbestand.api.Unprotect(Password = wachtwoord())
     #gegevens deelnemer invullen in de lege regel
     deelnemersbestand.cells(regel, 1).value = gegevens
     #sheet protecten
-    #deelnemersbestand.api.Protect(Password = wachtwoord())
+    deelnemersbestand.api.Protect(Password = wachtwoord())
 
 def Mbox(title, text, style):
     """
@@ -733,12 +733,12 @@ def persoonOpslag(sheet, persoonObject):
     persopslag[9][1] = persoonObject.rijNr
     
     #sheet unprotecten
-    #sheet.api.Unprotect(Password = wachtwoord())
+    sheet.api.Unprotect(Password = wachtwoord())
     #persoonopslag invoegen
     sheet.range((6,1),(15,2)).options(ndims = 2).value = persopslag
     sheet.range((6,1),(15,2)).color = (150,150,150)
     #sheet protecten
-    #sheet.api.Protect(Password = wachtwoord())
+    sheet.api.Protect(Password = wachtwoord())
 
 def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     """
@@ -845,12 +845,12 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[18][1] = str(flexibilisatie.pensioen.pensioenKleurHard)
     
     #sheet unprotecten
-    #book.api.Unprotect(Password = wachtwoord())
+    book.api.Unprotect(Password = wachtwoord())
     # Waardes in sheet plakken & celkleur instellen
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
     book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
     #sheet protecten
-    #book.api.Protect(Password = wachtwoord())
+    book.api.Protect(Password = wachtwoord())
     
     # # Pensioenleeftijd wijzigen J/N
     # if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
@@ -945,7 +945,7 @@ def FlexopslagVinden(book, naamFlex = "Geen"):
 #     #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
 #     book.sheets["Flexopslag"].clear()
 #     #sheet protecten
-#     #book.sheets["Flexopslag"].api.Pprotect(Password = wachtwoord())
+#     #book.sheets["Flexopslag"].api.Protect(Password = wachtwoord())
     
 #     #laatste opslag is verwijderd, dus drop down legen
 #     book.sheets["Vergelijken"]["B6"].value = ""
@@ -1083,7 +1083,7 @@ def berekeningen_init(sheet, deelnemer, logger):
 
     """
     #sheet unprotecten
-    #sheet.api.Unprotect(Password = wachtwoord())
+    sheet.api.Unprotect(Password = wachtwoord())
     
     logger.info("start berekenscherm init")
     # verkrijg berekeningen instellingen
@@ -1144,10 +1144,10 @@ def berekeningen_init(sheet, deelnemer, logger):
                      '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{0}{5}, {1}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{1}{5}, {2}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + 10), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
         blok.append(["Sommatie PP uitstellen", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
                      '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{0}{5}, {1}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{1}{5}, {2}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
-        blok.append(["Sommatie HL tweede", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}):{1}{4}), 3))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"], blokhoogte + 4, blokhoogte + 5), "",\
-                     '=IF(B{5} = "", "", CONCAT("=SUMPRODUCT({0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}, ":{0}{4}, {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}, ":{1}{4})"))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"], blokhoogte + 4, blokhoogte + 5)])
         blok.append(["Sommatie HL eerste", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):INDIRECT("{0}"&MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4}), INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):INDIRECT("{1}"&MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4})), 3))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4), "",\
                      '=IF(B{5} = "", "",CONCAT("=SUMPRODUCT({0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3), ":{0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4}, ", {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3),":{1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4},")"))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4)])
+        blok.append(["Sommatie HL tweede", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}):{1}{4}), 3))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"], blokhoogte + 4, blokhoogte + 5), "",\
+                     '=IF(B{5} = "", "", CONCAT("=SUMPRODUCT({0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}, ":{0}{4}, {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}, ":{1}{4})"))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"], blokhoogte + 4, blokhoogte + 5)])
         
         if sum([len(rij) for rij in blok]) == len(blok) * 4:
             blokruimte = sheet.range((blokhoogte, instellingen["pensioenblokkolom"]),\
@@ -1223,7 +1223,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
         
     #sheet protecten
-    #sheet.api.Protect(Password = wachtwoord())
+    sheet.api.Protect(Password = wachtwoord())
     
     logger.info("berekenscherm init afgerond")
     
@@ -1308,8 +1308,43 @@ def leesOPPP(sheet, flexibilisaties):
         flexibilisatie.partnerPensioen = PP
         flexibilisatie.ouderdomsPensioenHoog = OPH
         flexibilisatie.ouderdomsPensioenLaag = OPL
-    
+               
+def leesLimietMeldingen(sheet, flexibilisaties, huidigRegelingNaam):
+    """
+    leest de flexibilisaties uit de rekensheet en slaat eventuele andere gehanteerde waardes op
+    Bijvoorbeeld als een OP naar PP percentage te hoog was, dan wordt het nieuw gehanteerde percentage opgeslagen.
 
+    Parameters
+    ----------
+    sheet : Book.Sheet
+        Berekeningen sheet.
+    flexibilisaties : flex_keuzes
+        object met alle flexibilisatie eigenschappen.
+    limietMelding : bool
+        True als er gecheckt moet worden of er een limiet is bereikt.
+
+    Returns
+    -------
+    Lijst met per regeling de gehanteerde limieten.
+    """
+
+    instellingen = berekeningen_instellingen()
+    for i, flexibilisatie in enumerate(flexibilisaties):
+        if huidigRegelingNaam == flexibilisatie.pensioen.pensioenNaam:
+            blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
+            bereik = sheet.range((blokhoogte + 2, 2), (blokhoogte + 5, 3)).options(ndims = 2, numbers = int).value
+            
+            methodeOPPP = str(bereik[0][0])
+            try: limietOPPP = float(bereik[1][1])
+            except: limietOPPP = 0
+            
+            methodeHL = str(bereik[2][0])
+            try: limietHL = float(bereik[3][1])
+            except: limietHL = 0
+    
+            return methodeOPPP,limietOPPP,methodeHL,limietHL
+
+        
 def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een super coole title"):
     """
     Maakt de afbeelding in het flexscherm.
@@ -1429,9 +1464,13 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         ax.set_title(titel, fontweight='bold')
     
     if sheet != None:
-        locatieTop = int(12 + (ID%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
-        locatieLeft = int(2 + ((ID - i%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
-        locatie = sheet.range((locatieTop,locatieLeft))
+        if ID == 0:
+            locatie = sheet.range((14,2))
+        else:
+            teller = ID-1
+            locatieTop = int(12 + (teller%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
+            locatieLeft = int(17 + ((teller - teller%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
+            locatie = sheet.range((locatieTop,locatieLeft))
         afbeelding = plt.figure()
         for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
         
@@ -1447,17 +1486,27 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een sup
         plt.suptitle(titel, fontweight='bold')
         plt.xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
         
+        
         #sheet unprotecten
-        #sheet.api.Unprotect(Password = wachtwoord())
+        sheet.api.Unprotect(Password = wachtwoord())
         #afbeelding opslaan op sheet
         sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         #sheet protecten
-        #sheet.api.Protect(Password = wachtwoord())
+        sheet.api.Protect(Password = wachtwoord(), Contents=False)
+        
 
 def vergelijken_keuzes():
     """
     functie die de drop down list in de vergelijkingssheet vult met de namen van de opgeslagen afbeeldingen
 
+    Parameters
+    ----------
+    box : integer
+        0 - alle drie de keuzecellen updaten
+        1 - 1e keuzecel updaten
+        2 - linker vergelijken keuzecel updaten
+        3 - rechter vergelijken keuzecel updaten
+        
     Returns
     -------
     drop down list gevuld met namen uit de flexopslag
@@ -1469,10 +1518,18 @@ def vergelijken_keuzes():
     invoer = book.sheets["Flexopslag"]
     uitvoer = book.sheets["Vergelijken"]
     #list maken waarin de opgeslagen pensioenen worden bijgehouden
-    pensioenlist = []
+    pensioenlist = ["-"]
     celKolom = 5 
-    #cel met de drop down datavalisatie
-    keuzeCel = "B6"
+    #cellen met de drop down datavalisatie
+    # keuzeCel1 = "B6"
+    # keuzeCel2 = "J13"
+    # keuzeCel3 = "B37"
+    # keuzeCel4 = "J37"
+    #sheet unprotecten
+    uitvoer.api.Unprotect(Password = wachtwoord())
+    
+    
+    keuzecellen = ["B6", "J13", "B37", "J37"]
     if str(invoer.cells(2,celKolom).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
         #rij met flexibilisatienaam langsgaan en elke naam toevoegen aan pensioenlist
         while str(invoer.cells(2,celKolom).value) != "None":
@@ -1480,20 +1537,34 @@ def vergelijken_keuzes():
             pensioenlist.append(naam)
             celKolom += 4
         #lijst omzetten naar string, gescheiden door komma
+        pensioenopties = ','.join(pensioenlist[1:])
+        
+        #keuzeveld1
+        #verwijder bestaande datavalidatie uit cel
+        uitvoer[keuzecellen[0]].api.Validation.Delete()
+        #voeg nieuwe datavalidatie toe aan cel
+        uitvoer[keuzecellen[0]].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
+        #vul keuzeveld1 met eerste opties uit pensioenlist
+        uitvoer[keuzecellen[0]].value = pensioenlist[1]
+        #lege optie toevoegne aan pensioenopties
         pensioenopties = ','.join(pensioenlist)
-        #verwijder bestaande datavalidatie uit cel
-        uitvoer[keuzeCel].api.Validation.Delete()
-        #voeg nieuwe datavalidatie toe aan cel
-        uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
-        #vul keuzeveld met eerste opties uit pensioenlist
-        uitvoer[keuzeCel].value = pensioenlist[0]
+        for cel in keuzecellen[1:]:
+            #verwijder bestaande datavalidatie uit cel
+            uitvoer[cel].api.Validation.Delete()
+            #voeg nieuwe datavalidatie toe aan cel
+            uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateList, Formula1=pensioenopties)
+        #vul keuzeveld1 met eerste opties uit pensioenlist
+        #uitvoer[keuzecellen[0]].value = pensioenlist[0]
     else:   #geen flexibilisaties opgeslagen
-        #verwijder bestaande datavalidatie uit cel
-        uitvoer[keuzeCel].api.Validation.Delete()
-        #maak keuzeveld leeg
-        uitvoer[keuzeCel].value = ""
-        #voeg nieuwe datavalidatie toe aan cel
-        uitvoer[keuzeCel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
+        for cel in keuzecellen:
+            #verwijder bestaande datavalidatie uit cel
+            uitvoer[cel].api.Validation.Delete()
+            #maak keuzeveld leeg
+            uitvoer[cel].value = ""
+            #voeg nieuwe datavalidatie toe aan cel
+            uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
+    #sheet protecten
+    uitvoer.api.Protect(Password=wachtwoord(), Contents=False)
    
 def opslagLegen(book, logger):
     flexopslag = book.sheets["Flexopslag"]
@@ -1504,6 +1575,8 @@ def opslagLegen(book, logger):
         kolomLaatsteOpslag = FlexopslagVinden(book)[1]
         IDLaatsteOpslag = flexopslag.cells(3, kolomLaatsteOpslag).value
         stopNummer = int(IDLaatsteOpslag.split()[-1])
+        #vergelijken sheet unprotecten
+        vergelijken.api.Unprotect(Password=wachtwoord())
         #alle ID's tot laatste ID afgaan om (mogelijke) afbeelding te verwijderen
         for i in range(0,stopNummer+1):
             ID = f"Vergelijking {i}"
@@ -1511,13 +1584,15 @@ def opslagLegen(book, logger):
                 vergelijken.pictures[ID].delete()
             except:
                 pass
+        #vergelijken sheet protecten
+        vergelijken.api.Protect(Password=wachtwoord(), Contents=False)
         logger.info("Afbeeldingen op vergelijken sheet verwijderd")
         #flexopslag unprotecten
-        #flexopslag.api.Unprotect(Password = wachtwoord())
+        flexopslag.api.Unprotect(Password = wachtwoord())
         #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
         flexopslag.clear()
         #flexopslag protecten
-        #flexopslag.api.Protect(Password = wachtwoord())
+        flexopslag.api.Protect(Password = wachtwoord())
         
         #laatste opslag is verwijderd, dus drop down legen
         vergelijken_keuzes()
@@ -1659,10 +1734,12 @@ def leeftijd_notatie(jaar, maand):
         In woorden wat de pensioenleeftijd van een pensioen is rekening houdend met gramatica ev/mv
 
     """
-    if ("00" + maand)[-2] == ".": #checkt of de waarde is opgeslagen als x.0
-        maand = maand[:-2]
-    if ("00" + jaar)[-2] == ".":
-        jaar = jaar[:-2]
+    maand = str(int(float(maand)))
+    jaar = str(int(float(jaar)))
+    # if ("00" + maand)[-2] == ".": #checkt of de waarde is opgeslagen als x.0
+    #     maand = maand[:-2]
+    # if ("00" + jaar)[-2] == ".":
+    #     jaar = jaar[:-2]
     if maand == "0":
         antwoord = jaar + " jaar"
     elif maand == "1":
@@ -1672,7 +1749,89 @@ def leeftijd_notatie(jaar, maand):
     return antwoord  
     
     
+def geld_per_leeftijd(oud_pensioen, nieuw_pensioen):
+    """
+    Functie die per leeftijd aangeeft hoeveel geld erbij of af gaat
+
+    Parameters
+    ----------
+    oud_pensioen : list
+        Lijst met lijsten van oud pensioen. 
     
+    nieuw_pensioen: list
+        Lijst met lijsten van oud pensioen.
+
+    Returns
+    -------
+    list
+        Een lijst met de lijst van oud en nieuw pensioen. 
+        oud en nieuwpensioen zijn beide een lijst met lijsten van 2 lang 
+        bestaande uit de pensioen leeftijd en het verschil in bedrag met de leeftijd ervoor. 
+        Deze lijst is van jong naar oud gesoorteerd.
+        In deze lijst staan geen dubbele leeftijden meer.
+        
+    """
+    datum_en_geldnieuw = []
+    
+    p = 1 #hoeveelste pensioen
+    for i in nieuw_pensioen:
+        if i[1] == "Ja": #pensioenleeftijd aanpassen
+            startjaar = i[2]
+            startmaand = i[3]
+        else:
+            startjaar = str(oud_pensioen[p][1])
+            startmaand = "0"
+        
+        if i[9] == "Ja": #hooglaag staat aan
+            duur = int(float(i[11]))
+            hl_jaar = str(int(startjaar) + duur)
+            datum1 = leeftijd_notatie(startjaar, startmaand)
+            datum2 = leeftijd_notatie(hl_jaar, startmaand)
+            if i[10] == "Hoog-laag":
+                OP2 = int(float(i[16])) - int(float(i[15])) #op tweede gedeelte hl
+            else:
+                OP2 = int(float(i[15])) - int(float(i[16])) 
+            OP1 = int(float(i[15])) #op eerste gedeelte hl
+            datum_en_geldnieuw.append([datum1, OP1])
+            datum_en_geldnieuw.append([datum2, OP2])
+            
+        else:
+            datum = leeftijd_notatie(startjaar, startmaand)
+            geld = int(float(i[15]))
+            datum_en_geldnieuw.append([datum, geld])
+        p += 1            
+                    
+            
+    datum_en_geldoud = []
+    oud_pensioen.pop(0) #voor nu nog even gedaan omdat AOW er nog niet goed in lijkt te staan
+    for i in oud_pensioen:
+        datum = leeftijd_notatie(i[1], "0")
+        geld = i[3]
+        datum_en_geldoud.append([datum, geld])
+    
+    datum_en_geld = [datum_en_geldoud, datum_en_geldnieuw]
+    
+    oud_en_nieuw = [] #een lijst waar de enkellijsten van een oud en nieuw pensioen komen
+                        #met oud op index 0 en nieuw op index 1
+    
+    for lijst in datum_en_geld:
+        enkellijst = [["",""]]
+        dubbel = 0
+        for i in lijst:
+            for j in range(len(enkellijst)):
+                if i[0] == enkellijst[j][0]:
+                    enkellijst[j] = [enkellijst[j][0], enkellijst[j][1]+ i[1]]
+                    dubbel = 1
+            if dubbel == 0:
+                enkellijst.append(i)
+            dubbel = 0
+            
+        enkellijst.pop(0)
+        enkellijst.sort()
+        
+        oud_en_nieuw.append(enkellijst)
+        
+    return oud_en_nieuw
     
 def tekstkleurSheets(book, sheets, zicht):
     """
@@ -1700,9 +1859,13 @@ def tekstkleurSheets(book, sheets, zicht):
         sheet = book.sheets[sheetnaam]
         #mogelijk maken om sheet te wijzigen
         sheet.api.Unprotect(Password = wachtwoord())
-        #grootte van gegevensblok inlezen
-        aantalRegels = len(sheet.cells(1,1).expand().value) + 1
-        aantalKolommen = len(sheet.cells(1,1).expand().value[0]) + 1
+        try:
+            #grootte van gegevensblok inlezen
+            aantalRegels = len(sheet.cells(1,1).expand().value) + 1
+            aantalKolommen = len(sheet.cells(1,1).expand().value[0]) + 1
+        except:
+            aantalRegels = 1
+            aantalKolommen = 1
         
         if zicht == 0:  #tekstkleur zelfde als achtegrondkleur -> onleesbaar maken
             if sheetnaam == "Sterftetafels":
@@ -1727,16 +1890,22 @@ def tekstkleurSheets(book, sheets, zicht):
             elif sheetnaam == "Berekeningen": 
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = True
             
+            elif sheetnaam  == "Flexopslag":
+                sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = True
+            
             #sheet weer beveiligen, omdat gebruiker gegevens niet mag zien
-            #book.sheets[sheet].api.Protect(Password = wachtwoord())
+            if sheetnaam != "Vergelijken":
+                book.sheets[sheet].api.Protect(Password = wachtwoord())
+            else:
+                book.sheets[sheet].api.Protect(Password = wachtwoord(), Contents=False)
         
         elif zicht == 1:    #tekstkleur zwart maken -> leesbaar maken
             if sheetnaam in ["Sterftetafels", "AG2020", "deelnemersbestand", "Gegevens pensioencontracten"]:
                 sheet.range((1,1),(aantalRegels,aantalKolommen)).api.Font.Color = zwart
-            elif sheetnaam == "Berekeningen":
+            elif sheetnaam in ["Berekeningen", "Flexopslag"]:
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = False
             
-            
+def rentesort(flex): return flex[1].pensioen.rente
         
         
         

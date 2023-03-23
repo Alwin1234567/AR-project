@@ -62,7 +62,7 @@ class Inloggen(QtWidgets.QMainWindow):
         self.setWindowTitle("Inloggen als beheerder")
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
         self.ui.btnInloggen.clicked.connect(self.btnInloggenClicked)
-        self._Wachtwoord = "wachtwoord"
+        self._Wachtwoord = functions.wachtwoord()
 
         
     def btnInloggenClicked(self):
@@ -102,7 +102,7 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.ui.btnUitloggen.clicked.connect(self.btnUitloggenClicked)
         
         #sheets definieren
-        self.sheets = ["Sterftetafels", "AG2020", "Berekeningen", "deelnemersbestand", "Gegevens pensioencontracten"]
+        self.sheets = ["Sterftetafels", "AG2020", "Berekeningen", "deelnemersbestand", "Gegevens pensioencontracten", "Flexopslag"]
         self.vergelijken = self.book.sheets["Vergelijken"]
         self.flexopslag = self.book.sheets["Flexopslag"]
         self.beheerder = self.book.sheets["Beheerder"]
@@ -117,11 +117,11 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
         #beveiliging sheets ongedaan maken
-        # for i in self.sheets:
-        #     self.book.sheets[i].api.Unprotect(Password = "wachtwoord")
-        #     self.book.sheets[i].visible = True
-        # #sheets leesbaar maken
-        # functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
+        for i in self.sheets:
+            self.book.sheets[i].api.Unprotect(Password = functions.wachtwoord())
+            self.book.sheets[i].visible = True
+        #sheets leesbaar maken
+        functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
                 
     def btnAdviserenClicked(self):
         self.close()
@@ -137,11 +137,11 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.beheerder.visible = False
         self.close()
         #sheets onleesbaar maken
-        # functions.tekstkleurSheets(self.book, self.sheets, zicht = 0)
-        # #sheets beveiligen en hidden
-        # for i in self.sheets:
-        #     self.book.sheets[i].api.Protect(Password = functions.wachtwoord())
-        #     self.book.sheets[i].visible = False
+        functions.tekstkleurSheets(self.book, self.sheets, zicht = 0)
+        #sheets beveiligen en hidden
+        for i in self.sheets:
+            self.book.sheets[i].api.Protect(Password = functions.wachtwoord())
+            self.book.sheets[i].visible = False
         
         self._logger.info("Beheerderkeuzes scherm gesloten")
         self._windowkeus = Functiekeus(self.book, self._logger)
@@ -198,7 +198,8 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         
         #afbeelding huidige pensioen op vergelijken sheet plaatsen
         try: functions.maak_afbeelding(deelnemer, sheet = self.book.sheets["Vergelijken"], ID = 0, titel = "0 - Originele pensioen")
-        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
+        except Exception as e: 
+            self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
         
     def btnTerugClicked(self):
         self.close()
@@ -374,9 +375,9 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                     if gegevens[7] != "": 
                         gegevens[7] = float(gegevens[7])/100
                     try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
-                        #self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
+                        self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                         functions.ToevoegenDeelnemer(gegevens)
-                        #self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
+                        self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
                         self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
                     except Exception as e:
                         self._logger.exception("Er is iets fout gegaan bij het toevoegen van een deelnemer aan het deelnemersbestand")
@@ -454,9 +455,9 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui.txtUPercentage.textEdited.connect(lambda: self.invoerVerandering(2))
            
         # Aanpassing: hoog-laag constructie
-        self.ui.CheckHoogLaag.stateChanged.connect(lambda: self.invoerVerandering(3))
+        self.ui.CheckHoogLaag.stateChanged.connect(lambda: self.invoerVerandering(3, methode = True))
         self.ui.cbHLVolgorde.activated.connect(lambda: self.invoerVerandering(3))
-        self.ui.cbHLMethode.activated.connect(lambda: self.invoerVerandering(3))
+        self.ui.cbHLMethode.activated.connect(lambda: self.invoerVerandering(3, methode = True))
         self.ui.txtHLVerhoudingHoog.textEdited.connect(lambda: self.invoerVerandering(3))
         self.ui.txtHLVerhoudingLaag.textEdited.connect(lambda: self.invoerVerandering(3))
         self.ui.txtHLVerschil.textEdited.connect(lambda: self.invoerVerandering(3))
@@ -656,7 +657,10 @@ class Flexmenu(QtWidgets.QMainWindow):
             True als invoer klopt. False als invoer fout is.
         
         """
-        
+        # limietList = functions.leesLimietMeldingen(self.book.sheets["Berekeningen"], 
+        #                                            self.deelnemerObject.flexibilisaties, 
+        #                                            self.regelingCode.pensioen.pensioenNaam)
+
         if num == 1 or num == 0: # Check of invoer klopt van leeftijd blok
             if int(self.ui.sbJaar.value()) > (self.AOWjaar+5):
                 self.ui.sbJaar.setValue(self.AOWjaar+5)
@@ -679,6 +683,13 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                     self.ui.txtUVerhoudingOP.text(),
                                                     self.ui.txtUVerhoudingPP.text())
             
+            if OK and str(self.ui.cbUMethode.currentText()) == "Percentage":
+                # Check of maximum in sheet gebruikt wordt.
+                pass
+            elif OK and str(self.ui.cbUMethode.currentText()) == "Verhouding":
+                # Check of maximum in sheet gebruikt wordt.
+                pass
+            
             self.ui.lblFoutmeldingUitruilen.setText(melding)
             return OK
    
@@ -689,10 +700,17 @@ class Flexmenu(QtWidgets.QMainWindow):
                                                     self.ui.txtHLVerhoudingHoog.text(),
                                                     self.ui.txtHLVerhoudingLaag.text())
             
+            if OK and str(self.ui.cbHLMethode.currentText()) == "Verschil":
+                # Check of maximum in sheet gebruikt wordt.
+                pass
+            elif OK and str(self.ui.cbHLMethode.currentText()) == "Verhouding":
+                # Check of maximum in sheet gebruikt wordt.
+                pass
+            
             self.ui.lblFoutmeldingHoogLaag.setText(melding)
             return OK
         
-    def invoerVerandering(self,num):
+    def invoerVerandering(self, num, methode = False):
         """ 
         Deze functie activeert zodra de gebruiker een verandering maakt in het flexmenu scherm.
         Zo kan het scherm live aanpassen op basis van input van de gebruiker.
@@ -705,18 +723,42 @@ class Flexmenu(QtWidgets.QMainWindow):
             2 voor verandering bij OP/PP
             3 voor verandering bij Hoog/Laag
         
+        methode : bool
+            True betekent dat de HL methode gewijzigd is
+        
         """
+            
 
         if self.invoerCheck(num):
-            self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
+            #self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
             self.flexkeuzesOpslaan(num) # Sla flex keuzes op
             self.berekeningenDoorvoeren()
             functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
+        
+            # set leeftijd op juiste variabele
+            if methode:
+                self.blokkeerSignalen(True)
+                if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
+                    try:
+                        self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
+                        self.ui.sbMaand.setValue(self.regelingCode.AOWMaand)
+                    except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+                else:
+                    try:
+                        self.ui.sbJaar.setValue(self.regelingCode.leeftijdJaar)
+                        self.ui.sbMaand.setValue(self.regelingCode.leeftijdMaand)
+                    except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+                self.blokkeerSignalen(False)
+            
             self.samenvattingUpdate() # Update de samenvatting
-            try: # probeer een nieuwe afbeelding te maken
-                functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax)
-                self.ui.wdt_pltAfbeelding.canvas.draw()
-            except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+            
+        
+            
+        try: # probeer een nieuwe afbeelding te maken
+            functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax)
+            self.ui.wdt_pltAfbeelding.canvas.draw()
+        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+    
 
     def zoekFlexibilisaties(self):
         self.opslaanList = self.book.sheets["Flexopslag"].range("3:3")[1:500].value # Zoekt maximaal tot 500 anders wordt het langzaam
@@ -732,7 +774,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             return 1 # Als lijst leeg is, zijn er nog geen ID's opgeslagen. De eerste moet ID waarde 1 krijgen.
     
     
-    def flexkeuzesOpslaan(self,num):
+    def flexkeuzesOpslaan(self, num):
         """
         Deze functie slaat huidig ingevulde flex opties op in het flexibiliseringsobject.
         
@@ -757,12 +799,19 @@ class Flexmenu(QtWidgets.QMainWindow):
                 break
         
         if num == 1 or num == 0: # Leeftijd wijziging opslaan
-            try:
-                self.regelingCode.leeftijd_Actief = self.ui.CheckLeeftijdWijzigen.isChecked()
-                self.regelingCode.leeftijdJaar = int(self.ui.sbJaar.value())
-                self.regelingCode.leeftijdMaand = int(self.ui.sbMaand.value())
-            except Exception as e:
-                self._logger.exception("Er gaat iets fout bij het opslaan van de pensioenleeftijd in flexmenu.ui")
+            if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
+                try:
+                    self.ui.CheckLeeftijdWijzigen.setChecked(True)
+                    jaar = int(self.ui.sbJaar.value())
+                    maand = int(self.ui.sbMaand.value())
+                    self.deelnemerObject.setAOWLeeftijf(jaar, maand)
+                except Exception as e: self._logger.exception("Er gaat iets fout bij het opslaan van de pensioenleeftijd in flexmenu.ui")
+            else:
+                try:
+                    self.regelingCode.leeftijd_Actief = self.ui.CheckLeeftijdWijzigen.isChecked()
+                    self.regelingCode.leeftijdJaar = int(self.ui.sbJaar.value())
+                    self.regelingCode.leeftijdMaand = int(self.ui.sbMaand.value())
+                except Exception as e: self._logger.exception("Er gaat iets fout bij het opslaan van de pensioenleeftijd in flexmenu.ui")
         
         if num == 2 or num == 0: # OP/PP uitruiling opslaan
             try:
@@ -841,9 +890,31 @@ class Flexmenu(QtWidgets.QMainWindow):
                         self.regelingCode.HL_Verhouding_Laag = int(self.ui.txtHLVerhoudingLaag.text())
                      
             except Exception as e: self._logger.exception("Huidig geselecteerde hoog/laag flexibilisaties in flexmenu.ui kunnen niet opgeslagen worden.")
+    
+    def AOWberekenen(self, overbruggingen):
+        pass
+        # krijg lijst flexibilisaties met AOW gat opvullen
+        
+        # bepaal prioriteit
+        
+        # set hoog laag op laag hoog met jaren goed en verhouding 0.75
+        
+        # loop:
+            # lees factoren
+            # bereken verhouding
+            # set verhouding
+            # bereken nieuw verschil
+        
 
     def berekeningenDoorvoeren(self):
         instellingen = functions.berekeningen_instellingen()
+        overbruggingen = list()
+        for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
+            if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW":
+                overbruggingen.append(i, flexibilisatie)
+        
+        overbruggingen.sort(key = functions.rentesort)
+        
         for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
             blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(self.deelnemerObject.flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
             blok = list()
@@ -865,19 +936,24 @@ class Flexmenu(QtWidgets.QMainWindow):
                 blok.append(["", ""])
                 
             # Hoog/Laag doorvoeren
-            if flexibilisatie.HL_Actief:
-                blok.append([flexibilisatie.HL_Methode, flexibilisatie.HL_Volgorde])
-                if flexibilisatie.HL_Methode == "Verhouding": blok.append([flexibilisatie.HL_Jaar, min(max(flexibilisatie.HL_Verhouding_Laag / flexibilisatie.HL_Verhouding_Hoog, 3/4), 1)])
-                else: blok.append([flexibilisatie.HL_Jaar, max(flexibilisatie.HL_Verschil, 0)])
+            if i not in [flex[0] for flex in overbruggingen]:
+                if flexibilisatie.HL_Actief:
+                    blok.append([flexibilisatie.HL_Methode, flexibilisatie.HL_Volgorde])
+                    if flexibilisatie.HL_Methode == "Verhouding": blok.append([flexibilisatie.HL_Jaar, min(max(flexibilisatie.HL_Verhouding_Laag / flexibilisatie.HL_Verhouding_Hoog, 3/4), 1)])
+                    else: blok.append([flexibilisatie.HL_Jaar, max(flexibilisatie.HL_Verschil, 0)])
+                else:
+                    blok.append(["", ""])
+                    blok.append(["", ""])
             else:
-                blok.append(["", ""])
-                blok.append(["", ""])
-            
+                blok.append("Verhouding", "Laag-hoog")
+                blok.append(self.AOWjaar - flexibilisatie.AOWJaar, 3 / 4)
             updaterange = self.book.sheets["Berekeningen"].range((blokhoogte + 1, 2),\
                                                                  (blokhoogte + 5, 3))
             try: updaterange.value = blok
             except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
+        if len(overbruggingen) > 0: self.AOWberekenen(overbruggingen)
        
+        
     def samenvattingUpdate(self):
         """
         Deze functie update de waarden in de samenvatting boxes.
@@ -900,20 +976,15 @@ class Flexmenu(QtWidgets.QMainWindow):
                 
                 self.update_samenvatting(regelingDict["lbl_OP"], regelingDict["lbl_PP"])
                 
-                if self.regelingCode.leeftijd_Actief == True:
-                    regelingDict["lbl_pLeeftijd"].setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
-                elif self.regelingCode.leeftijd_Actief == False:
+                if self.regelingCode.leeftijd_Actief: regelingDict["lbl_pLeeftijd"].setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
+                else:
                     regelingDict["lbl_pLeeftijd"].setText("Leeftijd nog bepalen.")
                 
-                if self.regelingCode.OP_PP_Actief == True:
-                    regelingDict["lbl_OP_PP"].setText(str(self.regelingCode.OP_PP_UitruilenVan))
-                elif self.regelingCode.OP_PP_Actief == False:
-                    regelingDict["lbl_OP_PP"].setText("OP/PP uitruiling n.v.t.")
+                if self.regelingCode.OP_PP_Actief: regelingDict["lbl_OP_PP"].setText(str(self.regelingCode.OP_PP_UitruilenVan))
+                else: regelingDict["lbl_OP_PP"].setText("OP/PP uitruiling n.v.t.")
                 
-                if self.regelingCode.HL_Actief == True:
-                    regelingDict["lbl_hlConstructie"].setText(str(self.regelingCode.HL_Volgorde))
-                elif self.regelingCode.HL_Actief == False:
-                    regelingDict["lbl_hlConstructie"].setText("H/L constructie n.v.t.")
+                if self.regelingCode.HL_Actief: regelingDict["lbl_hlConstructie"].setText(str(self.regelingCode.HL_Volgorde))
+                else: regelingDict["lbl_hlConstructie"].setText("H/L constructie n.v.t.")
                                               
             else:
                 regelingDict["lbl"].setText(f"{regeling} (n.v.t.)")
@@ -993,7 +1064,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         #     functions.persoonOpslag(self.book.sheets["Flexopslag"],self.deelnemerObject)
         
         #sheet flexopslag unprotecten
-        #self.book.sheets["Flexopslag"].api.Unprotect(Password = functions.wachtwoord())
+        self.book.sheets["Flexopslag"].api.Unprotect(Password = functions.wachtwoord())
         # ID van de flexibilisatie in Excel opslaan
         flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
                  ["AfbeeldingID",f"Vergelijking {nieuwID}"]]
@@ -1004,7 +1075,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         for regelingCount,flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
             functions.flexOpslag(self.book.sheets["Flexopslag"],flexibilisatie,offsetID,regelingCount) 
         #sheet flesopslag protecten
-        #self.book.sheets["Flexopslag"].api.Protect(Password = functions.wachtwoord())
+        self.book.sheets["Flexopslag"].api.Protect(Password = functions.wachtwoord())
         
         # Melding geven dat flexibilisatie opgeslagen is
         tekst = "Deze flexibilisatie is opgeslagen. \nU kunt nu verder flexibiliseren. \nMet de knop 'Vergelijken' kunt u uw opgeslagen flexibilisaties vergelijken."
@@ -1047,7 +1118,7 @@ class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
     
     def btnGegevensWijzigenClicked(self):
         if self.ui.lwKeuzes.currentRow() == -1: 
-            self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren voordat u gaat flexibiliseren")
+            self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren om de gegevens te wijzigen")
             return
         
         #nieuwe deelnemer aanmaken
@@ -1264,10 +1335,10 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                 if gegevens[7] != "": 
                     gegevens[7] = float(gegevens[7])/100
                 try: #toevoegen van de gegevens van een deelnemer aan het deelnemersbestand
-                    #self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
+                    self.book.sheets["deelnemersbestand"].api.Unprotect(Password = functions.wachtwoord())
                     functions.ToevoegenDeelnemer(gegevens, regel = self.rijNr)
-                    #self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
-                    self._logger.info("Nieuwe deelnemer is toegevoegd aan het deelnemersbestand")
+                    self.book.sheets["deelnemersbestand"].api.Protect(Password = functions.wachtwoord())
+                    self._logger.info("Deelnemersgegevens zijn gewijzigd in het deelnemersbestand")
                 except Exception as e:
                     self._logger.exception("Er is iets fout gegaan bij het wijzigen van een deelnemer in het deelnemersbestand")
                 
