@@ -911,7 +911,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         overbruggingen = list()
         for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
             if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW":
-                overbruggingen.append(i, flexibilisatie)
+                overbruggingen.append((i, flexibilisatie))
         
         overbruggingen.sort(key = functions.rentesort)
         
