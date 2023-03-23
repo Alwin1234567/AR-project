@@ -53,6 +53,7 @@ class Flexibilisering:
         self._HL_Maand = 0
         
         # OP en PP waardes
+        self._OPU = 0
         self._OP_Hoog = self._pensioen.ouderdomsPensioen
         self._OP_Laag = self._pensioen.ouderdomsPensioen
         self._PP = self._pensioen.partnerPensioen
@@ -224,6 +225,13 @@ class Flexibilisering:
     def pensioen(self): return self._pensioen
     
     # --- OP/PP waardes ---
+    
+    # >>> ouderdomsensioen hoog 
+    @property
+    def ouderdomsPensioenUitruilen(self): return self._OPU
+    
+    @ouderdomsPensioenUitruilen.setter
+    def ouderdomsPensioenUitruilen(self, OPU): self._OPU = OPU
     
     # >>> ouderdomsensioen hoog 
     @property

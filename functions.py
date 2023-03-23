@@ -34,6 +34,30 @@ def wachtwoord():
     wachtwoord = "wachtwoord"
     return wachtwoord
 
+def ProtectBeheer(sheet):
+    '''
+    functie die de sheet protect als er geen beheerder is ingelogd en niets doet als er een beheerder is ingelogd.
+
+    Parameters
+    ----------
+    sheet : xlwings.Book.sheets["naam sheet"]
+        De excel sheet waarin het programma runned.
+    
+
+    Returns
+    -------
+    None.
+
+    '''
+    
+    beheerder = isBeheerder(sheet.book)
+    if beheerder == False:
+        if sheet.name == "Vergelijken":
+            sheet.api.Protect(Password = wachtwoord(), Contents=False)
+        else:
+            sheet.api.Protect(Password = wachtwoord())
+    
+
 def isBeheerder(book):
     '''
     functie die controleert of er een beheerder is ingelogd
@@ -445,7 +469,7 @@ def ToevoegenDeelnemer(gegevens, regel = 0):
     #gegevens deelnemer invullen in de lege regel
     deelnemersbestand.cells(regel, 1).value = gegevens
     #sheet protecten
-    deelnemersbestand.api.Protect(Password = wachtwoord())
+    functions.ProtectBeheer(deelnemersbestand) #.api.Protect(Password = wachtwoord())
 
 def Mbox(title, text, style):
     """
@@ -738,9 +762,9 @@ def persoonOpslag(sheet, persoonObject):
     sheet.range((6,1),(15,2)).options(ndims = 2).value = persopslag
     sheet.range((6,1),(15,2)).color = (150,150,150)
     #sheet protecten
-    sheet.api.Protect(Password = wachtwoord())
+    ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord())
 
-def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
+def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
     """
     Functie waar een lege 2D lijst wordt gecreëerd om flexibilisaties in op te slaan.
     Deze lijst moet vervolgens in de Flexopslag sheet geplakt worden.
@@ -845,12 +869,12 @@ def flexOpslag(book,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[18][1] = str(flexibilisatie.pensioen.pensioenKleurHard)
     
     #sheet unprotecten
-    book.api.Unprotect(Password = wachtwoord())
+    sheet.api.Unprotect(Password = wachtwoord())
     # Waardes in sheet plakken & celkleur instellen
-    book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
-    book.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
+    sheet.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
+    sheet.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
     #sheet protecten
-    book.api.Protect(Password = wachtwoord())
+    ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord())
     
     # # Pensioenleeftijd wijzigen J/N
     # if flexibilisatie.leeftijd_Actief: flexopslag[2][1] = "J"
@@ -945,7 +969,7 @@ def FlexopslagVinden(book, naamFlex = "Geen"):
 #     #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
 #     book.sheets["Flexopslag"].clear()
 #     #sheet protecten
-#     #book.sheets["Flexopslag"].api.Protect(Password = wachtwoord())
+#     #ProtectBeheer(book.sheets["Flexopslag"]) #.api.Protect(Password = wachtwoord())
     
 #     #laatste opslag is verwijderd, dus drop down legen
 #     book.sheets["Vergelijken"]["B6"].value = ""
@@ -1223,7 +1247,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
         
     #sheet protecten
-    sheet.api.Protect(Password = wachtwoord())
+    ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord())
     
     logger.info("berekenscherm init afgerond")
     
@@ -1302,9 +1326,11 @@ def leesOPPP(sheet, flexibilisaties):
     for i, flexibilisatie in enumerate(flexibilisaties):
         blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
         bereik = sheet.range((blokhoogte + 9, 2), (blokhoogte + 10, 3)).options(ndims = 2, numbers = int).value
+        OPU = bereik[0][0]
         PP = bereik[0][1]
         OPH = bereik[1][0]
         OPL = bereik[1][1]
+        flexibilisatie.ouderdomsPensioenUitruilen = OPU
         flexibilisatie.partnerPensioen = PP
         flexibilisatie.ouderdomsPensioenHoog = OPH
         flexibilisatie.ouderdomsPensioenLaag = OPL
@@ -1372,7 +1398,8 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
     allejaren = set()
     if AOW != None: allejaren.add(AOW.pensioenleeftijd)
     for flexibilisatie in deelnemer.flexibilisaties:
-        if flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12)
+        if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": allejaren.add(flexibilisatie.AOWJaar + flexibilisatie.AOWMaand / 12)
+        elif flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12)
         else: allejaren.add(flexibilisatie.pensioen.pensioenleeftijd)
         if flexibilisatie.HL_Actief: 
             if flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12 + flexibilisatie.HL_Jaar)
@@ -1412,11 +1439,13 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
     # De flexibilisaties toevoegen
     for i, flexibilisatie in enumerate(deelnemer.flexibilisaties):
         if AOW != None: i += 1
-        if flexibilisatie.leeftijd_Actief: startjaar = flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12
+        if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW" and AOW != None: startjaar = flexibilisatie.AOWJaar + flexibilisatie.AOWMaand / 12
+        elif flexibilisatie.leeftijd_Actief: startjaar = flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12
         else: startjaar = flexibilisatie.pensioen.pensioenleeftijd
         aanspraakHoog = flexibilisatie.ouderdomsPensioenHoog
         aanspraakLaag = flexibilisatie.ouderdomsPensioenLaag
-        HoogLaagjaren = flexibilisatie.HL_Jaar
+        if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW" and AOW != None: HoogLaagjaren = AOW.pensioenleeftijd
+        else: HoogLaagjaren = flexibilisatie.HL_Jaar
         HoogLaagVolgorde = flexibilisatie.HL_Volgorde
         
         hoogtes.append(list())
@@ -1492,7 +1521,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
         #afbeelding opslaan op sheet
         sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         #sheet protecten
-        sheet.api.Protect(Password = wachtwoord(), Contents=False)
+        ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord(), Contents=False)
         
 
 def vergelijken_keuzes():
@@ -1564,7 +1593,7 @@ def vergelijken_keuzes():
             #voeg nieuwe datavalidatie toe aan cel
             uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
     #sheet protecten
-    uitvoer.api.Protect(Password=wachtwoord(), Contents=False)
+    ProtectBeheer(uitvoer) #.api.Protect(Password=wachtwoord(), Contents=False)
    
 def opslagLegen(book, logger):
     flexopslag = book.sheets["Flexopslag"]
@@ -1585,14 +1614,14 @@ def opslagLegen(book, logger):
             except:
                 pass
         #vergelijken sheet protecten
-        vergelijken.api.Protect(Password=wachtwoord(), Contents=False)
+        ProtectBeheer(vergelijken) #.api.Protect(Password=wachtwoord(), Contents=False)
         logger.info("Afbeeldingen op vergelijken sheet verwijderd")
         #flexopslag unprotecten
         flexopslag.api.Unprotect(Password = wachtwoord())
         #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag
         flexopslag.clear()
         #flexopslag protecten
-        flexopslag.api.Protect(Password = wachtwoord())
+        ProtectBeheer(flexopslag) #.api.Protect(Password = wachtwoord())
         
         #laatste opslag is verwijderd, dus drop down legen
         vergelijken_keuzes()
@@ -1895,9 +1924,9 @@ def tekstkleurSheets(book, sheets, zicht):
             
             #sheet weer beveiligen, omdat gebruiker gegevens niet mag zien
             if sheetnaam != "Vergelijken":
-                book.sheets[sheet].api.Protect(Password = wachtwoord())
+                ProtectBeheer(book.sheets[sheet]) #.api.Protect(Password = wachtwoord())
             else:
-                book.sheets[sheet].api.Protect(Password = wachtwoord(), Contents=False)
+                ProtectBeheer(book.sheets[sheet]) #.api.Protect(Password = wachtwoord(), Contents=False)
         
         elif zicht == 1:    #tekstkleur zwart maken -> leesbaar maken
             if sheetnaam in ["Sterftetafels", "AG2020", "deelnemersbestand", "Gegevens pensioencontracten"]:
@@ -1905,7 +1934,9 @@ def tekstkleurSheets(book, sheets, zicht):
             elif sheetnaam in ["Berekeningen", "Flexopslag"]:
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = False
             
-def rentesort(flex): return flex[1].pensioen.rente
+def rentesort(flex): 
+    print(flex[1].pensioen.rente)
+    return flex[1].pensioen.rente
         
         
         
