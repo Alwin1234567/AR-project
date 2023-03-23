@@ -466,6 +466,10 @@ class Flexmenu(QtWidgets.QMainWindow):
         # Aanpassing: Regeling
         self.ui.cbRegeling.activated.connect(self.wijzigVelden)
         
+        # Aanpassing: Titel
+        self.ui.txtTitel.textEdited.connect(lambda: self.invoerVerandering(4))
+        self._titel = ""
+        
         # Laatste UI update
         self.ui.sbMaand.setValue(0)
         self.samenvattingUpdate()
@@ -722,42 +726,46 @@ class Flexmenu(QtWidgets.QMainWindow):
             1 voor verandering bij leeftijd
             2 voor verandering bij OP/PP
             3 voor verandering bij Hoog/Laag
+            4 voor verandering bij Titel
         
         methode : bool
             True betekent dat de HL methode gewijzigd is
         
         """
-            
 
-        if self.invoerCheck(num):
-            #self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
-            self.flexkeuzesOpslaan(num) # Sla flex keuzes op
-            self.berekeningenDoorvoeren()
-            functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
-        
-            # set leeftijd op juiste variabele
-            if methode:
-                self.blokkeerSignalen(True)
-                if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
-                    try:
-                        self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
-                        self.ui.sbMaand.setValue(self.regelingCode.AOWMaand)
-                    except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
-                else:
-                    try:
-                        self.ui.sbJaar.setValue(self.regelingCode.leeftijdJaar)
-                        self.ui.sbMaand.setValue(self.regelingCode.leeftijdMaand)
-                    except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
-                self.blokkeerSignalen(False)
+        if num != 4:
+            if self.invoerCheck(num):
+                #self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
+                self.flexkeuzesOpslaan(num) # Sla flex keuzes op
+                self.berekeningenDoorvoeren()
+                functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
             
-            self.samenvattingUpdate() # Update de samenvatting
-            
-        
-            
+                # set leeftijd op juiste variabele
+                if methode:
+                    self.blokkeerSignalen(True)
+                    if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
+                        try:
+                            self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
+                            self.ui.sbMaand.setValue(self.regelingCode.AOWMaand)
+                        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+                    else:
+                        try:
+                            self.ui.sbJaar.setValue(self.regelingCode.leeftijdJaar)
+                            self.ui.sbMaand.setValue(self.regelingCode.leeftijdMaand)
+                        except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+                    self.blokkeerSignalen(False)
+                
+                self.samenvattingUpdate() # Update de samenvatting
+                
+        else:
+            self._titel = str(self.ui.txtTitel.text())
+            print(self._titel)
+                
         try: # probeer een nieuwe afbeelding te maken
-            functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax)
+            functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax, titel = self._titel)
             self.ui.wdt_pltAfbeelding.canvas.draw()
         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
+            
     
 
     def zoekFlexibilisaties(self):
@@ -978,7 +986,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 
                 if self.regelingCode.leeftijd_Actief: regelingDict["lbl_pLeeftijd"].setText(str(self.regelingCode.leeftijdJaar)+" jaar en "+str(self.regelingCode.leeftijdMaand)+" maanden")
                 else:
-                    regelingDict["lbl_pLeeftijd"].setText("Leeftijd nog bepalen.")
+                    regelingDict["lbl_pLeeftijd"].setText(str(int(self.regelingCode.pensioen.pensioenleeftijd)) + " jaar en " + str(0) + " maanden")
                 
                 if self.regelingCode.OP_PP_Actief: regelingDict["lbl_OP_PP"].setText(str(self.regelingCode.OP_PP_UitruilenVan))
                 else: regelingDict["lbl_OP_PP"].setText("OP/PP uitruiling n.v.t.")

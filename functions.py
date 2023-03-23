@@ -1345,7 +1345,7 @@ def leesLimietMeldingen(sheet, flexibilisaties, huidigRegelingNaam):
             return methodeOPPP,limietOPPP,methodeHL,limietHL
 
         
-def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = "Een super coole title"):
+def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
     """
     Maakt de afbeelding in het flexscherm.
 
