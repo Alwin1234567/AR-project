@@ -225,7 +225,7 @@ def AfbeeldingVerplaatsen(vak):
             afbeelding.top = vlak.top
             afbeelding.left = vlak.left
     #vergelijken sheet protecten
-    functions.ProtectBeheer(vergelijken) #.api.Protect(Password=functions.wachtwoord(), Contents=False)
+    functions.ProtectBeheer(vergelijken)
        
 @xw.sub
 def AfbeeldingKiezen():
@@ -240,8 +240,6 @@ def AfbeeldingKiezen():
     if str(flexopslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
         #gekozen afbeelding inlezen
         gekozenAfbeelding = sheet.cells(6,"B").value
-        # #naam van gekozen afbeelding op sheet printen
-        # sheet.cells(8, "M").value = gekozenAfbeelding
         
         #Deelnemer toegevoegd zodat er gekeken kan worden naar het oude pensioen. Ik heb alleen nog geen idee hoe
         #rijnummer deelnemer zoeken
@@ -456,7 +454,6 @@ def AfbeeldingVerwijderen():
                 Vergelijken.pictures[ID].delete()
             except:
                 pass
-                #functions.Mbox("Foutmelding", f"Het verwijderen van flexibilisatie '{gekozenAfbeelding}' lukt niet.\n Het AfbeeldingID bestaat niet", 0)
             #vergelijken sheet protecten
             functions.ProtectBeheer(Vergelijken) #.api.Protect(Password = functions.wachtwoord(), Contents=False)
             

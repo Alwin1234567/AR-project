@@ -183,8 +183,8 @@ def regelingenophalen(rij):
     
     Returns
     -------
-    List met de volledige namen van pensioenregelingen van de betreffende deelnemer
-    List met de codenamen van pensioenregelingen van de betreffende deelnemer
+    regelingen: List met de volledige namen van pensioenregelingen van de betreffende deelnemer
+    regelingCode: List met de codenamen van pensioenregelingen van de betreffende deelnemer
     """
     
     # Sheet ophalen
@@ -226,7 +226,7 @@ def regelingNaamCode(naam):
     
     Returns
     -------
-    String met de codenaam van de regeling.
+    code: String met de codenaam van de regeling.
     """
     
     if naam == "ZwitserLeven":
@@ -255,7 +255,7 @@ def regelingCodeNaam(code):
     
     Returns
     -------
-    String met de volledige naam van de regeling.
+    naam: String met de volledige naam van de regeling.
     """
     
     if code == "ZL":
@@ -281,6 +281,9 @@ def getDeelnemersbestand(book, rij = 0):
     ----------
     book : xlwings.Book
         Het excel bestand waarin het programma runned.
+    rij : integer
+        specifieke rij die uit het deelnemersbestand gelezen moet worden
+        default = 0 (geen specifieke rij nodig - alles uitgelezen)
     
     Returns
     -------
@@ -496,7 +499,7 @@ def Mbox(title, text, style):
     Returns
     -------
     str
-        DESCRIPTION.
+        string die aangeeft welke op knop is geklikt als reactie op de messagebox.
 
     """
     returnValue = ctypes.windll.user32.MessageBoxW(0, text, title, style)
