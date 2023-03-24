@@ -1523,11 +1523,6 @@ def vergelijken_keuzes():
     #list maken waarin de opgeslagen pensioenen worden bijgehouden
     pensioenlist = ["-"]
     celKolom = 5 
-    #cellen met de drop down datavalisatie
-    # keuzeCel1 = "B6"
-    # keuzeCel2 = "J13"
-    # keuzeCel3 = "B37"
-    # keuzeCel4 = "J37"
     #sheet unprotecten
     uitvoer.api.Unprotect(Password = wachtwoord())
     
@@ -1565,7 +1560,8 @@ def vergelijken_keuzes():
             #maak keuzeveld leeg
             uitvoer[cel].value = ""
             #voeg nieuwe datavalidatie toe aan cel
-            uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
+            pensioenopties = ','.join([" "])
+            uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1=pensioenopties)
     #sheet protecten
     ProtectBeheer(uitvoer) #.api.Protect(Password=wachtwoord(), Contents=False)
    
