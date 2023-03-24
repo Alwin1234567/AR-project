@@ -2421,7 +2421,7 @@
      <x>0</x>
      <y>0</y>
      <width>1346</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -2435,6 +2435,30 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>cbRegeling</tabstop>
+  <tabstop>CheckLeeftijdWijzigen</tabstop>
+  <tabstop>btnAOWleeftijd</tabstop>
+  <tabstop>sbJaar</tabstop>
+  <tabstop>sbMaand</tabstop>
+  <tabstop>CheckUitruilen</tabstop>
+  <tabstop>cbUitruilenVan</tabstop>
+  <tabstop>cbUMethode</tabstop>
+  <tabstop>txtUVerhoudingOP</tabstop>
+  <tabstop>txtUVerhoudingPP</tabstop>
+  <tabstop>txtUPercentage</tabstop>
+  <tabstop>CheckHoogLaag</tabstop>
+  <tabstop>cbHLVolgorde</tabstop>
+  <tabstop>cbHLMethode</tabstop>
+  <tabstop>txtHLVerhoudingHoog</tabstop>
+  <tabstop>txtHLVerhoudingLaag</tabstop>
+  <tabstop>txtHLVerschil</tabstop>
+  <tabstop>sbHLJaar</tabstop>
+  <tabstop>txtTitel</tabstop>
+  <tabstop>btnOpslaan</tabstop>
+  <tabstop>btnVergelijken</tabstop>
+  <tabstop>btnAndereDeelnemer</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
