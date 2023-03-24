@@ -1343,8 +1343,6 @@ def leesLimietMeldingen(sheet, flexibilisaties, huidigRegelingNaam):
             blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
             bereik = sheet.range((blokhoogte + 3, 1), (blokhoogte + 5, 4)).options(ndims = 2, numbers = float).value
             
-            print(bereik)
-    
             return bereik
 
         
@@ -1496,7 +1494,10 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
         #sheet unprotecten
         sheet.api.Unprotect(Password = wachtwoord())
         #afbeelding opslaan op sheet
-        sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
+        if ID == 0:
+            sheet.pictures.add(afbeelding, update = True, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
+        else:
+            sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         #sheet protecten
         ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord(), Contents=False)
         
