@@ -464,7 +464,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
 
 class Flexmenu(QtWidgets.QMainWindow):
     
-    def __init__(self, book, deelnemer, logger):
+    def __init__(self, book, deelnemer, logger, titel = ""):
         self._logger = logger
         self._logger.info("Flexmenu scherm geopend")
         Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
@@ -493,6 +493,10 @@ class Flexmenu(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow5()
         self.ui.setupUi(self)
         self.setWindowTitle("Flexibilisatie menu") #Het moet na de setup, daarom staat het nu even hier
+        
+        #vul meegegeven titel in
+        self.ui.txtTitel.setText(titel)
+        self._titel = titel
         
         # Regeling selectie
         self._regelingenActiefKort = list()
@@ -531,7 +535,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # Aanpassing: Titel
         self.ui.txtTitel.textEdited.connect(lambda: self.invoerVerandering(4))
-        self._titel = ""
+        
         
         # Laatste UI update
         self.ui.sbMaand.setValue(0)
@@ -544,7 +548,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # Afbeelding genereren
         try:
-            functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax)
+            functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax, titel = self._titel)
             self.ui.wdt_pltAfbeelding.canvas.draw()
         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding")
         
@@ -1209,7 +1213,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 offsetID = (kolomLaatsteOpslag-1)/4
         
         # Afbeelding op vergelijkingsSheet zetten
-        try: functions.maak_afbeelding(self.deelnemerObject, sheet = self.book.sheets["Vergelijken"], ID = nieuwID, titel = f"{nieuwID} - Een super coole title")
+        try: functions.maak_afbeelding(self.deelnemerObject, sheet = self.book.sheets["Vergelijken"], ID = nieuwID, titel = f"{nieuwID} - {self._titel}")
         except Exception as e: self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
             
         
@@ -1220,8 +1224,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         #sheet flexopslag unprotecten
         self.book.sheets["Flexopslag"].api.Unprotect(Password = functions.wachtwoord())
-        # ID van de flexibilisatie in Excel opslaan
-        flexID = [["Naam flexibilisatie",f"Flexibilisatie {nieuwID}"],
+        # ID van de flexibilisatie in Excel opslaan     # oude titel = f"Flexibilisatie {nieuwID}"
+        flexID = [["Naam flexibilisatie",f"{nieuwID} - {self._titel}"],
                  ["AfbeeldingID",f"Vergelijking {nieuwID}"]]
         self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).options(ndims = 2).value = flexID
         self.book.sheets["Flexopslag"].range((2,4+4*offsetID),(3,5+4*offsetID)).color = (150,150,150)

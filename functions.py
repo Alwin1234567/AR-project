@@ -1014,10 +1014,10 @@ def UitlezenFlexopslag(book, naamFlex):
     rij = 0
     while rij < aantalPensioenen*20:
         #lijst met gegevens van 1 pensioen aanmaken
-        #pensioen = [0-pensioenfonds, 1-wijzigen, 2-leeftijd, 3-jaar, 4-leeftijd, 5-maand, 6-uitruilen, 7-volgorde, 8-methode,
-        #9-verhouding/percentage, 10-hoog/laag, 11-volgorde, 12-duur, 13-methode, 14-vers/verh/opvullen, 15-OP, 16-PP, 17-kleur]
+        #pensioen = [0-pensioenfonds, 1-wijzigen, 2-leeftijd-jaar, 3-leeftijd-maand, 4-uitruilen, 5-volgorde, 6-methode,
+        #7-verhouding/percentage, 8-verhouding/max, 9-hoog/laag, 10-volgorde, 11-duur, 12-methode, 13-vers/verh/opvullen, 14-verhouding/max, 15-OP, 16-PP, 17-kleur]
         pensioen = []
-        rijAdd = [5,7,8,8,10,11,12,13,13,15,16,17,18,18,18,21,21,22,23]
+        rijAdd = [5,7,8,8,10,11,12,13,13,15,16,17,18,19,19,21,21,22,23]
         kolomAdd = [0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0]
         for i in range(19):
             pensioen.append(str(flexopslag.cells(rij+rijAdd[i] ,flexKolom+kolomAdd[i]).value))

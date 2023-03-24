@@ -566,8 +566,7 @@ def afbeelding_aanpassen():
                         flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
                         flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
                     elif pensioengegevens[12] == "Verschil":
-                        flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))
-                    
+                        flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))       
                     
         
         
@@ -575,8 +574,9 @@ def afbeelding_aanpassen():
         logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
         app = 0
         app = QtWidgets.QApplication(sys.argv)
-        window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
+        window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger, titel = gekozenAfbeelding)
         window.invoerVerandering(num = 0)
+        
         window.show()
         app.exec_()
     else:
