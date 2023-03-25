@@ -617,7 +617,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 self.AOWmaand = int(round((pensioenV.pensioenleeftijd-self.AOWjaar)*12))
                 self.AOW = pensioenV
         
-    def wijzigVelden(self):
+    def wijzigVelden(self,aanpassing_aow=False):
         """
         Deze functie wordt geactiveerd als de regeling in de dropdown aangepast wordt.
         Deze functie moet alle invoervelden aanpassen naar eerder ingevoerde keuzes voor gekozen regeling.
@@ -644,7 +644,10 @@ class Flexmenu(QtWidgets.QMainWindow):
         try:
             if self.regelingCode.HL_Actief == True and self.regelingCode.HL_Methode == "Opvullen AOW":
                 self.ui.CheckLeeftijdWijzigen.setChecked(True)
-                self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
+                if aanpassing_aow:
+                    self.ui.sbJaar.setValue(self.regelingCode.leeftijdJaar)
+                else:
+                    self.ui.sbJaar.setValue(self.regelingCode.AOWjaar)
                 self.ui.sbMaand.setValue(self.AOWmaand)
             else:
                 self.ui.CheckLeeftijdWijzigen.setChecked(self.regelingCode.leeftijd_Actief)
@@ -831,7 +834,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 return False
                 
         
-    def invoerVerandering(self, num, methode = False):
+    def invoerVerandering(self, num, methode = False, aanpassing = False):
         """ 
         Deze functie activeert zodra de gebruiker een verandering maakt in het flexmenu scherm.
         Zo kan het scherm live aanpassen op basis van input van de gebruiker.
@@ -853,6 +856,10 @@ class Flexmenu(QtWidgets.QMainWindow):
         if num != 4:
             if self.invoerCheck(num):
                 #self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
+                
+                if aanpassing:
+                    self.wijzigVelden(aanpassing_aow = True)
+                    
                 self.flexkeuzesOpslaan(num) # Sla flex keuzes op
                 self.berekeningenDoorvoeren()
                 functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
@@ -924,7 +931,7 @@ class Flexmenu(QtWidgets.QMainWindow):
             if flexibilisatie.pensioen.pensioenVolNaam == str(self.ui.cbRegeling.currentText()):
                 self.regelingCode = flexibilisatie
                 break
-        
+
         if num == 1 or num == 0: # Leeftijd wijziging opslaan
             if self.regelingCode.HL_Actief and self.regelingCode.HL_Methode == "Opvullen AOW":
                 try: # Hier worden de spinboxes eerst naar de juiste waardes gezet voordat ze opgeslagen kunnen worden.
