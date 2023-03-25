@@ -18,112 +18,6 @@ from reportlab.lib.units import cm
 Body
 Hier komen alle functies
 """
-@xw.sub
-def Test():
-    """
-    functie om functie van tekstkleurveranderen te testen
-
-    Returns
-    -------
-    None.
-
-    """
-    book = xw.Book.caller()
-    flexopslag = book.sheets["Flexopslag"]
-    vergelijken = book.sheets["Vergelijken"]
-    
-    # vormen= []
-    # for i in flexopslag.shapes:
-    #     vormen.append(i.name)
-    # #vergelijken.range((2,15)).value = vormen
-    
-    
-    #testen met protected en unprotected sheet
-    # sheet = book.sheets["Test Julia"]
-    # sterftetafel = book.sheets["Sterftetafels"]
-    # functions.ProtectBeheer(sheet) #.api.Protect(Password = functions.wachtwoord())
-    
-    # sterftetafel.cells(7,6).value = "sheet protected"
-    # #haal waarde uit sheet
-    # waarde = sheet.cells(6,2).value
-    # #print opgehaalde tekst
-    # sterftetafel.cells(6,6).value = waarde
-    
-    # #waarde printen in sheet
-    # sheet.api.Unprotect(Password = functions.wachtwoord())
-    # sheet.cells(9,2).value = "Test printen"
-    
-    
-    # sht = "Sterftetafels"   #"deelnemersbestand"
-    # sheets = [sht]
-    # functions.tekstkleurSheets(book, sheets, zicht = 0)
-    # sht = "deelnemersbestand"
-    #sheets = ["Sterftetafels", "AG2020", "Gegevens pensioencontracten"]
-    # sheets = ["Berekeningen"]
-    # functions.tekstkleurSheets(book, sheets, zicht = 1)
-    
-    
-    
-    
-    # vergelijken = book.sheets["Vergelijken"]
-    # flexopslag = book.sheets["Flexopslag"]
-    # #keuzeCel = "J13"
-    # rijNr = int(float(flexopslag.cells(15,"B").value))
-    
-    # #deelnemerobject inladen
-    # deelnemer = functions.getDeelnemersbestand(book, rijNr)
-    # deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
-    
-    # afbeeldingen = []
-    # for cel in ["J13"]:
-    #     #gekozen afbeelding inlezen
-    #     gekozenAfbeelding = vergelijken[cel].value 
-    #     ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
-    #     afbeeldingen.append(ID)
-    
-    # vlakken = [vergelijken.range((14,10))]
-    
-    # vlak = vergelijken.range((14,10))
-    # gekozenAfbeelding = vergelijken["J13"].value 
-    # ID = functions.flexopslagNaamNaarID(book, gekozenAfbeelding)
-    
-    # #functions.maak_afbeelding(deelnemer, ID = ID, titel = f"{ID} - Een super coole title")
-    
-    # # for pic in vergelijken.pictures:
-    # #     for vlak, i in enumerate(vlakken):
-    # #         if pic.top == vlak.top and pic.left == vlak.left:
-    # #             #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
-    # #             if pic.name != afbeeldingen[i]:
-    # #                 #afbeelding terugverplaatsen
-    # #                 teller = afbeeldingen[i].split()[-1]-1
-    # #                 rij = int(12 + (teller%4)*22)
-    # #                 kolom = int(17 + ((teller - teller%4)/4)*8)
-    # #                 afbeelding = vergelijken.pictures[pic.name]
-    # #                 afbeelding.top = vergelijken.range((rij,kolom)).top
-    # #                 afbeelding.left = vergelijken.range((rij,kolom)).left
-                    
-    # #         #juiste afbeelding op vlak zetten
-    # #         afbeelding = vergelijken.pictures[afbeeldingen[i]]
-    # #         afbeelding.top = vlak.top
-    # #         afbeelding.left = vlak.left
-    
-    # for pic in vergelijken.pictures:
-    #     if pic.top == vlak.top and pic.left == vlak.left:
-    #         #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
-    #         if pic.name != ID:
-    #             #afbeelding terugverplaatsen
-                
-    #             teller = int(pic.name.split()[-1])-1
-    #             rij = int(12 + (teller%4)*22)
-    #             kolom = int(17 + ((teller - teller%4)/4)*8)
-    #             afbeelding = vergelijken.pictures[pic.name]
-    #             afbeelding.top = vergelijken.range((rij,kolom)).top
-    #             afbeelding.left = vergelijken.range((rij,kolom)).left
-                
-    #     #juiste afbeelding op vlak zetten
-    #     afbeelding = vergelijken.pictures[ID]
-    #     afbeelding.top = vlak.top
-    #     afbeelding.left = vlak.left
 
 @xw.sub
 def Schermen():
@@ -331,7 +225,7 @@ def AfbeeldingVerplaatsen(vak):
             afbeelding.top = vlak.top
             afbeelding.left = vlak.left
     #vergelijken sheet protecten
-    functions.ProtectBeheer(vergelijken) #.api.Protect(Password=functions.wachtwoord(), Contents=False)
+    functions.ProtectBeheer(vergelijken)
        
 @xw.sub
 def AfbeeldingKiezen():
@@ -346,10 +240,8 @@ def AfbeeldingKiezen():
     if str(flexopslag.cells(2, 5).value) != "None":   #alleen als er nog flexibilisaties opgeslagen zijn
         #gekozen afbeelding inlezen
         gekozenAfbeelding = sheet.cells(6,"B").value
-        # #naam van gekozen afbeelding op sheet printen
-        # sheet.cells(8, "M").value = gekozenAfbeelding
         
-        #Deelnemer toegevoegd zodat er gekeken kan worden naar het oude pensioen. Ik heb alleen nog geen idee hoe
+        #Deelnemer toegevoegd zodat er gekeken kan worden naar het oude pensioen. 
         #rijnummer deelnemer zoeken
         rijNr = int(float(flexopslag.cells(15,"B").value))
         
@@ -357,7 +249,6 @@ def AfbeeldingKiezen():
         deelnemer = functions.getDeelnemersbestand(book, rijNr)
         deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
         
-        #book.sheets["Sterftetafels"].cells(15, 5).value = deelnemer.achternaam
         oudpensioen = []
         for i in deelnemer.pensioenen:
             pensioen = []
@@ -379,10 +270,8 @@ def AfbeeldingKiezen():
         verhaallijn = verhaalstart
         
         
-        
-        #book.sheets["Sterftetafels"].cells(15, 5).value = oudpensioen
-        
-        pdf_canvas = Canvas("test.pdf")
+        naam_pdf = gekozenAfbeelding + ".pdf"
+        pdf_canvas = Canvas(naam_pdf)
         pdf_canvas.setFont("Helvetica", 11)
         halfbreedte = cm*10.5
         
@@ -433,12 +322,12 @@ def AfbeeldingKiezen():
         # oudpensioenimg = "pensioenplaatje.png"
         # nieuwpensioenimg = "pensioenplaatje2.png"
         
-        # pdf_canvas.drawImage(nieuwpensioen, 40, 575, 250, 193)
-        # pdf_canvas.drawImage(oudpensioen, 40 + halfbreedte, 575, 250, 193)
+        # pdf_canvas.drawImage(nieuwpensioenimg, 40, 575, 250, 193)
+        # pdf_canvas.drawImage(oudpensioenimg, 40 + halfbreedte, 575, 250, 193)
         # nieuwe_pagina(pdf_canvas, halfbreedte)
         #staat nog in commentaar, omdat een manier van afbeelding maken/lezen moet worden gevonden
         
-        
+        #Samenvattingen
         benodigde_indexen = [0, 1, 2, 15, 17, 4, 5, 7, 9, 10, 11, 13]
         #4 start 5, 7(8)
         #9 start 10,11,13(14) past 15(16) aan
@@ -452,13 +341,6 @@ def AfbeeldingKiezen():
                 if l == 2:
                     if pensioen[1] == "Ja":
                         antwoord = functions.leeftijd_notatie(pensioen[2], pensioen[3])
-                        #voor nu is dit de enige plek, maar met het verhaal en oud pensioen moet dit meer toegepast worden
-                        # if pensioen[3] == "0":
-                        #     antwoord = pensioen[2] + " jaar"
-                        # elif pensioen[3] == "1":
-                        #     antwoord = pensioen[2] + " jaar en 1 maand"
-                        # else:
-                        #     antwoord = pensioen[2] + " jaar en " + pensioen[3] + " maanden"
                     else:
                         antwoord =  functions.leeftijd_notatie(oudpensioen[p-1][1], "0")
                         
@@ -480,19 +362,31 @@ def AfbeeldingKiezen():
                         if l == 7:
                             if pensioen[l-1] == "Verhouding":
                                 antwoord = pensioen[l] + ":" + pensioen[l+1]
-                            else:
-                                antwoord = pensioen[l]
+                            else: #pencentage
+                                if pensioen[l+1] == "None": #geen maxpercentage gebruikt
+                                    antwoord = str(int(float(pensioen[l]))) + "%"
+                                else: #wel maxpercentage gebruikt
+                                    antwoord = str(round(float(pensioen[l+1]), 2)) + "%"
+                                
                         else:
                             antwoord = pensioen[l]
                     else:
                         antwoord = ""
                 elif l == 10 or l == 11 or l == 13: #opties die alleen bij hoog-laag horen
                     if pensioen[9] == "Ja":
-                        if l == 13:
+                        if l == 11:
+                            antwoord = functions.leeftijd_notatie(pensioen[l], "0")
+                        elif l == 13:
                             if pensioen[l-1] == "Verhouding":
                                 antwoord = pensioen[l] + ":" + pensioen[l+1]
-                            else:
-                                antwoord = pensioen[l]
+                            elif pensioen[l-1] == "Verschil":
+                                if pensioen[l+1] == "None": #geen maxbedrag gebruikt
+                                    antwoord = "€" + str(int(float(pensioen[l])))
+                                else:  #wel maxbedrag gebruikt
+                                    antwoord = "€" + str(round(float(pensioen[l+1]), 2))
+                                    
+                            else: #Opvullen AOW
+                                antwoord = ""
                         else:
                             antwoord = pensioen[l]
                     else:
@@ -534,8 +428,8 @@ def AfbeeldingKiezen():
         
     else:
         functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
-    
-#book.sheets["Vergelijken"].cells(2, "O").value = "Test"
+
+
 @xw.sub
 def AfbeeldingVerwijderen():
     """
@@ -562,7 +456,6 @@ def AfbeeldingVerwijderen():
                 Vergelijken.pictures[ID].delete()
             except:
                 pass
-                #functions.Mbox("Foutmelding", f"Het verwijderen van flexibilisatie '{gekozenAfbeelding}' lukt niet.\n Het AfbeeldingID bestaat niet", 0)
             #vergelijken sheet protecten
             functions.ProtectBeheer(Vergelijken) #.api.Protect(Password = functions.wachtwoord(), Contents=False)
             
@@ -672,17 +565,16 @@ def afbeelding_aanpassen():
                         flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
                         flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
                     elif pensioengegevens[12] == "Verschil":
-                        flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))
+                        flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))       
                     
-                    
-        
-        
         #scherm flexmenu openen
         logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
         app = 0
         app = QtWidgets.QApplication(sys.argv)
-        window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger)
-        window.invoerVerandering(num = 0)
+        window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger, titel = gekozenAfbeelding)
+        window.invoerVerandering(num = 0, aanpassing = True)
+        
+        
         window.show()
         app.exec_()
     else:

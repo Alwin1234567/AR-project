@@ -1949,12 +1949,42 @@
      <x>0</x>
      <y>0</y>
      <width>1304</width>
-     <height>31</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>txtVoorletters</tabstop>
+  <tabstop>txtTussenvoegsel</tabstop>
+  <tabstop>txtAchternaam</tabstop>
+  <tabstop>sbDag</tabstop>
+  <tabstop>sbMaand</tabstop>
+  <tabstop>sbJaar</tabstop>
+  <tabstop>cbBurgerlijkeStaat</tabstop>
+  <tabstop>cbGeslacht</tabstop>
+  <tabstop>txtFulltimeLoon</tabstop>
+  <tabstop>txtParttimePercentage</tabstop>
+  <tabstop>cbHuidigeRegeling</tabstop>
+  <tabstop>CheckAegon65</tabstop>
+  <tabstop>txtOPAegon65</tabstop>
+  <tabstop>CheckAegon67</tabstop>
+  <tabstop>txtOPAegon67</tabstop>
+  <tabstop>CheckNN65</tabstop>
+  <tabstop>txtOPNN65</tabstop>
+  <tabstop>txtPPNN65</tabstop>
+  <tabstop>CheckNN67</tabstop>
+  <tabstop>txtOPNN67</tabstop>
+  <tabstop>txtPPNN67</tabstop>
+  <tabstop>CheckPFVLC68</tabstop>
+  <tabstop>txtOPVLC68</tabstop>
+  <tabstop>txtPPVLC68</tabstop>
+  <tabstop>CheckZL</tabstop>
+  <tabstop>txtOPZL</tabstop>
+  <tabstop>btnToevoegen</tabstop>
+  <tabstop>btnTerug</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

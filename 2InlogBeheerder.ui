@@ -367,6 +367,11 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>txtBeheerderscode</tabstop>
+  <tabstop>btnInloggen</tabstop>
+  <tabstop>btnTerug</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

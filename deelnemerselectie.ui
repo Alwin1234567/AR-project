@@ -1015,6 +1015,19 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>txtVoorletters</tabstop>
+  <tabstop>txtTussenvoegsel</tabstop>
+  <tabstop>txtAchternaam</tabstop>
+  <tabstop>sbDag</tabstop>
+  <tabstop>sbMaand</tabstop>
+  <tabstop>sbJaar</tabstop>
+  <tabstop>cbGeslacht</tabstop>
+  <tabstop>lwKeuzes</tabstop>
+  <tabstop>btnStartFlexibiliseren</tabstop>
+  <tabstop>btnTerug</tabstop>
+  <tabstop>btnDeelnemerToevoegen</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

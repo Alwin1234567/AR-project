@@ -183,8 +183,8 @@ def regelingenophalen(rij):
     
     Returns
     -------
-    List met de volledige namen van pensioenregelingen van de betreffende deelnemer
-    List met de codenamen van pensioenregelingen van de betreffende deelnemer
+    regelingen: List met de volledige namen van pensioenregelingen van de betreffende deelnemer
+    regelingCode: List met de codenamen van pensioenregelingen van de betreffende deelnemer
     """
     
     # Sheet ophalen
@@ -226,7 +226,7 @@ def regelingNaamCode(naam):
     
     Returns
     -------
-    String met de codenaam van de regeling.
+    code: String met de codenaam van de regeling.
     """
     
     if naam == "ZwitserLeven":
@@ -255,7 +255,7 @@ def regelingCodeNaam(code):
     
     Returns
     -------
-    String met de volledige naam van de regeling.
+    naam: String met de volledige naam van de regeling.
     """
     
     if code == "ZL":
@@ -281,6 +281,9 @@ def getDeelnemersbestand(book, rij = 0):
     ----------
     book : xlwings.Book
         Het excel bestand waarin het programma runned.
+    rij : integer
+        specifieke rij die uit het deelnemersbestand gelezen moet worden
+        default = 0 (geen specifieke rij nodig - alles uitgelezen)
     
     Returns
     -------
@@ -469,7 +472,7 @@ def ToevoegenDeelnemer(gegevens, regel = 0):
     #gegevens deelnemer invullen in de lege regel
     deelnemersbestand.cells(regel, 1).value = gegevens
     #sheet protecten
-    functions.ProtectBeheer(deelnemersbestand) #.api.Protect(Password = wachtwoord())
+    ProtectBeheer(deelnemersbestand) #.api.Protect(Password = wachtwoord())
 
 def Mbox(title, text, style):
     """
@@ -496,7 +499,7 @@ def Mbox(title, text, style):
     Returns
     -------
     str
-        DESCRIPTION.
+        string die aangeeft welke op knop is geklikt als reactie op de messagebox.
 
     """
     returnValue = ctypes.windll.user32.MessageBoxW(0, text, title, style)
@@ -622,9 +625,9 @@ def setup_logger(name):
     logger.info("Setup logger is done")
     return logger
 
-def isNotInteger(veldInput):
+def isNotFloat(veldInput):
     try:
-        veldInput = int(veldInput)
+        veldInput = float(veldInput)
         return False
     except ValueError:
         return True
@@ -637,63 +640,63 @@ def checkVeldInvoer(soort,methode,veld1,veld2,veld3):
     
     if str(methode) == "Percentage" or str(methode) == "Verschil":
         if str(veld1) == "": emptyProblem = True
-        elif isNotInteger(veld1): intProblem = True
+        elif isNotFloat(veld1): intProblem = True
         
         if str(veld2) == "": pass
-        elif isNotInteger(veld2): intProblem = True
+        elif isNotFloat(veld2): intProblem = True
             
         if str(veld3) == "": pass
-        elif isNotInteger(veld3): intProblem = True  
+        elif isNotFloat(veld3): intProblem = True  
         
     elif str(methode) == "Verhouding":
         if str(veld1) == "": pass
-        elif isNotInteger(veld1): intProblem = True
+        elif isNotFloat(veld1): intProblem = True
 
         if str(veld2) == "": emptyProblem = True
-        elif isNotInteger(veld2): intProblem = True
+        elif isNotFloat(veld2): intProblem = True
             
         if str(veld3) == "": emptyProblem = True
-        elif isNotInteger(veld3): intProblem = True
+        elif isNotFloat(veld3): intProblem = True
     
     elif str(methode) == "Opvullen AOW":
-        if isNotInteger(veld1): intProblem = True
+        if isNotFloat(veld1): intProblem = True
 
-        if isNotInteger(veld2): intProblem = True
+        if isNotFloat(veld2): intProblem = True
 
-        if isNotInteger(veld3): intProblem = True
+        if isNotFloat(veld3): intProblem = True
 
     if intProblem == True and emptyProblem == True: # Er zijn letters ingevuld & er zijn lege vakjes
         return ["Er is foute invoer en missende invoer.",False]
     elif intProblem == True and emptyProblem == False: # Er zijn letters ingevuld
-        return ["Invoer mag alleen een positief geheel getal zijn.",False]
+        return ["Invoer mag alleen een positief getal zijn.",False]
     elif intProblem == False and emptyProblem == True: # Er zijn lege vakjes
         return ["Er is missende invoer.",False]
     elif intProblem == False and emptyProblem == False: # Alle vakjes zijn met gehele getallen ingevuld
         if soort == "OP-PP":
             if str(methode) == "Verhouding":
-                if int(veld2) < 0 or int(veld3) < 0: # Getallen mogen niet negatief zijn
+                if float(veld2) < 0 or float(veld3) < 0: # Getallen mogen niet negatief zijn
                     message = "Getallen mogen niet negatief zijn."
                     OK = False
-                elif int(veld3)/int(veld2) > 0.70: # Verhouding moet voldoen aan PP max. 70% van OP regel
+                elif float(veld3)/float(veld2) > 0.70: # Verhouding moet voldoen aan PP max. 70% van OP regel
                     message = "Verhouding ongeldig (PP maximaal 70% van OP)"
                     OK = False
             elif str(methode) == "Percentage":
-                if int(veld1) < 0: # Getallen mogen niet negatief zijn
+                if float(veld1) < 0: # Getallen mogen niet negatief zijn
                     message = "Getallen mogen niet negatief zijn."
                     OK = False
-                elif int(veld1) > 100: # Percentage kan niet hoger dan 100% zijn
+                elif float(veld1) > 100: # Percentage kan niet hoger dan 100% zijn
                     message = "Percentage ongeldig (kan niet hoger dan 100%)"
                     OK = False
         elif soort == "hoog-laag":
             if str(methode) == "Verhouding":
-                if int(veld2) < 0 and int(veld3) < 0: # Getallen mogen niet negatief zijn
+                if float(veld2) < 0 and int(veld3) < 0: # Getallen mogen niet negatief zijn
                     message = "Getallen mogen niet negatief zijn."
                     OK = False
-                elif int(veld3)/int(veld2) < 0.75 or int(veld3)/int(veld2) > 1: # Verhouding moet voldoen aan hoog-laag 4:3 regel
+                elif float(veld3)/float(veld2) < 0.75 or float(veld3)/float(veld2) > 1: # Verhouding moet voldoen aan hoog-laag 4:3 regel
                     message = "Verhouding ongeldig (3:4 regel)"
                     OK = False
             elif str(methode) == "Verschil":
-                if int(veld1) < 0: # Getallen mogen niet negatief zijn
+                if float(veld1) < 0: # Getallen mogen niet negatief zijn
                     message = "Getallen mogen niet negatief zijn."
                     OK = False
             
@@ -826,8 +829,13 @@ def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
     else: flexopslag[2][1] = "Nee"
     
     # Pensioenleeftijd: Jaar & Maand
-    flexopslag[3][1] = flexibilisatie.leeftijdJaar
-    flexopslag[3][2] = flexibilisatie.leeftijdMaand
+    if flexibilisatie.HL_Methode == "Opvullen AOW":
+        flexopslag[2][1] = "Ja"
+        flexopslag[3][1] = flexibilisatie.AOWJaar
+        flexopslag[3][2] = flexibilisatie.AOWMaand
+    else:
+        flexopslag[3][1] = flexibilisatie.leeftijdJaar
+        flexopslag[3][2] = flexibilisatie.leeftijdMaand
     
     # OP/PP Uitruilen wijzigen J/N
     if flexibilisatie.OP_PP_Actief: flexopslag[5][1] = "Ja"
@@ -842,6 +850,8 @@ def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
         flexopslag[8][2] = flexibilisatie.OP_PP_Verhouding_PP
     elif flexibilisatie.OP_PP_Methode == "Percentage":
         flexopslag[8][1] = flexibilisatie.OP_PP_Percentage
+        if flexibilisatie.OP_PP_Percentage > flexibilisatie.OP_PP_PercentageMax:
+            flexopslag[8][2] = flexibilisatie.OP_PP_PercentageMax
     #else: logger.info("OP/PP methode wordt niet herkend bij opslaan naar excel.")
     
     # Hoog/Laag constructie opslaan
@@ -855,9 +865,12 @@ def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[13][1] = flexibilisatie.HL_Methode
     if flexibilisatie.HL_Methode == "Verhouding":
         flexopslag[14][1] = flexibilisatie.HL_Verhouding_Hoog
-        flexopslag[15][2] = flexibilisatie.HL_Verhouding_Laag
+        flexopslag[14][2] = flexibilisatie.HL_Verhouding_Laag
     elif flexibilisatie.HL_Methode == "Verschil":
         flexopslag[14][1] = flexibilisatie.HL_Verschil
+        
+        if flexibilisatie.HL_Verschil > flexibilisatie.HL_VerschilMax:
+            flexopslag[14][2] = flexibilisatie.HL_VerschilMax
     #else: logger.info("H/L methode wordt niet herkend bij opslaan naar excel.")
     
     # Nieuwe OP en PP opslaan
@@ -1004,10 +1017,10 @@ def UitlezenFlexopslag(book, naamFlex):
     rij = 0
     while rij < aantalPensioenen*20:
         #lijst met gegevens van 1 pensioen aanmaken
-        #pensioen = [0-pensioenfonds, 1-wijzigen, 2-leeftijd, 3-jaar, 4-leeftijd, 5-maand, 6-uitruilen, 7-volgorde, 8-methode,
-        #9-verhouding/percentage, 10-hoog/laag, 11-volgorde, 12-duur, 13-methode, 14-vers/verh/opvullen, 15-OP, 16-PP, 17-kleur]
+        #pensioen = [0-pensioenfonds, 1-wijzigen, 2-leeftijd-jaar, 3-leeftijd-maand, 4-uitruilen, 5-volgorde, 6-methode,
+        #7-verhouding/percentage, 8-verhouding/max, 9-hoog/laag, 10-volgorde, 11-duur, 12-methode, 13-vers/verh/opvullen, 14-verhouding/max, 15-OP, 16-PP, 17-kleur]
         pensioen = []
-        rijAdd = [5,7,8,8,10,11,12,13,13,15,16,17,18,18,18,21,21,22,23]
+        rijAdd = [5,7,8,8,10,11,12,13,13,15,16,17,18,19,19,21,21,22,23]
         kolomAdd = [0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0]
         for i in range(19):
             pensioen.append(str(flexopslag.cells(rij+rijAdd[i] ,flexKolom+kolomAdd[i]).value))
@@ -1015,36 +1028,6 @@ def UitlezenFlexopslag(book, naamFlex):
         flexgegevens.append(pensioen)
         #rij ophogen met 20 -> naar volgende blok
         rij += 20
-        
-    # flexgegevens = []
-    # rij = 0
-    # while rij < aantalPensioenen*20:
-    #     #lijst met gegevens van 1 pensioen aanmaken
-    #     #pensioen = [pensioenfonds, wijzigen, leeftijd-jaar, leeftijd-maand, uitruilen, volgorde, methode, verhouding/percentage,
-    #     #hoog/laag, volgorde, duur, methode, vers/verh/opvullen, OP, PP, kleur]
-    #     pensioen = [] #list(range(18))
-    #     pensioen.append(str(flexopslag.cells(rij+5 ,flexKolom).value))       #0  pensioenfonds
-    #     pensioen.append(str(flexopslag.cells(rij+7 ,flexKolom).value))       #1  wijzigen J/N
-    #     pensioen.append(str(flexopslag.cells(rij+8 ,flexKolom).value))       #2  pensioenleeftijd-jaar
-    #     pensioen.append(str(flexopslag.cells(rij+8 ,flexKolom + 1).value))   #3  pensioenleeftijd-maand
-    #     pensioen.append(str(flexopslag.cells(rij+10,flexKolom).value))       #4  uitruilen
-    #     pensioen.append(str(flexopslag.cells(rij+11,flexKolom).value))       #5  volgorde PP/OP OP/PP
-    #     pensioen.append(str(flexopslag.cells(rij+12,flexKolom).value))       #6  methode Verh/Perc
-    #     pensioen.append(str(flexopslag.cells(rij+13,flexKolom).value))       #7  verhouding/percentage 
-    #     pensioen.append(str(flexopslag.cells(rij+13,flexKolom+1).value))     #8  verhouding/percentage (leeg bij percentage)
-    #     pensioen.append(str(flexopslag.cells(rij+15,flexKolom).value))       #9  hoog/laag J/N
-    #     pensioen.append(str(flexopslag.cells(rij+16,flexKolom).value))       #10 volgorde Hoog/Laag Laag/Hoog
-    #     pensioen.append(str(flexopslag.cells(rij+17,flexKolom).value))       #11 duur
-    #     pensioen.append(str(flexopslag.cells(rij+18,flexKolom).value))       #12 methode Vers/Verh/Opv
-    #     pensioen.append(str(flexopslag.cells(rij+19,flexKolom).value))       #13 Vers/Verh/Opv
-    #     pensioen.append(str(flexopslag.cells(rij+19,flexKolom+1).value))     #14 Vers/Verh/Opv (leeg bij vers en opv)
-    #     pensioen.append(str(flexopslag.cells(rij+21,flexKolom).value))       #15 OP
-    #     pensioen.append(str(flexopslag.cells(rij+21,flexKolom+1).value))     #16 PP
-    #     pensioen.append(str(flexopslag.cells(rij+23,flexKolom).value))       #17 kleur (rgb)
-    #     #pensioensgegevens toevoegen aan lijst met totale flexibilisatiegegevens
-    #     flexgegevens.append(pensioen)
-    #     #rij ophogen met 20 -> naar volgende blok
-    #     rij += 20
     
     return flexgegevens
 
@@ -1107,7 +1090,7 @@ def berekeningen_init(sheet, deelnemer, logger):
 
     """
     #sheet unprotecten
-    sheet.api.Unprotect(Password = wachtwoord())
+    #sheet.api.Unprotect(Password = wachtwoord())
     
     logger.info("start berekenscherm init")
     # verkrijg berekeningen instellingen
@@ -1247,7 +1230,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
         
     #sheet protecten
-    ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord())
+    #ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord())
     
     logger.info("berekenscherm init afgerond")
     
@@ -1358,17 +1341,9 @@ def leesLimietMeldingen(sheet, flexibilisaties, huidigRegelingNaam):
     for i, flexibilisatie in enumerate(flexibilisaties):
         if huidigRegelingNaam == flexibilisatie.pensioen.pensioenNaam:
             blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
-            bereik = sheet.range((blokhoogte + 2, 2), (blokhoogte + 5, 3)).options(ndims = 2, numbers = int).value
+            bereik = sheet.range((blokhoogte + 3, 1), (blokhoogte + 5, 4)).options(ndims = 2, numbers = float).value
             
-            methodeOPPP = str(bereik[0][0])
-            try: limietOPPP = float(bereik[1][1])
-            except: limietOPPP = 0
-            
-            methodeHL = str(bereik[2][0])
-            try: limietHL = float(bereik[3][1])
-            except: limietHL = 0
-    
-            return methodeOPPP,limietOPPP,methodeHL,limietHL
+            return bereik
 
         
 def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
@@ -1519,7 +1494,13 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
         #sheet unprotecten
         sheet.api.Unprotect(Password = wachtwoord())
         #afbeelding opslaan op sheet
-        sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
+        if ID == 0:
+            try:
+                sheet.pictures.add(afbeelding, update = True, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
+            except:
+                sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
+        else:
+            sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         #sheet protecten
         ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord(), Contents=False)
         
@@ -1549,11 +1530,6 @@ def vergelijken_keuzes():
     #list maken waarin de opgeslagen pensioenen worden bijgehouden
     pensioenlist = ["-"]
     celKolom = 5 
-    #cellen met de drop down datavalisatie
-    # keuzeCel1 = "B6"
-    # keuzeCel2 = "J13"
-    # keuzeCel3 = "B37"
-    # keuzeCel4 = "J37"
     #sheet unprotecten
     uitvoer.api.Unprotect(Password = wachtwoord())
     
@@ -1591,7 +1567,8 @@ def vergelijken_keuzes():
             #maak keuzeveld leeg
             uitvoer[cel].value = ""
             #voeg nieuwe datavalidatie toe aan cel
-            uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1="None")
+            pensioenopties = ','.join([" "])
+            uitvoer[cel].api.Validation.Add(Type=DVType.xlValidateCustom, Formula1=pensioenopties)
     #sheet protecten
     ProtectBeheer(uitvoer) #.api.Protect(Password=wachtwoord(), Contents=False)
    
@@ -1738,7 +1715,9 @@ def nieuwe_pagina(pdf, halfbreedte):
     breedte_logo = 183.2
     hoogte_logo = 40
     image = ("{}\\logo.png".format(sys.path[0]))
+    #Zet het Vlc logo rechtsboven op de pagina
     pdf.drawImage(image, cm*21 -breedte_logo, cm* 29.7-hoogte_logo, breedte_logo, hoogte_logo)
+    #Maakt een streep in het midden van de pagina om zo oud en nieuw te splitsen
     pdf.line(halfbreedte, 0, halfbreedte, cm* 29.7)
     pdf.setFont("Helvetica", 30)
     pdf.drawString(40, 770, "Nieuw")
@@ -1765,10 +1744,7 @@ def leeftijd_notatie(jaar, maand):
     """
     maand = str(int(float(maand)))
     jaar = str(int(float(jaar)))
-    # if ("00" + maand)[-2] == ".": #checkt of de waarde is opgeslagen als x.0
-    #     maand = maand[:-2]
-    # if ("00" + jaar)[-2] == ".":
-    #     jaar = jaar[:-2]
+
     if maand == "0":
         antwoord = jaar + " jaar"
     elif maand == "1":
@@ -1805,10 +1781,10 @@ def geld_per_leeftijd(oud_pensioen, nieuw_pensioen):
     p = 1 #hoeveelste pensioen
     for i in nieuw_pensioen:
         if i[1] == "Ja": #pensioenleeftijd aanpassen
-            startjaar = i[2]
-            startmaand = i[3]
+            startjaar = str(int(float(i[2])))
+            startmaand = str(int(float(i[3])))
         else:
-            startjaar = str(oud_pensioen[p][1])
+            startjaar = str(int(float(oud_pensioen[p][1])))
             startmaand = "0"
         
         if i[9] == "Ja": #hooglaag staat aan
