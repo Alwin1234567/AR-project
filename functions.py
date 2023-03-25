@@ -1779,10 +1779,10 @@ def geld_per_leeftijd(oud_pensioen, nieuw_pensioen):
     p = 1 #hoeveelste pensioen
     for i in nieuw_pensioen:
         if i[1] == "Ja": #pensioenleeftijd aanpassen
-            startjaar = i[2]
-            startmaand = i[3]
+            startjaar = str(int(float(i[2])))
+            startmaand = str(int(float(i[3])))
         else:
-            startjaar = str(oud_pensioen[p][1])
+            startjaar = str(int(float(oud_pensioen[p][1])))
             startmaand = "0"
         
         if i[9] == "Ja": #hooglaag staat aan

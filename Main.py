@@ -330,7 +330,7 @@ def AfbeeldingKiezen():
         # nieuwe_pagina(pdf_canvas, halfbreedte)
         #staat nog in commentaar, omdat een manier van afbeelding maken/lezen moet worden gevonden
         
-        
+        #Samenvattingen
         benodigde_indexen = [0, 1, 2, 15, 17, 4, 5, 7, 9, 10, 11, 13]
         #4 start 5, 7(8)
         #9 start 10,11,13(14) past 15(16) aan
@@ -372,19 +372,31 @@ def AfbeeldingKiezen():
                         if l == 7:
                             if pensioen[l-1] == "Verhouding":
                                 antwoord = pensioen[l] + ":" + pensioen[l+1]
-                            else:
-                                antwoord = pensioen[l]
+                            else: #pencentage
+                                if pensioen[l+1] == "None": #geen maxpercentage gebruikt
+                                    antwoord = str(int(float(pensioen[l]))) + "%"
+                                else: #wel maxpercentage gebruikt
+                                    antwoord = str(round(float(pensioen[l+1]), 2)) + "%"
+                                
                         else:
                             antwoord = pensioen[l]
                     else:
                         antwoord = ""
                 elif l == 10 or l == 11 or l == 13: #opties die alleen bij hoog-laag horen
                     if pensioen[9] == "Ja":
-                        if l == 13:
+                        if l == 11:
+                            antwoord = functions.leeftijd_notatie(pensioen[l], "0")
+                        elif l == 13:
                             if pensioen[l-1] == "Verhouding":
                                 antwoord = pensioen[l] + ":" + pensioen[l+1]
-                            else:
-                                antwoord = pensioen[l]
+                            elif pensioen[l-1] == "Verschil":
+                                if pensioen[l+1] == "None": #geen maxbedrag gebruikt
+                                    antwoord = "€" + str(int(float(pensioen[l])))
+                                else:  #wel maxbedrag gebruikt
+                                    antwoord = "€" + str(round(float(pensioen[l+1]), 2))
+                                    
+                            else: #Opvullen AOW
+                                antwoord = ""
                         else:
                             antwoord = pensioen[l]
                     else:
