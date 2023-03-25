@@ -865,13 +865,14 @@ class Flexmenu(QtWidgets.QMainWindow):
                             self.ui.CheckLeeftijdWijzigen.setChecked(True)
                             self.ui.sbJaar.setValue(self.regelingCode.AOWJaar)
                             self.ui.sbMaand.setValue(self.AOWmaand)
-                        except: self._logger.exception("Fout bij het genereren van de afbeelding")
+                            self.ui.sbHLJaar.setValue(int(self.AOWjaar-self.regelingCode.AOWJaar))
+                        except: self._logger.exception("Fout bij het opslaan van opvullen AOW leeftijd.")
                     else:
                         try:
                             self.ui.CheckLeeftijdWijzigen.setChecked(self.regelingCode.leeftijd_Actief)
                             self.ui.sbJaar.setValue(self.regelingCode.leeftijdJaar)
                             self.ui.sbMaand.setValue(self.regelingCode.leeftijdMaand)
-                        except: self._logger.exception("Fout bij het genereren van de afbeelding")
+                        except: self._logger.exception("Fout bij het opslaan van normale pensioenleeftijd.")
                     self.blokkeerSignalen(False)
                 
                 self.samenvattingUpdate() # Update de samenvatting
@@ -936,7 +937,13 @@ class Flexmenu(QtWidgets.QMainWindow):
                     self.ui.CheckLeeftijdWijzigen.setChecked(True)
                     jaar = int(self.ui.sbJaar.value())
                     maand = int(self.ui.sbMaand.value())
-                    self.deelnemerObject.setAOWLeeftijd(jaar, maand)
+                    self.deelnemerObject.setAOWLeeftijd(jaar, maand, self.AOWjaar)
+                    
+                    self.regelingCode.HL_Jaar = int(self.AOWjaar-self.regelingCode.AOWJaar)
+                    
+                    self.blokkeerSignalen(True)
+                    self.ui.sbHLJaar.setValue(self.regelingCode.HL_Jaar)
+                    self.blokkeerSignalen(False)
                     
                 except: self._logger.exception("Er gaat iets fout bij het corrigeren van de leeftijd spinboxes voor AOW opvullen in flexmenu.ui")
             else:
@@ -979,6 +986,45 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         if num == 3 or num == 0: # Hoog/Laag constructie opslaan
             try:
+                # Onderstaande if-elif statements regelen het aanpassen van de hoog-laag eerste periode spinbox op basis van de leeftijd voor opvullen AOW
+                # Het houdt ook rekening met of de spinbox veranderd moet worden of dat de leeftijd veranderd moet worden als de spinbox verandert.
+                if self.regelingCode.HL_Methode != "Opvullen AOW" and str(self.ui.cbHLMethode.currentText()) == "Opvullen AOW" and self.regelingCode.HL_Actief:
+                    # Dit activeert als Opvullen AOW nu geselecteerd is en de hoog-laag constructie staat al geactiveerd.
+                    self.blokkeerSignalen(True)
+                    self.ui.sbHLJaar.setValue(int(self.AOWjaar-self.regelingCode.AOWJaar))
+                    self.regelingCode.HL_Jaar = int(self.AOWjaar-self.regelingCode.AOWJaar)
+                    self.blokkeerSignalen(False)
+                
+                elif self.regelingCode.HL_Methode == "Opvullen AOW" and self.regelingCode.HL_Actief == False and self.ui.CheckHoogLaag.isChecked():
+                    # Dit activeert als Opvullen AOW al geselcteerd was en op dit moment hoog-laag constructie geactiveerd wordt.
+                    self.blokkeerSignalen(True)
+                    self.ui.sbHLJaar.setValue(int(self.AOWjaar-self.regelingCode.AOWJaar))
+                    self.regelingCode.HL_Jaar = int(self.AOWjaar-self.regelingCode.AOWJaar)
+                    self.blokkeerSignalen(False)
+
+                elif (self.regelingCode.HL_Methode == "Opvullen AOW" and 
+                      str(self.ui.cbHLMethode.currentText()) == "Opvullen AOW" and self.regelingCode.HL_Actief):
+                    # Dit activeert als opvullen AOW al geselecteerd is en de hoog-laag constructie ook al op actief stond.
+                    
+                    self.blokkeerSignalen(True)
+                    self.ui.CheckLeeftijdWijzigen.setChecked(True)
+                    
+                    if int(self.ui.sbHLJaar.value()) > (self.AOWjaar-60):
+                        self.ui.sbHLJaar.setValue(int(self.AOWjaar-60))
+                        self.regelingCode.HL_Jaar = int(self.AOWjaar-60)
+                    else:
+                        self.regelingCode.HL_Jaar = int(self.ui.sbHLJaar.value())
+                    
+                    self.ui.sbJaar.setValue(int(self.AOWjaar-self.regelingCode.HL_Jaar))
+                    self.ui.sbMaand.setValue(int(self.AOWmaand))
+                    
+                    self.blokkeerSignalen(False)
+                    
+                    jaar = int(self.ui.sbJaar.value())
+                    maand = int(self.ui.sbMaand.value())
+                    
+                    self.deelnemerObject.setAOWLeeftijd(jaar, maand, self.AOWjaar)
+                    
                 self.regelingCode.HL_Actief = self.ui.CheckHoogLaag.isChecked() 
                 self.regelingCode.HL_Volgorde = str(self.ui.cbHLVolgorde.currentText()) 
                 self.regelingCode.HL_Methode = str(self.ui.cbHLMethode.currentText()) 
