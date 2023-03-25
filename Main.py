@@ -274,7 +274,8 @@ def AfbeeldingKiezen():
         
         #book.sheets["Sterftetafels"].cells(15, 5).value = oudpensioen
         
-        pdf_canvas = Canvas("test.pdf")
+        naam_pdf = gekozenAfbeelding + ".pdf"
+        pdf_canvas = Canvas(naam_pdf)
         pdf_canvas.setFont("Helvetica", 11)
         halfbreedte = cm*10.5
         
