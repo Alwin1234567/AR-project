@@ -241,7 +241,7 @@ def AfbeeldingKiezen():
         #gekozen afbeelding inlezen
         gekozenAfbeelding = sheet.cells(6,"B").value
         
-        #Deelnemer toegevoegd zodat er gekeken kan worden naar het oude pensioen. Ik heb alleen nog geen idee hoe
+        #Deelnemer toegevoegd zodat er gekeken kan worden naar het oude pensioen. 
         #rijnummer deelnemer zoeken
         rijNr = int(float(flexopslag.cells(15,"B").value))
         
@@ -249,7 +249,6 @@ def AfbeeldingKiezen():
         deelnemer = functions.getDeelnemersbestand(book, rijNr)
         deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
         
-        #book.sheets["Sterftetafels"].cells(15, 5).value = deelnemer.achternaam
         oudpensioen = []
         for i in deelnemer.pensioenen:
             pensioen = []
@@ -270,9 +269,6 @@ def AfbeeldingKiezen():
         verhaalstart = 536
         verhaallijn = verhaalstart
         
-        
-        
-        #book.sheets["Sterftetafels"].cells(15, 5).value = oudpensioen
         
         naam_pdf = gekozenAfbeelding + ".pdf"
         pdf_canvas = Canvas(naam_pdf)
@@ -326,8 +322,8 @@ def AfbeeldingKiezen():
         # oudpensioenimg = "pensioenplaatje.png"
         # nieuwpensioenimg = "pensioenplaatje2.png"
         
-        # pdf_canvas.drawImage(nieuwpensioen, 40, 575, 250, 193)
-        # pdf_canvas.drawImage(oudpensioen, 40 + halfbreedte, 575, 250, 193)
+        # pdf_canvas.drawImage(nieuwpensioenimg, 40, 575, 250, 193)
+        # pdf_canvas.drawImage(oudpensioenimg, 40 + halfbreedte, 575, 250, 193)
         # nieuwe_pagina(pdf_canvas, halfbreedte)
         #staat nog in commentaar, omdat een manier van afbeelding maken/lezen moet worden gevonden
         
@@ -345,13 +341,6 @@ def AfbeeldingKiezen():
                 if l == 2:
                     if pensioen[1] == "Ja":
                         antwoord = functions.leeftijd_notatie(pensioen[2], pensioen[3])
-                        #voor nu is dit de enige plek, maar met het verhaal en oud pensioen moet dit meer toegepast worden
-                        # if pensioen[3] == "0":
-                        #     antwoord = pensioen[2] + " jaar"
-                        # elif pensioen[3] == "1":
-                        #     antwoord = pensioen[2] + " jaar en 1 maand"
-                        # else:
-                        #     antwoord = pensioen[2] + " jaar en " + pensioen[3] + " maanden"
                     else:
                         antwoord =  functions.leeftijd_notatie(oudpensioen[p-1][1], "0")
                         
@@ -439,8 +428,8 @@ def AfbeeldingKiezen():
         
     else:
         functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
-    
-#book.sheets["Vergelijken"].cells(2, "O").value = "Test"
+
+
 @xw.sub
 def AfbeeldingVerwijderen():
     """

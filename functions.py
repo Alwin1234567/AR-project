@@ -1715,7 +1715,9 @@ def nieuwe_pagina(pdf, halfbreedte):
     breedte_logo = 183.2
     hoogte_logo = 40
     image = ("{}\\logo.png".format(sys.path[0]))
+    #Zet het Vlc logo rechtsboven op de pagina
     pdf.drawImage(image, cm*21 -breedte_logo, cm* 29.7-hoogte_logo, breedte_logo, hoogte_logo)
+    #Maakt een streep in het midden van de pagina om zo oud en nieuw te splitsen
     pdf.line(halfbreedte, 0, halfbreedte, cm* 29.7)
     pdf.setFont("Helvetica", 30)
     pdf.drawString(40, 770, "Nieuw")
@@ -1742,10 +1744,7 @@ def leeftijd_notatie(jaar, maand):
     """
     maand = str(int(float(maand)))
     jaar = str(int(float(jaar)))
-    # if ("00" + maand)[-2] == ".": #checkt of de waarde is opgeslagen als x.0
-    #     maand = maand[:-2]
-    # if ("00" + jaar)[-2] == ".":
-    #     jaar = jaar[:-2]
+
     if maand == "0":
         antwoord = jaar + " jaar"
     elif maand == "1":
