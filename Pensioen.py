@@ -2,7 +2,7 @@
 Header
 Hier komen alle libraries die in het programma gebruikt worden
 """
-
+from datetime import date
 
 """
 Body
@@ -22,6 +22,8 @@ class Pensioen():
     
     def __init__(self, pensioen, kolom1, kolom2):
         self._pensioen = pensioen
+        self._actieveRegeling = False
+        self._regelingFactor = 0
         if self._pensioen.soortRegeling == "DC":
             self._OP = 0
             self._PP = 0
@@ -34,6 +36,12 @@ class Pensioen():
             self._OP = 0
             self._PP = 0
             self._koopsom = 0
+            
+    def extraPensioen(self, inkomen):
+        self._actieveRegeling = True
+        self._regelingsFactor = (inkomen - self._pensioen.franchise) * self._pensioen.opbouwpercentage
+        
+    
     @property
     def pensioenVolNaam(self):
         return self._pensioen.pensioenVolNaam
@@ -66,6 +74,12 @@ class Pensioen():
     def pensioenKleurZacht(self): return self._pensioen.kleurZacht
     
     @property
+    def actieveRegeling(self): return self._actieveRegeling
+    
+    @property
+    def regelingsFactor(self): return self._regelingsFactor
+    
+    @property
     def pensioenKleurHard(self): return self._pensioen.kleurHard
     
     @property
@@ -75,7 +89,7 @@ class Pensioen():
     def partnerPensioen(self): return self._PP
     
     @property
-    def koopsom(self): return self._koopsom
+    def koopsom(self): return self._koopsom            
     
     @property
     def alleenstaandAOW(self): return self._pensioen.alleenstaandAOW

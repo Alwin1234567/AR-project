@@ -26,10 +26,13 @@ class Deelnemer():
         self._geslacht = self.informatieOpslaan(informatie, "Geslacht")
         self._burgelijkeStaat = self.informatieOpslaan(informatie, "Burg. Staat")
         self._ftLoon = self.informatieOpslaan(informatie, "FT loon")
+        if self._ftLoon != None: self._ftLoon = int(self._ftLoon)
         self._pt = self.informatieOpslaan(informatie, "PT%")
+        if self._pt != None: self._pt = float(self._pt)
         self._regeling = self.informatieOpslaan(informatie, "Regeling")
         self._rijNr = self.informatieOpslaan(informatie, "rijNr")
         self._pensioenen = self.pensioenenOpslaan(informatie, pensioeninformatie)
+        self.actieveRegeling()
         self._flexibilisaties = list()
         
     def informatieOpslaan(self, informatie, kolomNaam):
@@ -67,7 +70,16 @@ class Deelnemer():
         for flexibilisatie in self._flexibilisaties:
             flexibilisatie.AOWJaar = jaar
             flexibilisatie.AOWMaand = maand
-            
+    
+    def actieveRegeling(self):
+        if self._regeling == "Inactief": return
+        selectie = list()
+        for pensioen in self._pensioenen:
+            if self._regeling in pensioen.pensioenNaam: selectie.append(pensioen)
+        if len(selectie) == 0: return
+        selectie.sort(reverse = True, key = lambda pensioen: pensioen.pensioenleeftijd)
+        pensioen = selectie[0]
+        pensioen.extraPensioen(self._ftLoon * self._pt)
         
     @property
     def achternaam(self): return self._achternaam

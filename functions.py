@@ -1933,10 +1933,7 @@ def tekstkleurSheets(book, sheets, zicht):
                 sheet.range((1,1),(aantalRegels,aantalKolommen)).api.Font.Color = zwart
             elif sheetnaam in ["Berekeningen", "Flexopslag"]:
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = False
-            
-def rentesort(flex): 
-    print(flex[1].pensioen.rente)
-    return flex[1].pensioen.rente
+
         
         
         

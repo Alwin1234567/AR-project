@@ -33,7 +33,7 @@ class Pensioenfonds():
         self._pensioenleefijd = gegevensSheet.range((gegevensRij, kolommen["pensioenleeftijdkolom"])).value
         self._rente = float(gegevensSheet.range((gegevensRij, kolommen["rentekolom"])).options(numbers = float).value)
         self._sterftetafel = gegevensSheet.range((gegevensRij, kolommen["sterftetafelkolom"])).value
-        self._opbouwpercentage = gegevensSheet.range((gegevensRij, kolommen["opbouwpercentage"])).value
+        self._opbouwpercentage = float(gegevensSheet.range((gegevensRij, kolommen["opbouwpercentage"])).options(numbers = float).value)
         self._franchise = gegevensSheet.range((gegevensRij, kolommen["franchise"])).options(numbers = int).value
         self._opmerking = gegevensSheet.range((gegevensRij, kolommen["opmerking"])).value
         self._kleurZacht = tuple([int(kleur) for kleur in gegevensSheet.range((gegevensRij, kolommen["kleurzachtkolom"])).value.split(",")])

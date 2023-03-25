@@ -9,7 +9,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
 import functions
-from datetime import datetime
+from datetime import datetime, date
 from decimal import getcontext, Decimal
 from xlwings.utils import rgb_to_int
 from Pensioenfonds import Pensioenfonds
@@ -824,7 +824,8 @@ class Flexmenu(QtWidgets.QMainWindow):
             if self.invoerCheck(num):
                 #self.ui.lbl_opslaanMelding.setText("") # Opslaan melding verdwijnt.
                 self.flexkeuzesOpslaan(num) # Sla flex keuzes op
-                self.berekeningenDoorvoeren()
+                if methode: self.berekeningenDoorvoeren(1)
+                else: self.berekeningenDoorvoeren(num)
                 functions.leesOPPP(self.book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties) # lees de nieuwe OP en PP waardes
             
                 # set leeftijd op juiste variabele
@@ -1019,21 +1020,47 @@ class Flexmenu(QtWidgets.QMainWindow):
             try: updaterange.value = blok
             except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")    
 
-    def berekeningenDoorvoeren(self):
+    def berekeningenDoorvoeren(self, num):
         instellingen = functions.berekeningen_instellingen()
         overbruggingen = list()
         for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
             if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": overbruggingen.append((i, flexibilisatie))
         
-        overbruggingen.sort(key = functions.rentesort)
+        overbruggingen.sort(key = lambda flex: flex[1].pensioen.rente)
         
         for i, flexibilisatie in enumerate(self.deelnemerObject.flexibilisaties):
             blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + len(self.deelnemerObject.flexibilisaties) + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
             blok = list()
             
             # Leeftijd doorvoeren
-            if flexibilisatie.leeftijd_Actief: blok.append([flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12, ""])
+            if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": blok.append([flexibilisatie.AOWJaar + flexibilisatie.AOWMaand / 12, ""])
+            elif flexibilisatie.leeftijd_Actief: blok.append([flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12, ""])
             else: blok.append([flexibilisatie.pensioen.pensioenleeftijd, ""])
+            
+            if num == 1 and flexibilisatie.pensioen.actieveRegeling:
+                if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": jaren = flexibilisatie.AOWJaar - (date.today().year - self.deelnemerObject.geboortedatum.year)
+                elif flexibilisatie.leeftijd_Actief: jaren = flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand - (date.today().year - self.deelnemerObject.geboortedatum.year)
+                else: jaren = flexibilisatie.pensioen.pensioenleeftijd - (date.today().year - self.deelnemerObject.geboortedatum.year)
+                if flexibilisatie.pensioen.pensioenSoortRegeling == "DC":
+                    bedrag = flexibilisatie.pensioen.koopsom
+                    for i in range(jaren):
+                        bedrag += flexibilisatie.pensioen.regelingsFactor
+                        bedrag *= 1 + flexibilisatie.pensioen.rente
+                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 4)). value = bedrag
+                    except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
+                elif flexibilisatie.pensioen.pensioenSoortRegeling == "DB":
+                    bedrag = flexibilisatie.pensioen.OP
+                    bedrag += flexibilisatie.pensioen.regelingsFactor * jaren
+                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 2)). value = bedrag
+                    except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
+                elif flexibilisatie.pensioen.pensioenSoortRegeling == "DB met PP":
+                    bedragOP = flexibilisatie.pensioen.OP
+                    bedragPP = flexibilisatie.pensioen.PP
+                    bedragOP += flexibilisatie.pensioen.regelingsFactor * jaren / 1.7
+                    bedragPP += flexibilisatie.pensioen.regelingsFactor * jaren / 1.7 * 0.7
+                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 2), (blokhoogte + 6, 3)). value = [bedragOP, bedragPP]
+                    except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
+                else: self._logger.warning("onbekende actieve regeling")
             
             # OP/PP doorvoeren
             if flexibilisatie.OP_PP_Actief:
