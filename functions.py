@@ -1495,7 +1495,10 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
         sheet.api.Unprotect(Password = wachtwoord())
         #afbeelding opslaan op sheet
         if ID == 0:
-            sheet.pictures.add(afbeelding, update = True, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
+            try:
+                sheet.pictures.add(afbeelding, update = True, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
+            except:
+                sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         else:
             sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
         #sheet protecten
