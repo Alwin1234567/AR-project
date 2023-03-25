@@ -63,10 +63,12 @@ class Deelnemer():
             if pensioen.pensioenSoortRegeling != "AOW": flexibilisaties.append(Flexibilisering(pensioen))
         self._flexibilisaties = flexibilisaties
     
-    def setAOWLeeftijd(self, jaar, maand):
+    def setAOWLeeftijd(self, jaar, maand, AOWjaar):
         for flexibilisatie in self._flexibilisaties:
             flexibilisatie.AOWJaar = jaar
             flexibilisatie.AOWMaand = maand
+            if flexibilisatie.HL_Methode == "Opvullen AOW":
+                flexibilisatie.HL_Jaar = int(AOWjaar-jaar)
             
         
     @property

@@ -52,7 +52,6 @@ class Flexibilisering:
         self._HL_Verschil = 0
         self._HL_VerschilMax = 0
         self._HL_Jaar = 5
-        self._HL_Maand = 0
         
         # OP en PP waardes
         self._OPU = 0
