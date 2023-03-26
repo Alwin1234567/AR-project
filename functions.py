@@ -765,7 +765,7 @@ def persoonOpslag(sheet, persoonObject):
     sheet.range((6,1),(15,2)).options(ndims = 2).value = persopslag
     sheet.range((6,1),(15,2)).color = (150,150,150)
     #sheet protecten
-    ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord())
+    ProtectBeheer(sheet)
 
 def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
     """
