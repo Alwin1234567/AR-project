@@ -1134,8 +1134,8 @@ def berekeningen_init(sheet, deelnemer, logger):
         
         blok.append(["", "", "", ""])
         
-        if flexibilisatie.pensioen.pensioenSoortRegeling == "DC": blok.append(["OP en PP Origineel", "=ROUND(D{0} / B{1}, 0)".format(blokhoogte + 7, blokhoogte + 11), "0", flexibilisatie.pensioen.koopsom])
-        else: blok.append(["OP en PP Origineel", flexibilisatie.pensioen.ouderdomsPensioen, flexibilisatie.pensioen.partnerPensioen, "=B{0} * B{1} + C{0} * B{2}".format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 13)])
+        if flexibilisatie.pensioen.pensioenSoortRegeling == "DC": blok.append(["OP en PP Origineel", "=ROUND(D{0} / B{1}, 0)".format(blokhoogte + 7, blokhoogte + 11), "0", regelingBedrag(deelnemer, flexibilisatie)[2]])
+        else: blok.append(["OP en PP Origineel", regelingBedrag(deelnemer, flexibilisatie)[0], regelingBedrag(deelnemer, flexibilisatie)[1], "=B{0} * B{1} + C{0} * B{2}".format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 13)])
         blok.append(["OP en PP na Uitstellen", '=ROUND(B{0} * B{1} / B{2}, 0)'.format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 12),\
                      '=ROUND(C{0} * B{1} / B{2}, 0)'.format(blokhoogte + 7, blokhoogte + 13, blokhoogte + 14), "formuletekst"])
         blok.append(["OP en PP na uitruilen", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - MIN(B{2}, D{2})), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
@@ -1910,7 +1910,30 @@ def tekstkleurSheets(book, sheets, zicht):
             elif sheetnaam in ["Berekeningen", "Flexopslag"]:
                 sheet.shapes["VerbergBerekeningen"].api.Fill.Visible = False
 
-        
+def regelingBedrag(deelnemer, flexibilisatie):
+    if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": jaren = flexibilisatie.AOWJaar - (date.today().year - deelnemer.geboortedatum.year)
+    elif flexibilisatie.leeftijd_Actief: jaren = flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand - (date.today().year - deelnemer.geboortedatum.year)
+    else: jaren = flexibilisatie.pensioen.pensioenleeftijd - (date.today().year - deelnemer.geboortedatum.year)
+    if flexibilisatie.pensioen.pensioenSoortRegeling == "DC":
+        if not flexibilisatie.pensioen.actieveRegeling: return (0, 0, flexibilisatie.pensioen.koopsom)
+        bedrag = flexibilisatie.pensioen.koopsom
+        for i in range(int(jaren)):
+            bedrag += flexibilisatie.pensioen.regelingsFactor
+            bedrag *= 1 + flexibilisatie.pensioen.rente
+        return (0, 0, bedrag)
+    elif flexibilisatie.pensioen.pensioenSoortRegeling == "DB":
+        if not flexibilisatie.pensioen.actieveRegeling: return (flexibilisatie.pensioen.ouderdomsPensioen, 0, 0)
+        bedrag = flexibilisatie.pensioen.ouderdomsPensioen
+        bedrag += flexibilisatie.pensioen.regelingsFactor * jaren
+        return (round(bedrag), 0, 0)
+    elif flexibilisatie.pensioen.pensioenSoortRegeling == "DB met PP":
+        if not flexibilisatie.pensioen.actieveRegeling: return (flexibilisatie.pensioen.ouderdomsPensioen, flexibilisatie.pensioen.partnerPensioen, 0)
+        bedragOP = flexibilisatie.pensioen.ouderdomsPensioen
+        bedragPP = flexibilisatie.pensioen.partnerPensioen
+        bedragOP += flexibilisatie.pensioen.regelingsFactor * jaren / 1.7
+        bedragPP += flexibilisatie.pensioen.regelingsFactor * jaren / 1.7 * 0.7
+        return (round(bedragOP), round(bedragPP), 0)
+    else: return (0, 0, 0)
         
         
         

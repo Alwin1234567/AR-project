@@ -1122,27 +1122,15 @@ class Flexmenu(QtWidgets.QMainWindow):
             else: blok.append([flexibilisatie.pensioen.pensioenleeftijd, ""])
             
             if num == 1 and flexibilisatie.pensioen.actieveRegeling:
-                if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": jaren = flexibilisatie.AOWJaar - (date.today().year - self.deelnemerObject.geboortedatum.year)
-                elif flexibilisatie.leeftijd_Actief: jaren = flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand - (date.today().year - self.deelnemerObject.geboortedatum.year)
-                else: jaren = flexibilisatie.pensioen.pensioenleeftijd - (date.today().year - self.deelnemerObject.geboortedatum.year)
+                bedragen = functions.regelingBedrag(self.deelnemerObject, flexibilisatie)
                 if flexibilisatie.pensioen.pensioenSoortRegeling == "DC":
-                    bedrag = flexibilisatie.pensioen.koopsom
-                    for i in range(jaren):
-                        bedrag += flexibilisatie.pensioen.regelingsFactor
-                        bedrag *= 1 + flexibilisatie.pensioen.rente
-                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 4)). value = bedrag
+                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 4)). value = bedragen[2]
                     except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
                 elif flexibilisatie.pensioen.pensioenSoortRegeling == "DB":
-                    bedrag = flexibilisatie.pensioen.OP
-                    bedrag += flexibilisatie.pensioen.regelingsFactor * jaren
-                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 2)). value = bedrag
+                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 2)). value = bedragen[0]
                     except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
                 elif flexibilisatie.pensioen.pensioenSoortRegeling == "DB met PP":
-                    bedragOP = flexibilisatie.pensioen.OP
-                    bedragPP = flexibilisatie.pensioen.PP
-                    bedragOP += flexibilisatie.pensioen.regelingsFactor * jaren / 1.7
-                    bedragPP += flexibilisatie.pensioen.regelingsFactor * jaren / 1.7 * 0.7
-                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 2), (blokhoogte + 6, 3)). value = [bedragOP, bedragPP]
+                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 2), (blokhoogte + 6, 3)). value = [bedragen[0], bedragen[1]]
                     except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
                 else: self._logger.warning("onbekende actieve regeling")
             

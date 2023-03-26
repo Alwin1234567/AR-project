@@ -23,7 +23,7 @@ class Pensioen():
     def __init__(self, pensioen, kolom1, kolom2):
         self._pensioen = pensioen
         self._actieveRegeling = False
-        self._regelingFactor = 0
+        self._regelingsFactor = 0
         if self._pensioen.soortRegeling == "DC":
             self._OP = 0
             self._PP = 0

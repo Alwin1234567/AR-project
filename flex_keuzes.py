@@ -286,4 +286,3 @@ class Flexibilisering:
     
     @AOWMaand.setter
     def AOWMaand(self, maand): self._AOWMaand = maand
-    

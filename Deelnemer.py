@@ -53,10 +53,10 @@ class Deelnemer():
                 pensioenen.append(Pensioen(pensioen, 0, 0))
             else:
                 if informatie[1][pensioen.ouderdomsPensioen] != None: 
-                    OP = informatie[1][pensioen.ouderdomsPensioen]
+                    OP = int(informatie[1][pensioen.ouderdomsPensioen])
                     if pensioen.partnerPensioen == None: PP = 0
                     elif informatie[1][pensioen.partnerPensioen] == None: PP = 0
-                    else: PP = informatie[1][pensioen.partnerPensioen]
+                    else: PP = int(informatie[1][pensioen.partnerPensioen])
                     pensioenen.append(Pensioen(pensioen, OP, PP))
         return pensioenen
     
