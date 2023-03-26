@@ -1419,7 +1419,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
         else: startjaar = flexibilisatie.pensioen.pensioenleeftijd
         aanspraakHoog = flexibilisatie.ouderdomsPensioenHoog
         aanspraakLaag = flexibilisatie.ouderdomsPensioenLaag
-        if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW" and AOW != None: HoogLaagjaren = AOW.pensioenleeftijd
+        if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW" and AOW != None: HoogLaagjaren = AOW.pensioenleeftijd - startjaar
         else: HoogLaagjaren = flexibilisatie.HL_Jaar
         HoogLaagVolgorde = flexibilisatie.HL_Volgorde
         
