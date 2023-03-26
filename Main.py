@@ -402,12 +402,16 @@ def afbeelding_aanpassen():
                         flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
                     elif pensioengegevens[12] == "Verschil":
                         flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))       
-                    
+        if len(gekozenAfbeelding)>4:
+            titelAfbeelding = gekozenAfbeelding[4:]
+        else:
+            titelAfbeelding = ""
+                
         #scherm flexmenu openen
         logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
         app = 0
         app = QtWidgets.QApplication(sys.argv)
-        window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger, titel = gekozenAfbeelding)
+        window = Klassen_Schermen.Flexmenu(xw.Book.caller(), deelnemer, logger, titel = titelAfbeelding)
         window.invoerVerandering(num = 0, aanpassing = True)
         
         
