@@ -4,14 +4,9 @@ Hier komen alle libraries die in het programma gebruikt worden
 """
 import sys
 from PyQt5 import QtWidgets, uic
-
-# from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-# from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-# import matplotlib.pyplot as plt
 import functions
 from datetime import datetime
 from decimal import getcontext, Decimal
-# from Pensioenfonds import Pensioenfonds
 
 """
 Body
