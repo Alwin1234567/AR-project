@@ -5,14 +5,13 @@ Hier komen alle libraries die in het programma gebruikt worden
 import sys
 from PyQt5 import QtWidgets, uic
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import matplotlib.pyplot as plt
+# from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+# from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+# import matplotlib.pyplot as plt
 import functions
-from datetime import datetime, date
+from datetime import datetime
 from decimal import getcontext, Decimal
-#from xlwings.utils import rgb_to_int
-from Pensioenfonds import Pensioenfonds
+# from Pensioenfonds import Pensioenfonds
 
 """
 Body
@@ -25,7 +24,6 @@ class Functiekeus(QtWidgets.QMainWindow):
         Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))
         super(Functiekeus, self).__init__()
         self.book = book
-        #self.book.app.display_alerts = False # Dit moet de OLE melding voorkomen
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle("Kies uw functie")
