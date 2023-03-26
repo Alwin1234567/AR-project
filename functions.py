@@ -1376,7 +1376,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
         if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode == "Opvullen AOW": allejaren.add(flexibilisatie.AOWJaar + flexibilisatie.AOWMaand / 12)
         elif flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12)
         else: allejaren.add(flexibilisatie.pensioen.pensioenleeftijd)
-        if flexibilisatie.HL_Actief: 
+        if flexibilisatie.HL_Actief and flexibilisatie.HL_Methode != "Opvullen AOW": 
             if flexibilisatie.leeftijd_Actief: allejaren.add(flexibilisatie.leeftijdJaar + flexibilisatie.leeftijdMaand / 12 + flexibilisatie.HL_Jaar)
             else: allejaren.add(flexibilisatie.pensioen.pensioenleeftijd + flexibilisatie.HL_Jaar)
     # geeft de breedte aan van alle hoogtes
