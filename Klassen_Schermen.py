@@ -338,7 +338,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
             if i[0].isChecked() == True:    #het pensioen is aangevinkt
                 AantalPensioenen += 1       #houdt het aantal aangevinkte pensioenen bij
                 for x in i[1:-1]:
-                    if functions.isfloat(x.text()) == True:   #Er is een getal-waarde ingevuld
+                    if functions.isfloat(x.text()):   #Er is een getal-waarde ingevuld
                         Pensioensgegevens[tellerPensioenen] = float(x.text().replace(".", "").replace(",", "."))
                     else:
                         FouteRegelingen.append(i[-1])   #regeling aan foutmelding toevoegen
@@ -355,8 +355,12 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         for i in range(4,10,2):
             #kijken of pensioen ingevuld is.
             if Pensioensgegevens[i] != "":
-                verhouding = (Pensioensgegevens[i+1])/(Pensioensgegevens[i])
-                if verhouding > 0.7:
+                if Pensioensgegevens[i+1] == "": Pensioensgegevens[i+1] = 0
+                try: verhouding = (Pensioensgegevens[i+1])/(Pensioensgegevens[i])
+                except: 
+                    verhouding = 0
+                    verhoudingFout = verhoudingFout + ", " + PPRegelingen[int(i/2 - 2)]
+                if verhouding > 0.7: 
                     #als verhouding groter dan 100:70, pensioen toevoegen aan foutmelding
                     verhoudingFout = verhoudingFout + ", " + PPRegelingen[int(i/2 - 2)]
         
