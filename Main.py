@@ -94,7 +94,12 @@ def AfbeeldingKiezen():
             pensioen.append(i.ouderdomsPensioen)        #3
             pensioen.append(i.partnerPensioen)          #4
             oudpensioen.append(pensioen)            
-            
+        
+        if deelnemer.burgelijkeStaat == "Samenwonend":    
+            AOW = "€11681,32"
+        else:
+            AOW = "€17169.60"
+        
         nieuwpensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
         
         eenperjaar = functions.geld_per_leeftijd(oudpensioen, nieuwpensioen)
@@ -107,6 +112,10 @@ def AfbeeldingKiezen():
         
         
         naam_pdf = gekozenAfbeelding + ".pdf"
+        
+        #staat online, geeft ook bijmij binnnen python een error dus werkt waarschijnlijk niet
+        #save_pad = os.path.join(os.path.expanduser("~"),"C:\Users\mitch\OneDrive\Documenten\ " , pdf_name) 
+        
         pdf_canvas = Canvas(naam_pdf)
         pdf_canvas.setFont("Helvetica", 11)
         halfbreedte = cm*10.5
@@ -151,6 +160,13 @@ def AfbeeldingKiezen():
         
         PPnieuwverhaal = "Uw nieuwe partner pensioen is €" + str(totPPnieuw) + " per jaar"
         pdf_canvas.drawString(40, verhaallijn-14, PPnieuwverhaal)
+        
+        
+        AOWverhaal1 = "Vanaf 67 jaar en 3 maanden krijgt u"
+        AOWverhaal2 = AOW + "aan AOW per jaar"
+        pdf_canvas.drawString(40, verhaallijn-28, AOWverhaal1)
+        pdf_canvas.drawString(40, verhaallijn-42, AOWverhaal2)
+        
         
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
         startschrijfhoogte = 720
@@ -260,7 +276,9 @@ def AfbeeldingKiezen():
                 k+=1
             schrijfhoogte = schrijfhoogte -25
             p+=1
+            
         pdf_canvas.save()
+        functions.Mbox("Opgeslagen", "De keuze is opgeslagen", 0)
         
     else:
         functions.Mbox("foutmelding", "Er zijn geen flexibilisaties opgeslagen. \nMaak eerst een nieuwe flexibilisatie aan.", 0)
