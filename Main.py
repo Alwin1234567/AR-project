@@ -53,7 +53,6 @@ def AfbeeldingVerplaatsen(vak):
                 afbeelding = vergelijken.pictures[pic.name]
                 afbeelding.top = vergelijken.range((rij,kolom)).top
                 afbeelding.left = vergelijken.range((rij,kolom)).left
-                print(rij,kolom)
                 
         if ID != "-":
             #juiste afbeelding op vlak zetten
