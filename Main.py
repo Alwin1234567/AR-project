@@ -43,8 +43,7 @@ def AfbeeldingVerplaatsen(vak):
     #vergelijken sheet unprotecten
     vergelijken.api.Unprotect(Password = functions.wachtwoord())
     for pic in vergelijken.pictures:
-        if pic.top == vlak.top and pic.left == vlak.left: #als er een afbeelding al in staat
-            
+        if round(pic.top,1) == vlak.top and round(pic.left,1) == vlak.left: #als er een afbeelding al in staat
             if pic.name != ID: #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
                 #afbeelding terugverplaatsen
                 
@@ -54,6 +53,8 @@ def AfbeeldingVerplaatsen(vak):
                 afbeelding = vergelijken.pictures[pic.name]
                 afbeelding.top = vergelijken.range((rij,kolom)).top
                 afbeelding.left = vergelijken.range((rij,kolom)).left
+                print(rij,kolom)
+                
         if ID != "-":
             #juiste afbeelding op vlak zetten
             afbeelding = vergelijken.pictures[ID]
