@@ -879,7 +879,7 @@ class Flexmenu(QtWidgets.QMainWindow):
                 self.samenvattingUpdate() # Update de samenvatting
         else:
             self._titel = str(self.ui.txtTitel.text())
-            print(self._titel)
+            #print(self._titel)
                 
         try: # probeer een nieuwe afbeelding te maken
             functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax, titel = self._titel)
