@@ -1109,7 +1109,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         pensioeninfo = list()
         pensioeninfo.append(flexibilisatie.pensioen.pensioenVolNaam)
         pensioeninfo.append('=B{}'.format(blokhoogte + 10))
-        pensioeninfo.append('=IF(B{0} = "", "", B{1})'.format(blokhoogte + 4, blokhoogte + 10))
+        pensioeninfo.append('=IF(B{0} = "", "", C{1})'.format(blokhoogte + 4, blokhoogte + 10))
         pensioeninfo.append('=C{}'.format(blokhoogte + 9))
         pensioeninfo.append(flexibilisatie.pensioen.pensioenleeftijd)
         inforange = sheet.range((instellingen["pensioeninfohoogte"] + i, instellingen["pensioeninfokolom"]),\
