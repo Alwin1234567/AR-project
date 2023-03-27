@@ -43,7 +43,7 @@ def AfbeeldingVerplaatsen(vak):
     #vergelijken sheet unprotecten
     vergelijken.api.Unprotect(Password = functions.wachtwoord())
     for pic in vergelijken.pictures:
-        if round(pic.top,1) == vlak.top and round(pic.left,1) == vlak.left: #als er een afbeelding al in staat
+        if round(pic.top,1) == round(vlak.top,1) and round(pic.left,1) == round(vlak.left,1): #als er een afbeelding al in staat
             if pic.name != ID: #als naam afbeelding in box niet gelijk is aan naam gekozen afbeelding
                 #afbeelding terugverplaatsen
                 
