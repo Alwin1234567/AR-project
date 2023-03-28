@@ -59,6 +59,9 @@ class Inloggen(QtWidgets.QMainWindow):
         self.setWindowTitle("Inloggen als beheerder")
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
         self.ui.btnInloggen.clicked.connect(self.btnInloggenClicked)
+        #op enter klikken met cursur in txtBeheerderscode voert zelfde uit als klikken op knop inloggen
+        self.ui.txtBeheerderscode.returnPressed.connect(self.ui.btnInloggen.click)
+
         self._Wachtwoord = functions.wachtwoord()
         #voorkom dat scherm gesloten kan worden met kruisje
         self._want_to_close = False
