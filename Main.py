@@ -3,15 +3,14 @@ Header
 Hier komen alle libraries die in het programma gebruikt worden
 """
 import xlwings as xw
-import matplotlib.pyplot as plt
 import sys
 from PyQt5 import QtWidgets
-from string import ascii_uppercase
 import functions
 import Klassen_Schermen
 from logging import getLogger
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import cm
+import mplwidget
 
 
 """
@@ -662,6 +661,14 @@ def flexibilisaties_testen():
                            flexibilisaties(aanspraak_deel1, c).value = (OP_nieuw * koopsomfactor(rij+1).value - soort_HL * flexibilisaties(factor_deel2, c).value)/koopsomfactor(rij+1).value
                            flexibilisaties(aanspraak_deel2, c).value = round(flexibilisaties(aanspraak_deel1, c).value + soort_HL)
                            flexibilisaties(aanspraak_deel1, c).value = round(flexibilisaties(aanspraak_deel1, c).value)
-                    
-                           
-       
+
+if __name__ == '__main__':
+    if sys.argv[1] == "AfbeeldingVerplaatsen": AfbeeldingVerplaatsen(sys.argv[2])
+    elif sys.argv[1] == "AfbeeldingKiezen": AfbeeldingKiezen()
+    elif sys.argv[1] == "AfbeeldingVerwijderen": AfbeeldingVerwijderen()
+    elif sys.argv[1] == "afbeelding_aanpassen": afbeelding_aanpassen()
+    elif sys.argv[1] == "NieuweFlexibilisatie": NieuweFlexibilisatie()
+    elif sys.argv[1] == "AndereDeelnemer": AndereDeelnemer()
+    elif sys.argv[1] == "BeheerderskeuzesOpenen": BeheerderskeuzesOpenen()
+    elif sys.argv[1] == "InEnUitloggen": InEnUitloggen()
+    elif sys.argv[1] == "flexibilisaties_testen": flexibilisaties_testen()
