@@ -17,6 +17,7 @@ import sys
 from string import ascii_uppercase
 import matplotlib.pyplot as plt
 from reportlab.lib.units import cm
+from pathlib import Path
 
 """
 Body
@@ -602,10 +603,10 @@ def setup_logger(name):
 
     logger.setLevel(logging.DEBUG)
     today = date.today().strftime("%Y_%m_%d")
-    if not exists("{}\\Logs\\{}.log".format(sys.path[0], today)): os.makedirs(os.path.dirname("{}\\Logs\\{}.log".format(sys.path[0], today)), exist_ok=True)
-    if not exists("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)): os.makedirs(os.path.dirname("{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)), exist_ok=True)
-    filename = "{}\\Logs\\{}.log".format(sys.path[0], today)
-    errorname = "{}\\Logs\\Errors\\{}.log".format(sys.path[0], today)
+    if not exists("{}\\Logs\\{}.log".format(krijgpad(), today)): os.makedirs(os.path.dirname("{}\\Logs\\{}.log".format(krijgpad(), today)), exist_ok=True)
+    if not exists("{}\\Logs\\Errors\\{}.log".format(krijgpad(), today)): os.makedirs(os.path.dirname("{}\\Logs\\Errors\\{}.log".format(krijgpad(), today)), exist_ok=True)
+    filename = "{}\\Logs\\{}.log".format(krijgpad(), today)
+    errorname = "{}\\Logs\\Errors\\{}.log".format(krijgpad(), today)
     
     chat_logger = logging.StreamHandler()
     file_logger = logging.FileHandler(filename)
@@ -1714,7 +1715,7 @@ def nieuwe_pagina(pdf, halfbreedte):
     """
     breedte_logo = 183.2
     hoogte_logo = 40
-    image = ("{}\\logo.png".format(sys.path[0]))
+    image = ("{}\\logo.png".format(krijgpad()))
     #Zet het Vlc logo rechtsboven op de pagina
     pdf.drawImage(image, cm*21 -breedte_logo, cm* 29.7-hoogte_logo, breedte_logo, hoogte_logo)
     #Maakt een streep in het midden van de pagina om zo oud en nieuw te splitsen
@@ -1935,6 +1936,9 @@ def regelingBedrag(deelnemer, flexibilisatie):
         return (round(bedragOP), round(bedragPP), 0)
     else: return (0, 0, 0)
         
+def krijgpad():
+    if sys.executable[-10:] == "python.exe": return sys.path[0]
+    return Path(sys.executable).parent.parent.absolute()
         
         
     

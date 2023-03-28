@@ -2,7 +2,6 @@
 Header
 Hier komen alle libraries die in het programma gebruikt worden
 """
-import sys
 from PyQt5 import QtWidgets, uic
 import functions
 from datetime import datetime
@@ -18,8 +17,8 @@ class Functiekeus(QtWidgets.QMainWindow):
         self._logger.info("Functiekeus scherm geopend")
         #De 0 staat op het einde, zodat hij de QTbaseClass niet meeneemt, deze wordt namelijk
         #Nergens gebruikt
-        Functiekeus_UI = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))[0]
-        #Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))
+        Functiekeus_UI = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(functions.krijgpad()))[0]
+        #Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(functions.krijgpad()))
         super(Functiekeus, self).__init__()
         self.book = book
         self.ui = Functiekeus_UI()
@@ -51,8 +50,8 @@ class Inloggen(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("Inloggen scherm geopend")
-        inlog_UI = uic.loadUiType("{}\\2InlogBeheerder.ui".format(sys.path[0]))[0]
-        #Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\2InlogBeheerder.ui".format(sys.path[0]))
+        inlog_UI = uic.loadUiType("{}\\2InlogBeheerder.ui".format(functions.krijgpad()))[0]
+        #Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\2InlogBeheerder.ui".format(functions.krijgpad()))
         super(Inloggen, self).__init__()
         self.book = book
         self.ui = inlog_UI()
@@ -99,8 +98,8 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("Beheerderkeuzes scherm geopend")
-        Beheerkeuzes_UI = uic.loadUiType("{}\\Beheerderkeuzes.ui".format(sys.path[0]))[0]
-        #Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\Beheerderkeuzes.ui".format(sys.path[0]))
+        Beheerkeuzes_UI = uic.loadUiType("{}\\Beheerderkeuzes.ui".format(functions.krijgpad()))[0]
+        #Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\Beheerderkeuzes.ui".format(functions.krijgpad()))
         super(Beheerderkeuzes, self).__init__()
         self.book = book
         self.ui = Beheerkeuzes_UI()
@@ -174,8 +173,8 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("Deelnemerselectie scherm geopend")
-        Deelnemerselectie_UI = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))[0]
-        #Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
+        Deelnemerselectie_UI = uic.loadUiType("{}\\deelnemerselectie.ui".format(functions.krijgpad()))[0]
+        #Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(functions.krijgpad()))
         super(Deelnemerselectie, self).__init__()
         self.book = book
         self.ui = Deelnemerselectie_UI()
@@ -272,8 +271,8 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("Deelnemer toevoegen scherm geopend")
-        deelnemertoevoegen_UI = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))[0]
-        #Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
+        deelnemertoevoegen_UI = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(functions.krijgpad()))[0]
+        #Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(functions.krijgpad()))
         super(Deelnemertoevoegen, self).__init__()
         self.book = book
         self.ui = deelnemertoevoegen_UI()
@@ -462,8 +461,8 @@ class Flexmenu(QtWidgets.QMainWindow):
     def __init__(self, book, deelnemer, logger, titel = ""):
         self._logger = logger
         self._logger.info("Flexmenu scherm geopend")
-        Flexmenu_UI = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))[0]
-        #Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
+        Flexmenu_UI = uic.loadUiType("{}\\flexmenu.ui".format(functions.krijgpad()))[0]
+        #Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(functions.krijgpad()))
         super(Flexmenu, self).__init__()
         self.book = book
         self.opslaanCount = 0 #Teller voor aantal opgeslagen flexibilisaties.
@@ -1310,8 +1309,8 @@ class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("DeelnemerselectieBeheerder scherm geopend")
-        DeelnemerselectieBeheerder_UI = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))[0]
-        #Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
+        DeelnemerselectieBeheerder_UI = uic.loadUiType("{}\\deelnemerselectie.ui".format(functions.krijgpad()))[0]
+        #Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(functions.krijgpad()))
         super(DeelnemerselectieBeheerder, self).__init__()
         self.book = book
         self.ui = DeelnemerselectieBeheerder_UI()
@@ -1396,8 +1395,8 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
     def __init__(self, book, logger, deelnemer):
         self._logger = logger
         self._logger.info("Deelnemer wijzigen scherm geopend")
-        DeelnemerWijzigen_UI = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))[0]
-        #Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
+        DeelnemerWijzigen_UI = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(functions.krijgpad()))[0]
+        #Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(functions.krijgpad()))
         super(DeelnemerWijzigen, self).__init__()
         self.book = book
         self.ui = DeelnemerWijzigen_UI()
