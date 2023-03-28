@@ -16,10 +16,13 @@ class Functiekeus(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("Functiekeus scherm geopend")
-        Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))
+        #De 0 staat op het einde, zodat hij de QTbaseClass niet meeneemt, deze wordt namelijk
+        #Nergens gebruikt
+        Functiekeus_UI = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))[0]
+        #Ui_MainWindow, QtBaseClass = uic.loadUiType("{}\\1AdviseurBeheerder.ui".format(sys.path[0]))
         super(Functiekeus, self).__init__()
         self.book = book
-        self.ui = Ui_MainWindow()
+        self.ui = Functiekeus_UI()
         self.ui.setupUi(self)
         self.setWindowTitle("Kies uw functie")
         self.ui.btnAdviseur.clicked.connect(self.btnAdviseurClicked)
@@ -48,10 +51,11 @@ class Inloggen(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("Inloggen scherm geopend")
-        Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\2InlogBeheerder.ui".format(sys.path[0]))
+        inlog_UI = uic.loadUiType("{}\\2InlogBeheerder.ui".format(sys.path[0]))[0]
+        #Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\2InlogBeheerder.ui".format(sys.path[0]))
         super(Inloggen, self).__init__()
         self.book = book
-        self.ui = Ui_MainWindow2()
+        self.ui = inlog_UI()
         self.ui.setupUi(self)
         self.setWindowTitle("Inloggen als beheerder")
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
@@ -95,10 +99,11 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("Beheerderkeuzes scherm geopend")
-        Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\Beheerderkeuzes.ui".format(sys.path[0]))
+        Beheerkeuzes_UI = uic.loadUiType("{}\\Beheerderkeuzes.ui".format(sys.path[0]))[0]
+        #Ui_MainWindow2, QtBaseClass2 = uic.loadUiType("{}\\Beheerderkeuzes.ui".format(sys.path[0]))
         super(Beheerderkeuzes, self).__init__()
         self.book = book
-        self.ui = Ui_MainWindow2()
+        self.ui = Beheerkeuzes_UI()
         self.ui.setupUi(self)
         self.setWindowTitle("Beheerderkeuzes")
         self.ui.btnGegevensWijzigen.clicked.connect(self.btnGegevensWijzigenClicked)
@@ -169,10 +174,11 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("Deelnemerselectie scherm geopend")
-        Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
+        Deelnemerselectie_UI = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))[0]
+        #Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
         super(Deelnemerselectie, self).__init__()
         self.book = book
-        self.ui = Ui_MainWindow3()
+        self.ui = Deelnemerselectie_UI()
         self.ui.setupUi(self)
         self.setWindowTitle("Deelnemerselectie")
         self.deelnemerlijst = functions.getDeelnemersbestand(self.book)
@@ -266,10 +272,11 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("Deelnemer toevoegen scherm geopend")
-        Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
+        deelnemertoevoegen_UI = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))[0]
+        #Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
         super(Deelnemertoevoegen, self).__init__()
         self.book = book
-        self.ui = Ui_MainWindow4()
+        self.ui = deelnemertoevoegen_UI()
         self.ui.setupUi(self)
         self.setWindowTitle("Deelnemer toevoegen")
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
@@ -455,7 +462,8 @@ class Flexmenu(QtWidgets.QMainWindow):
     def __init__(self, book, deelnemer, logger, titel = ""):
         self._logger = logger
         self._logger.info("Flexmenu scherm geopend")
-        Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
+        Flexmenu_UI = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))[0]
+        #Ui_MainWindow5, QtBaseClass5 = uic.loadUiType("{}\\flexmenu.ui".format(sys.path[0]))
         super(Flexmenu, self).__init__()
         self.book = book
         self.opslaanCount = 0 #Teller voor aantal opgeslagen flexibilisaties.
@@ -478,7 +486,7 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         
         # Setup van UI
-        self.ui = Ui_MainWindow5()
+        self.ui = Flexmenu_UI()
         self.ui.setupUi(self)
         self.setWindowTitle("Flexibilisatie menu") #Het moet na de setup, daarom staat het nu even hier
         
@@ -1302,10 +1310,11 @@ class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
     def __init__(self, book, logger):
         self._logger = logger
         self._logger.info("DeelnemerselectieBeheerder scherm geopend")
-        Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
+        DeelnemerselectieBeheerder_UI = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))[0]
+        #Ui_MainWindow3, QtBaseClass3 = uic.loadUiType("{}\\deelnemerselectie.ui".format(sys.path[0]))
         super(DeelnemerselectieBeheerder, self).__init__()
         self.book = book
-        self.ui = Ui_MainWindow3()
+        self.ui = DeelnemerselectieBeheerder_UI()
         self.ui.setupUi(self)
         self.setWindowTitle("Deelnemerselectie")
         self.deelnemerlijst = functions.getDeelnemersbestand(self.book)
@@ -1387,10 +1396,11 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
     def __init__(self, book, logger, deelnemer):
         self._logger = logger
         self._logger.info("Deelnemer wijzigen scherm geopend")
-        Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
+        DeelnemerWijzigen_UI = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))[0]
+        #Ui_MainWindow4, QtBaseClass4 = uic.loadUiType("{}\\4DeelnemerToevoegen.ui".format(sys.path[0]))
         super(DeelnemerWijzigen, self).__init__()
         self.book = book
-        self.ui = Ui_MainWindow4()
+        self.ui = DeelnemerWijzigen_UI()
         self.ui.setupUi(self)
         self.setWindowTitle("Deelnemer wijzigen")
         #naam button aanpassen

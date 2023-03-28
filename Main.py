@@ -164,8 +164,8 @@ def AfbeeldingKiezen():
         
         AOWverhaal1 = "Vanaf 67 jaar en 3 maanden krijgt u"
         AOWverhaal2 = AOW + " aan AOW per jaar"
-        pdf_canvas.drawString(40, verhaallijn-28, AOWverhaal1)
-        pdf_canvas.drawString(40, verhaallijn-42, AOWverhaal2)
+        pdf_canvas.drawString(40, verhaallijn-42, AOWverhaal1)
+        pdf_canvas.drawString(40, verhaallijn-56, AOWverhaal2)
         
         
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
