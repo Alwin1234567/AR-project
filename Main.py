@@ -18,6 +18,46 @@ Body
 Hier komen alle functies
 """
 
+#hulp-berichten die verwerkt bij knoppen in sommige schermen moeten komen
+def BeheerderHelp():
+    
+    #mogelijke help-berichten definiëren
+    GegevensWijzigen = "'Gegevens wijzigen' opent het deelnemerselectiescherm. Hierin selecteerd u de deelnemer waarvan u de gegevens wilt wijzigen. Daarna opent een scherm waarin alle deelnemergegevens ingevuld staan en kunt u hierin wijzigingen aanbrengen.\n"
+    Beheren = "'Beheren' sluit dit scherm en maakt alle sheets zichtbaar en bewerkbaar. Hierdoor kunt u gegevens inzien en wijzigen.\n"
+    Adviseren = "'Adviseren' opent het deelnemerselectiescherm waarin u een nieuwe deelnemer kunt selecteren om een flexibilisatie voor uit te voeren. Om door te gaan met de vorige deelnemer kunt u dit scherm sluiten met het kruisje rechtbovenin.\n"
+    Uitloggen = "'Uitloggen' logt u als beheerder uit. U kunt nog steeds flexibilisaties uitvoeren en de huidige flexibilisaties blijven bewaard, maar u kunt niet alle gegevens meer inzien of wijzigen.\n"
+    
+    bericht = f"Dit is een uitleg van de beheerderkeuzes: \n\n{GegevensWijzigen}\n{Beheren}\n{Adviseren}\n{Uitloggen}\n"
+    
+    #messagebox met help-bericht maken
+    functions.Mbox("Help bij vergelijken", bericht, 0)
+    
+def SelectieHelp():
+    
+    #mogelijke help-berichten definiëren
+    NieuweDeelnemer = "'Nieuwe deelnemer toevoegen' opent een scherm waarin u de gegevens van de nieuwe deelnemer kunt invullen. Door op 'Toevoegen' te klikken wordt de deelnemer toegevoegd en is deze terug te vinden in de deelnemerselectie.\n"
+    Selecteren = ""
+    
+    
+    bericht = f"Dit is een uitleg voor het selecteren van een deelnmer: \n\n{NieuweDeelnemer}\n{Selecteren}\n"
+    #messagebox met help-bericht maken
+    functions.Mbox("Help bij vergelijken", bericht, 0)
+    
+    
+def ToevoegenHelp():
+    
+    #mogelijke help-berichten definiëren
+    Persoonsgegevens = ""
+    Pensioengegevens = ""
+    
+    bericht = f"Dit is een uitleg voor het toevoegen van een deelnemer: \n\n{Persoonsgegevens}\n{Pensioengegevens}\n"
+    
+    #messagebox met help-bericht maken
+    functions.Mbox("Help bij vergelijken", bericht, 0)
+    
+    
+
+
 @xw.sub
 def VergelijkenHelp():
     book = xw.Book.caller()
