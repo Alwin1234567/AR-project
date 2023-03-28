@@ -10,7 +10,7 @@ import Klassen_Schermen
 from logging import getLogger
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import cm
-import mplwidget
+import mplwidget #zodat deze ook in de Frozen variant geïmporteerd word
 
 
 """
