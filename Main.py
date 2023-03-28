@@ -19,6 +19,30 @@ Hier komen alle functies
 """
 
 @xw.sub
+def VergelijkenHelp():
+    book = xw.Book.caller()
+    
+    #mogelijke help-berichten definiëren
+    Kiezen = "'Kiezen' maakt een pdf bestand van de gekozen flexibilisatie aan. Hierin staan de gegevens van het originele en het geselecteerde pensioen en kunnen deze vergeleken worden.\n"
+    Verwijderen = "'Verwijderen' verwijderd de gekozen flexibilisatie van de vergelijken sheet en uit de opslag.\n"
+    Aanpassen = "'Aanpassen' opent het flexibilisatiemenu met daarin de flexibilisaties van de gekozen flexibilisatie ingeladen. Dit kunt u gebruiken om verder te flexibiliseren. De gekozen flexibilisatie blijft opgeslagen staan op de vergelijken sheet.\n"
+    NieuweFlex = "'Nieuwe flexibilisatie' opent het flexibilisatiemenu, waardoor er een nieuwe flexibilisatie voor de huidige deelnemer uitgevoerd kan worden.\n"
+    AndereDeelnemer = "'Andere deelnemer' opent het deelnemerselectiescherm om een flexibilisatie voor een nieuwe deelnemer te starten.\n"
+    Inloggen = "'Inloggen' opent het inlogscherm voor beheerders. Een beheerder kan gegevens inzien en wijzigen.\n"
+    Beheerderkeuzes = "'Beheerderkeuzes' opent het beheerderkeuzes scherm waarmee gegevens ingezien en gewijzigd kunnen worden.\n"
+    Uitloggen = "'Uitloggen' logt u als beheerder uit. U kunt nog steeds flexibilisaties uitvoeren en de huidige flexibilisaties blijven bewaard, maar u kunt niet alle gegevens meer inzien of wijzigen.\n"
+    Vergelijken = "U kunt flexibilisaties met elkaar vergelijken door deze in de drop down menu's in de vakken linksonder het knoppenmenu te selecteren. Hierdoor worden de afbeeldingen verplaatst en kunt u ze naast elkaar zetten. Door '-' of een andere afbeelding te selecteren verplaatst de vorige afbeelding terug naar zijn originele plek.\n"
+    
+    bericht = f"Dit is een uitleg van wat u kunt op de vergelijken sheet: \n\n{Kiezen}\n{Verwijderen}\n{Aanpassen}\n{NieuweFlex}\n{AndereDeelnemer}\n"
+    if functions.isBeheerder(book):
+        bericht = bericht + f"{Uitloggen}\n{Beheerderkeuzes}\n{Vergelijken}\n"
+    else:
+        bericht = bericht + f"{Inloggen}\n{Vergelijken}\n"
+    
+    #messagebox met help-bericht maken
+    functions.Mbox("Help bij vergelijken", bericht, 0)
+
+@xw.sub
 def AfbeeldingVerplaatsen(vak):
     book = xw.Book.caller()
     vergelijken = book.sheets["Vergelijken"]
