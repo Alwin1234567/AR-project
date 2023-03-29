@@ -1734,8 +1734,8 @@ def nieuwe_pagina(pdf, halfbreedte):
     #Maakt een streep in het midden van de pagina om zo oud en nieuw te splitsen
     pdf.line(halfbreedte, 0, halfbreedte, cm* 29.7)
     pdf.setFont("Helvetica", 30)
-    pdf.drawString(40, 770, "Nieuw")
-    pdf.drawString(halfbreedte + 40, 770, "Oud")
+    pdf.drawString(30, 770, "Nieuw")
+    pdf.drawString(halfbreedte + 30, 770, "Oud")
     pdf.setFont("Helvetica", 11)
     
     
