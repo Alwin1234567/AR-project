@@ -16,8 +16,9 @@ from os.path import exists
 import sys
 from string import ascii_uppercase
 import matplotlib.pyplot as plt
-from reportlab.lib.units import cm
+from reportlab.lib.units import cm, ImageReader
 from pathlib import Path
+from cStringIO import StringIO
 
 """
 Body
@@ -1347,7 +1348,7 @@ def leesLimietMeldingen(sheet, flexibilisaties, huidigRegelingNaam):
             return bereik
 
         
-def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
+def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, titel = ""):
     """
     Maakt de afbeelding in het flexscherm.
 
@@ -1468,7 +1469,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
         ax.set_xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
         ax.set_title(titel, fontweight='bold')
     
-    if sheet != None:
+    if sheet != None or pdf:
         if ID == 0:
             locatie = sheet.range((14,2))
         else:
@@ -1491,19 +1492,29 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, titel = ""):
         plt.suptitle(titel, fontweight='bold')
         plt.xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
         
-        
-        #sheet unprotecten
-        sheet.api.Unprotect(Password = wachtwoord())
-        #afbeelding opslaan op sheet
-        if ID == 0:
-            try:
-                sheet.pictures.add(afbeelding, update = True, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
-            except:
+        if sheet != None:
+            #sheet unprotecten
+            sheet.api.Unprotect(Password = wachtwoord())
+            #afbeelding opslaan op sheet
+            if ID == 0:
+                try:
+                    sheet.pictures.add(afbeelding, update = True, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
+                except:
+                    sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
+            else:
                 sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
-        else:
-            sheet.pictures.add(afbeelding, top = locatie.top, left = locatie.left, height = 300, name = "Vergelijking {}".format(ID))
-        #sheet protecten
-        ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord(), Contents=False)
+            #sheet protecten
+            ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord(), Contents=False)
+        if pdf:
+            # Credits to launchpadmcquack on Stackoverflow
+            # https://stackoverflow.com/questions/18897511/how-to-drawimage-a-matplotlib-figure-in-a-reportlab-canvas
+            afbeeldingData = StringIO()
+            afbeelding.savefig(afbeeldingData, format='png')
+            afbeeldingData.seek(0)  # rewind the data
+            
+            Image = ImageReader(afbeeldingData)
+            return Image
+
         
 
 def vergelijken_keuzes():

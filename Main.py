@@ -178,11 +178,11 @@ def AfbeeldingKiezen():
         
         #staat online, geeft ook bijmij binnnen python een error dus werkt waarschijnlijk niet
         #save_pad = os.path.join(os.path.expanduser("~"),"C:\Users\mitch\OneDrive\Documenten\ " , pdf_name) 
-        
+        save_pad = "{}\naam_pdf".format(functions.krijgpad)
         pdf_canvas = Canvas(naam_pdf)
         pdf_canvas.setFont("Helvetica", 11)
         halfbreedte = cm*10.5
-        
+        # pdf_canvas(maak_afbeelding(Deelnemer, pdf = True, titel = gekozenAfbeelding))
         totOPoud = 0
         pdf_canvas.drawString(40+halfbreedte, 550, "Met uw oude pensioen")
         for i in eenperjaaroud:
