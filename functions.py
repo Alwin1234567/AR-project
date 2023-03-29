@@ -16,9 +16,11 @@ from os.path import exists
 import sys
 from string import ascii_uppercase
 import matplotlib.pyplot as plt
-from reportlab.lib.units import cm, ImageReader
+from reportlab.lib.units import cm
+from reportlab.lib.utils import ImageReader
 from pathlib import Path
-from cStringIO import StringIO
+#from cStringIO import StringIO     Gaf error dat niet bestond, google gaf die eronder aan (geen error bij mij meer)
+from io import StringIO 
 
 """
 Body

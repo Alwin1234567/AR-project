@@ -157,12 +157,16 @@ def AfbeeldingKiezen():
             pensioen.append(i.ouderdomsPensioen)        #3
             pensioen.append(i.partnerPensioen)          #4
             oudpensioen.append(pensioen)            
+            
+            
+        Fonds = functions.getPensioeninformatie(book)
         
         if deelnemer.burgelijkeStaat == "Samenwonend":    
-            AOW = "€11681,32"
+            AOW = "€" + str(int(float(Fonds[0].samenwondendAOW)))
         else:
-            AOW = "€17169.60"
-        
+            AOW = "€" + str(int(float(Fonds[0].alleenstaandAOW)))
+            
+
         nieuwpensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
         
         eenperjaar = functions.geld_per_leeftijd(oudpensioen, nieuwpensioen)
@@ -182,7 +186,8 @@ def AfbeeldingKiezen():
         pdf_canvas = Canvas(naam_pdf)
         pdf_canvas.setFont("Helvetica", 11)
         halfbreedte = cm*10.5
-        # pdf_canvas(maak_afbeelding(Deelnemer, pdf = True, titel = gekozenAfbeelding))
+        
+       
         totOPoud = 0
         pdf_canvas.drawString(40+halfbreedte, 550, "Met uw oude pensioen")
         for i in eenperjaaroud:
@@ -234,12 +239,14 @@ def AfbeeldingKiezen():
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
         startschrijfhoogte = 720
         schrijfhoogte = startschrijfhoogte
+        
+        #oudpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = gekozenAfbeelding)
         # oudpensioenimg = "pensioenplaatje.png"
         # nieuwpensioenimg = "pensioenplaatje2.png"
         
         # pdf_canvas.drawImage(nieuwpensioenimg, 40, 575, 250, 193)
-        # pdf_canvas.drawImage(oudpensioenimg, 40 + halfbreedte, 575, 250, 193)
-        # nieuwe_pagina(pdf_canvas, halfbreedte)
+        #pdf_canvas.drawImage(oudpensioenimg, 40 + halfbreedte, 575, 250, 193)
+        
         #staat nog in commentaar, omdat een manier van afbeelding maken/lezen moet worden gevonden
         
         #Samenvattingen
