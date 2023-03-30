@@ -269,10 +269,10 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         #mogelijke help-berichten definiëren
         NieuweDeelnemer = "'Nieuwe deelnemer toevoegen' opent een scherm waarin u de gegevens van de nieuwe deelnemer kunt invullen. Door op 'Toevoegen' te klikken wordt de deelnemer toegevoegd en is deze terug te vinden in de deelnemerselectie.\n"
         Selecteren = "In het linkerdeel kunt u de gegevens van de deelnemer die u zoekt, invullen. In het rechtervak worden deelnemers getoont die voldoen aan uw zoektermen. Hoe meer deelnemersgegevens u invult, hoe specifieker de zoekresultaten worden.\n"
-        Terug = "'Terug' sluit het huidige scherm en opent het deelnemerselectiescherm.\n"
+        Terug = "'Terug' sluit het huidige scherm en opent het vorige scherm.\n"
         
         
-        bericht = f"Dit is een uitleg voor het selecteren van een deelnmer: \n\n{NieuweDeelnemer}\n{Selecteren}\n{Terug}\n"
+        bericht = f"Dit is een uitleg voor het selecteren van een deelnemer: \n\n{NieuweDeelnemer}\n{Selecteren}\n{Terug}\n"
         #messagebox met help-bericht maken
         functions.Mbox("Help bij selecteren", bericht, 0)
         
@@ -1375,6 +1375,7 @@ class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
         #buttons connecten
         self.ui.btnStartFlexibiliseren.clicked.connect(self.btnGegevensWijzigenClicked)
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
+        self.ui.btnHelp.clicked.connect(self.btnHelpClicked)
         self.ui.sbDag.valueChanged.connect(lambda: self.onChange(False))
         self.ui.sbMaand.valueChanged.connect(lambda: self.onChange(True))
         self.ui.sbJaar.valueChanged.connect(lambda: self.onChange(True))
@@ -1421,6 +1422,16 @@ class DeelnemerselectieBeheerder(QtWidgets.QMainWindow):
             self.windowstart = Functiekeus(self.book, self._logger)
             self.windowstart.show()
     
+    def btnHelpClicked(self):
+        #mogelijke help-berichten definiëren
+        NieuweDeelnemer = "'Gegevens wijzigen' opent een scherm waarin u de gegevens van de nieuwe deelnemer kunt invullen. Door op 'Wijzigen' te klikken wordt de deelnemergegevens gewijzigd en is deze terug te vinden in de deelnemerselectie.\n"
+        Selecteren = "In het linkerdeel kunt u de huidige gegevens van de deelnemer die u zoekt, invullen. In het rechtervak worden deelnemers getoont die voldoen aan uw zoektermen. Hoe meer deelnemersgegevens u invult, hoe specifieker de zoekresultaten worden.\n"
+        Terug = "'Terug' sluit het huidige scherm en opent het scherm met beheerderkeuzes.\n"
+        
+        bericht = f"Dit is een uitleg voor het selecteren van een deelnemer: \n\n{NieuweDeelnemer}\n{Selecteren}\n{Terug}\n"
+        #messagebox met help-bericht maken
+        functions.Mbox("Help bij selecteren", bericht, 0)
+    
     def clearError(self): self.ui.lblFoutmeldingKiezen.clear()
         
     def onChange(self, datumChange):
@@ -1457,6 +1468,7 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
         #buttons connecten
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
         self.ui.btnToevoegen.clicked.connect(self.btnWijzigenClicked)
+        self.ui.btnHelp.clicked.connect(self.btnHelpClicked)
         self.ui.sbMaand.valueChanged.connect(self.onChange)
         self.ui.sbJaar.valueChanged.connect(self.onChange)
         self._30maand = [4,6,9,11]
@@ -1517,11 +1529,24 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
         self._logger.info("Deelnemer wijzigen scherm gesloten")
         self._windowdeelnemer = DeelnemerselectieBeheerder(self.book, self._logger)
         self._windowdeelnemer.show()
+    
+    def btnHelpClicked(self):
+        #mogelijke help-berichten definiëren
+        Persoonsgegevens = "Uw persoonsgegevens zijn nodig om u terug te kunnen vinden of om flexibilisaties uit te voeren.\n"
+        HuidigeRegeling = "De 'Huidige regeling' is de regeling waarbij u nu pensioen aan het opbouwen bent. Als u inactief bent, hoeft u deze niet in te vullen.\n"
+        OpgebouwdePensioenen = "Uw opgebouwde pensioenen kunt u aanvinken en dan kunt u uw ouderdomspensioen (en uw partnerpensioen) invullen. Hierbij mag uw partnerpensioen niet meer dan 70% van uw ouderdomspensioen zijn.\n"
+        Terug = "'Terug' sluit het huidige scherm en opent het deelnemerselectiescherm.\n"
         
+        bericht = f"Dit is een uitleg voor het wijzigen van deelnemergegevens: \n\n{HuidigeRegeling}\n{OpgebouwdePensioenen}\n{Persoonsgegevens}\n{Terug}\n"
+        
+        #messagebox met help-bericht maken
+        functions.Mbox("Help bij toevoegen", bericht, 0)
+    
     def btnWijzigenClicked(self):
         #lege foutmeldingen aanmaken
         foutmeldingGegevens = ""
         foutmeldingPensioen = ""
+        verhoudingFout = ""
         AantalPensioenen = 0 #teller voor aantal afgeronde pensioenopbouwen
         FouteRegelingen = [] #lijst met pensioenregelingen met foute invoer
         #controleer persoonsgegevens
@@ -1535,11 +1560,11 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                 else: 
                     foutmeldingGegevens = "Uw werkinformatie is niet (goed) ingevuld. "
                 
-        #controleer of de deelnemer al de pensioenleeftijd heeft behaald
-        if self.ui.sbJaar.text() < str(functions.pensioensdatum())[3:7]:
-            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
-        elif self.ui.sbJaar.text() == str(functions.pensioensdatum())[3:7] and int(self.ui.sbMaand.text()) < int(str(functions.pensioensdatum())[0:2]):
-            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
+        #controleer of geboortedatum deelnemer in de toekomst ligt
+        geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text()))
+        huidigeDatum = datetime.now()
+        if geboortedatum > huidigeDatum:
+            foutmeldingGegevens = foutmeldingGegevens + "Uw geboortedatum ligt in de toekomst. "
         
         #controleer pensioengegevens
         #lijst met pensioensgegevens [regeling, ZL, AegonOP65, AegonOP67, NNOP65, NNPP65,NNOP67, NNPP67, PFVLCOP68, PFVLCPP68]
@@ -1556,6 +1581,13 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                 for x in i[1:-1]:
                     if functions.isfloat(x.text()) == True:   #Er is een getal-waarde ingevuld
                         Pensioensgegevens[tellerPensioenen] = float(x.text().replace(".", "").replace(",", "."))
+                        #controle verhouding OP:PP kleiner dan 100:70
+                        if i[-1] in ["NN65", "NN67", "VLC"] and i[1].text() != "" and i[2].text() != "" and x.text() == i[1].text(): 
+                            #alleen voor regelingen met PP, als beiden ingevuld zijn en het de eerste loop voor dit pensioen is.
+                            verhouding = float(i[2].text().replace(".", "").replace(",", "."))/float(i[1].text().replace(".", "").replace(",", "."))
+                            if verhouding > 0.7:
+                                #als verhouding groter dan 100:70, pensioen toevoegen aan foutmelding
+                                verhoudingFout = verhoudingFout + ", " + i[-1]
                     else:
                         FouteRegelingen.append(i[-1])   #regeling aan foutmelding toevoegen
                     tellerPensioenen += 1
@@ -1564,17 +1596,7 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                     if functions.isfloat(x.text()) == True:   #wel een getal-waarde ingevuld, maar pensioen niet aangevinkt
                         FouteRegelingen.append(i[-1])
                 tellerPensioenen += len(i)-2        #tellerPensioenen ophogen met aantal pensioenopties OP of OP+PP
-        
-        #controleren of OP:PP verhouding kleiner is dan 100:70
-        verhoudingFout = ""
-        PPRegelingen = ["NN65", "NN67", "VLC"]  #pensioenen met PP
-        for i in range(4,10,2):
-            #kijken of pensioen ingevuld is.
-            if Pensioensgegevens[i] != "":
-                verhouding = (Pensioensgegevens[i+1])/(Pensioensgegevens[i])
-                if verhouding > 0.7:
-                    #als verhouding groter dan 100:70, pensioen toevoegen aan foutmelding
-                    verhoudingFout = verhoudingFout + ", " + PPRegelingen[int(i/2 - 2)]
+
         
         #foutmelding pensioensgegevens genereren
         if AantalPensioenen == 0 and len(FouteRegelingen) == 0: #foutmelding als er geen regeling aangegeven is
@@ -1589,7 +1611,6 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
         
         #gegevens invullen of foutmelding geven
         if foutmeldingGegevens == "" and foutmeldingPensioen == "":
-            geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text()))
             achternaam = self.ui.txtAchternaam.text()[0].upper() + self.ui.txtAchternaam.text()[1:]
             #voorletters met hoofdletters en punten ertussen
             voorletters = ""
