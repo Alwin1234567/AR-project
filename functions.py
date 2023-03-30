@@ -393,11 +393,24 @@ def filterkolom(deelnemerlijst, zoekterm, attribuutnaam):
     return kleinDeelnemerlijst
 
 
-def pensioensdatum(pensioenJaar = 67, pensioenMaand = 3):
+def pensioensdatum(pensioenJaar = 67, pensioenMaand = 3, vorm = "dmj"):
     """
     Functie die het geboortejaar en maand van mensen op pensioensleeftijd uitrekent en teruggeeft
-    input : -
-    output : geboortejaar en maand van mensen op pensioensleeftijd
+
+    Parameters
+    ----------
+    pensioenJaar : integer, optional
+        Jaren van de pensioenleeftijd. The default is 67.
+    pensioenMaand : integer, optional
+        Maanden van de pensioenleeftijd. The default is 3.
+    vorm : string, optional
+        Geeft aan of allen de dag-maand-jaar vorm of het hele datetime-object ndoig is. The default is "dmj".
+
+    Returns
+    -------
+    pensioendatum of pensioendatumDMJ (Afhankelijk van gekozen vorm)
+        geboortedatum van mensen op de meegegeven pensioenleeftijd.
+
     """
     
     huidigeDatum = datetime.today()
@@ -410,10 +423,13 @@ def pensioensdatum(pensioenJaar = 67, pensioenMaand = 3):
     else: 
         nieuweJaar = huidigeDatum.year - pensioenJaar
     dag = min(datetime.now().day, 28)
-    pensioensdatum = datetime(nieuweJaar, nieuweMaand, dag, 1)
-    pensioensdatum = pensioensdatum.strftime("%d-%m-%Y")
+    pensioensdatum = datetime(nieuweJaar, nieuweMaand, dag)
+    pensioensdatumDMJ = pensioensdatum.strftime("%d-%m-%Y")
     
-    return pensioensdatum
+    if vorm == "dmj":
+        return pensioensdatumDMJ
+    else:
+        return pensioensdatum
 
 def isfloat(string):
     """

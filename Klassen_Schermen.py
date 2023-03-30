@@ -239,17 +239,19 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         deelnemer.activeerFlexibilisatie()
         
         geboortedatum = deelnemer.geboortedatum
-        geboortedatum = geboortedatum.strftime("%d-%m-%Y")
+        #AOW-leeftijd opvragen
         for i in deelnemer.pensioenen:
             if i.pensioenSoortRegeling == "AOW":
                 AOW_leeftijd = i.pensioenleeftijd
         AOWjaar = int(AOW_leeftijd)//1 
         AOWmaand = (int(AOW_leeftijd)%1) * 12        
-        AOWdatum = functions.pensioensdatum(AOWjaar, AOWmaand)
+        AOWdatum = functions.pensioensdatum(AOWjaar, AOWmaand, vorm = "volledig")
+        #geboortedatum vergelijken met AOW-datum
         if geboortedatum < AOWdatum:
             #deelnemer is al met pensioen
             self.ui.lblFoutmeldingKiezen.setText("Deze deelnemer heeft de pensioenleeftijd al bereikt. Hiervoor kunnen geen flexibilisaties meer uitgevoerd worden.")
         else:
+            #deelnemer is nog niet met pensioen, dus flexibilisaties kunnen gestart worden
             #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag en vergelijken sheet
             functions.opslagLegen(self.book, self._logger)
                     
@@ -1628,7 +1630,7 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
             Deelnemersgegevens = [achternaam, self.ui.txtTussenvoegsel.text(), voorletters, geboortedatum, self.ui.cbGeslacht.currentText(), 
                                   self.ui.cbBurgerlijkeStaat.currentText(), fulltimeLoon, ptPercentage]
                         
-                        
+                       
             #geboortedatum in goede notatie voor invoer in excel
             geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text())).strftime("%m-%d-%Y")
             Deelnemersgegevens[3] = geboortedatum
