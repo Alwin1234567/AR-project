@@ -30,7 +30,7 @@ def BeheerderHelp():
     bericht = f"Dit is een uitleg van de beheerderkeuzes: \n\n{GegevensWijzigen}\n{Beheren}\n{Adviseren}\n{Uitloggen}\n"
     
     #messagebox met help-bericht maken
-    functions.Mbox("Help bij vergelijken", bericht, 0)
+    functions.Mbox("Help bij beheerderkeuzes", bericht, 0)
     
 def SelectieHelp():
     
@@ -42,7 +42,7 @@ def SelectieHelp():
     
     bericht = f"Dit is een uitleg voor het selecteren van een deelnmer: \n\n{NieuweDeelnemer}\n{Selecteren}\n{Terug}\n"
     #messagebox met help-bericht maken
-    functions.Mbox("Help bij vergelijken", bericht, 0)
+    functions.Mbox("Help bij selecteren", bericht, 0)
     
     
 def ToevoegenHelp():
@@ -56,7 +56,7 @@ def ToevoegenHelp():
     bericht = f"Dit is een uitleg voor het toevoegen van een deelnemer: \n\n{Persoonsgegevens}\n{HuidigeRegeling}\n{OpgebouwdePensioenen}\n{Terug}\n"
     
     #messagebox met help-bericht maken
-    functions.Mbox("Help bij vergelijken", bericht, 0)
+    functions.Mbox("Help bij toevoegen", bericht, 0)
     
     
 

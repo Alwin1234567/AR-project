@@ -112,6 +112,7 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self.ui.btnBeheren.clicked.connect(self.btnBeherenClicked)
         self.ui.btnAdviseren.clicked.connect(self.btnAdviserenClicked)
         self.ui.btnUitloggen.clicked.connect(self.btnUitloggenClicked)
+        self.ui.btnHelp.clicked.connect(self.btnHelpClicked)
         
         #sheets definieren
         self.sheets = ["Sterftetafels", "AG2020", "Berekeningen", "deelnemersbestand", "Gegevens pensioencontracten", "Flexopslag", "Flexopslag"]
@@ -142,8 +143,7 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         #scherm sluiten
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
-        
-        
+       
                 
     def btnAdviserenClicked(self):
         #scherm sluiten
@@ -173,7 +173,18 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         self._windowkeus = Functiekeus(self.book, self._logger)
         self._windowkeus.show()
         functions.Mbox("Uitgelogd", "U bent nu uitgelogd.", 0)
-               
+    
+    def btnHelpClicked(self):
+        #mogelijke help-berichten definiëren
+        GegevensWijzigen = "'Gegevens wijzigen' opent het deelnemerselectiescherm. Hierin selecteerd u de deelnemer waarvan u de gegevens wilt wijzigen. Daarna opent een scherm waarin alle deelnemergegevens ingevuld staan en kunt u hierin wijzigingen aanbrengen.\n"
+        Beheren = "'Beheren' sluit dit scherm en maakt alle sheets zichtbaar en bewerkbaar. Hierdoor kunt u gegevens inzien en wijzigen.\n"
+        Adviseren = "'Adviseren' opent het deelnemerselectiescherm waarin u een nieuwe deelnemer kunt selecteren om een flexibilisatie voor uit te voeren. Om door te gaan met de vorige deelnemer kunt u dit scherm sluiten met het kruisje rechtbovenin.\n"
+        Uitloggen = "'Uitloggen' logt u als beheerder uit. U kunt nog steeds flexibilisaties uitvoeren en de huidige flexibilisaties blijven bewaard, maar u kunt niet alle gegevens meer inzien of wijzigen.\n"
+        
+        bericht = f"Dit is een uitleg van de beheerderkeuzes: \n\n{GegevensWijzigen}\n{Beheren}\n{Adviseren}\n{Uitloggen}\n"
+        
+        #messagebox met help-bericht maken
+        functions.Mbox("Help bij beheerderkeuzes", bericht, 0)
 
 
 class Deelnemerselectie(QtWidgets.QMainWindow):
@@ -191,6 +202,7 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self.kleinDeelnemerlijst = list()
         self.ui.btnDeelnemerToevoegen.clicked.connect(self.btnDeelnemerToevoegenClicked)
         self.ui.btnStartFlexibiliseren.clicked.connect(self.btnStartFlexibiliserenClicked)
+        self.ui.btnHelp.clicked.connect(self.btnHelpClicked)
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
         self.ui.sbDag.valueChanged.connect(lambda: self.onChange(False))
         self.ui.sbMaand.valueChanged.connect(lambda: self.onChange(True))
@@ -238,6 +250,17 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         try: functions.maak_afbeelding(deelnemer, sheet = self.book.sheets["Vergelijken"], ID = 0, titel = "0 - Originele pensioen")
         except: 
             self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
+    
+    def btnHelpClicked(self):
+        #mogelijke help-berichten definiëren
+        NieuweDeelnemer = "'Nieuwe deelnemer toevoegen' opent een scherm waarin u de gegevens van de nieuwe deelnemer kunt invullen. Door op 'Toevoegen' te klikken wordt de deelnemer toegevoegd en is deze terug te vinden in de deelnemerselectie.\n"
+        Selecteren = "In het linkerdeel kunt u de gegevens van de deelnemer die u zoekt, invullen. In het rechtervak worden deelnemers getoont die voldoen aan uw zoektermen. Hoe meer deelnemersgegevens u invult, hoe specifieker de zoekresultaten worden.\n"
+        Terug = "'Terug' sluit het huidige scherm en opent het deelnemerselectiescherm.\n"
+        
+        
+        bericht = f"Dit is een uitleg voor het selecteren van een deelnmer: \n\n{NieuweDeelnemer}\n{Selecteren}\n{Terug}\n"
+        #messagebox met help-bericht maken
+        functions.Mbox("Help bij selecteren", bericht, 0)
         
     def btnTerugClicked(self):
         #scherm sluiten
@@ -287,6 +310,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         self.setWindowTitle("Deelnemer toevoegen")
         self.ui.btnTerug.clicked.connect(self.btnTerugClicked)
         self.ui.btnToevoegen.clicked.connect(self.btnToevoegenClicked)
+        self.ui.btnHelp.clicked.connect(self.btnHelpClicked)
         self.ui.sbMaand.valueChanged.connect(self.onChange)
         self.ui.sbJaar.valueChanged.connect(self.onChange)
         self._30maand = [4,6,9,11]
@@ -314,6 +338,18 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         self._logger.info("Deelnemer toevoegen scherm gesloten")
         self._windowdeelnemer = Deelnemerselectie(self.book, self._logger)
         self._windowdeelnemer.show()
+    
+    def btnHelpClicked(self):
+        #mogelijke help-berichten definiëren
+        Persoonsgegevens = "Uw persoonsgegevens zijn nodig om u terug te kunnen vinden of om flexibilisaties uit te voeren.\n"
+        HuidigeRegeling = "De 'Huidige regeling' is de regeling waarbij u nu pensioen aan het opbouwen bent. Als u inactief bent, hoeft u deze niet in te vullen.\n"
+        OpgebouwdePensioenen = "Uw opgebouwde pensioenen kunt u aanvinken en dan kunt u uw ouderdomspensioen (en uw partnerpensioen) invullen. Hierbij mag uw partnerpensioen niet meer dan 70% van uw ouderdomspensioen zijn.\n"
+        Terug = "'Terug' sluit het huidige scherm en opent het deelnemerselectiescherm.\n"
+        
+        bericht = f"Dit is een uitleg voor het toevoegen van een deelnemer: \n\n{HuidigeRegeling}\n{OpgebouwdePensioenen}\n{Persoonsgegevens}\n{Terug}\n"
+        
+        #messagebox met help-bericht maken
+        functions.Mbox("Help bij toevoegen", bericht, 0)
         
     def btnToevoegenClicked(self):
         #lege foutmeldingen aanmaken
