@@ -99,7 +99,8 @@ def getaltotijd(getal):
     jaar = int(getal)
     maand = round((getal - jaar) * 12)
     tijd = "{}j".format(jaar)
-    if maand > 0: tijd = tijd + " {}m".format(maand)
+    if maand > 0: tijd += " {}m".format(maand)
+    else: tijd += "   "
     return tijd
 
 def getaltogeld(getal): return "€{:.2f}".format(float(getal)).replace(".",",")
@@ -1461,15 +1462,13 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
     PPtotaal = 0
     for flexibilisatie in deelnemer.flexibilisaties: PPtotaal += flexibilisatie.partnerPensioen
     
-    # maak titel - titel al meegegeven bij aanroepen functie (Standaard "Een super coole title")
-    #titel = "Een super coole title"
     # maak de afbeeling
     if ax != None:
         ax.clear()
         for i in range(len(hoogtes) - 1): ax.stairs(hoogtes[i+1], edges = randen, baseline = hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
         
         ax.set_xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
-        ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation=30, horizontalalignment='right')
+        ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation = 90, horizontalalignment = 'center')
         ax.set_yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
     
         handles, labels = ax.get_legend_handles_labels()
@@ -1486,7 +1485,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
         for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
         
         plt.xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
-        plt.setp(plt.gca().get_xticklabels(), rotation=30, horizontalalignment='right')
+        plt.setp(plt.gca().get_xticklabels(), rotation=90, horizontalalignment='center')
         plt.yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
 
         handles, labels = plt.gca().get_legend_handles_labels()
