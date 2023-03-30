@@ -19,8 +19,8 @@ import matplotlib.pyplot as plt
 from reportlab.lib.units import cm
 from reportlab.lib.utils import ImageReader
 from pathlib import Path
-#from cStringIO import StringIO     Gaf error dat niet bestond, google gaf die eronder aan (geen error bij mij meer)
 from io import StringIO 
+
 
 """
 Body
@@ -305,7 +305,6 @@ def getDeelnemersbestand(book, rij = 0):
     for deelnemer in deelnemersbestand[1:]:
         informatie = [deelnemersbestand[0], deelnemer]
         deelnemerlijst.append(Deelnemer(informatie, pensioeninformatie))
-    
     
     if rij == 0: 
         return deelnemerlijst
@@ -1144,7 +1143,7 @@ def berekeningen_init(sheet, deelnemer, logger):
                      '=ROUND(C{0} * B{1} / B{2}, 0)'.format(blokhoogte + 7, blokhoogte + 13, blokhoogte + 14), "formuletekst"])
         blok.append(["OP en PP na uitruilen", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - MIN(B{2}, D{2})), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
                      '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * MIN(B{2}, D{2}) * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8), "formuletekst"])
-        blok.append(["Op en PP met hoog laag", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{2} + IF(C{0} = "Hoog-laag", MIN(C{1}, D{1}) * B{4}, MIN(C{1}, D{1}) * B{5}) / B{3}, 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16),\
+        blok.append(["Op met hoog laag", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{2} + IF(C{0} = "Hoog-laag", MIN(C{1}, D{1}) * B{4}, MIN(C{1}, D{1}) * B{5}) / B{3}, 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16),\
                      '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding", ROUND(C{1} * (B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{6} - MIN(C{1}, D{1}), 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16, blokhoogte + 10), "formuletekst"])
         
         blok.append(["Sommatie OP origineel", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 10), inttoletter(rekenblokstart + 11), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
@@ -1954,6 +1953,3 @@ def krijgpad():
     return Path(sys.executable).parent.parent.absolute()
         
         
-    
-    
-

@@ -24,6 +24,7 @@ class Pensioen():
         self._pensioen = pensioen
         self._actieveRegeling = False
         self._regelingsFactor = 0
+        self._AOWLeeftijd = 0
         if self._pensioen.soortRegeling == "DC":
             self._OP = 0
             self._PP = 0
@@ -53,7 +54,12 @@ class Pensioen():
     def pensioenSoortRegeling(self): return self._pensioen.soortRegeling
     
     @property
-    def pensioenleeftijd(self): return self._pensioen.pensioenleeftijd
+    def pensioenleeftijd(self):
+        if self._AOWLeeftijd == 0: return self._pensioen.pensioenleeftijd
+        return self._AOWLeeftijd
+    
+    @pensioenleeftijd.setter
+    def pensioenleeftijd(self, leeftijd): self._AOWLeeftijd = leeftijd
     
     @property
     def rente(self): return self._pensioen.rente
