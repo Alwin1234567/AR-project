@@ -12,6 +12,7 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import cm
 import mplwidget #zodat deze ook in de Frozen variant geïmporteerd word
 from reportlab.graphics import renderPDF
+import os
 
 """
 Body
@@ -142,10 +143,8 @@ def AfbeeldingKiezen():
         
         naam_pdf = gekozenAfbeelding + ".pdf"
         
-        #staat online, geeft ook bijmij binnnen python een error dus werkt waarschijnlijk niet
-        #save_pad = os.path.join(os.path.expanduser("~"),"C:\Users\mitch\OneDrive\Documenten\ " , pdf_name) 
-        save_pad = "{}\naam_pdf".format(functions.krijgpad)
-        pdf_canvas = Canvas(naam_pdf)
+        save_pad = os.path.join(functions.krijgpad(), naam_pdf)
+        pdf_canvas = Canvas(save_pad)
         pdf_canvas.setFont("Helvetica", 11)
         halfbreedte = cm*10.5
         
