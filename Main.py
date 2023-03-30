@@ -36,10 +36,11 @@ def SelectieHelp():
     
     #mogelijke help-berichten definiëren
     NieuweDeelnemer = "'Nieuwe deelnemer toevoegen' opent een scherm waarin u de gegevens van de nieuwe deelnemer kunt invullen. Door op 'Toevoegen' te klikken wordt de deelnemer toegevoegd en is deze terug te vinden in de deelnemerselectie.\n"
-    Selecteren = ""
+    Selecteren = "In het linkerdeel kunt u de gegevens van de deelnemer die u zoekt, invullen. In het rechtervak worden deelnemers getoont die voldoen aan uw zoektermen. Hoe meer deelnemersgegevens u invult, hoe specifieker de zoekresultaten worden.\n"
+    Terug = "'Terug' sluit het huidige scherm en opent het deelnemerselectiescherm.\n"
     
     
-    bericht = f"Dit is een uitleg voor het selecteren van een deelnmer: \n\n{NieuweDeelnemer}\n{Selecteren}\n"
+    bericht = f"Dit is een uitleg voor het selecteren van een deelnmer: \n\n{NieuweDeelnemer}\n{Selecteren}\n{Terug}\n"
     #messagebox met help-bericht maken
     functions.Mbox("Help bij vergelijken", bericht, 0)
     
@@ -47,10 +48,12 @@ def SelectieHelp():
 def ToevoegenHelp():
     
     #mogelijke help-berichten definiëren
-    Persoonsgegevens = ""
-    Pensioengegevens = ""
+    Persoonsgegevens = "Uw persoonsgegevens zijn nodig om u terug te kunnen vinden om flexibilisaties te doen of de flexibilisaties uit te voeren.\n"
+    HuidigeRegeling = "De 'Huidige regeling' is de regeling waarbij u nu pensioen aan het opbouwen bent. Als u inactief bent, hoeft u deze niet in te vullen.\n"
+    OpgebouwdePensioenen = "Uw opgebouwde pensioenen kunt u aanvinken en dan uw ouderdomspensioen (en uw partnerpensioen) invullen. Hierbij mag uw partnerpensioen niet meer dan 70% van uw ouderdomspensioen zijn.\n"
+    Terug = "'Terug' sluit het huidige scherm en opent het deelnemerselectiescherm.\n"
     
-    bericht = f"Dit is een uitleg voor het toevoegen van een deelnemer: \n\n{Persoonsgegevens}\n{Pensioengegevens}\n"
+    bericht = f"Dit is een uitleg voor het toevoegen van een deelnemer: \n\n{Persoonsgegevens}\n{HuidigeRegeling}\n{OpgebouwdePensioenen}\n{Terug}\n"
     
     #messagebox met help-bericht maken
     functions.Mbox("Help bij vergelijken", bericht, 0)
