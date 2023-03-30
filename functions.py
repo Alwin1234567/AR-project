@@ -1445,7 +1445,16 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
                 bedrag = float(hoogtes[i][j] + aanspraakHoog)
                 hoogtes[i+1].append(bedrag)
                 ywaardes.add(bedrag)
+    # set ywaardes en vermijd overlap in labels
     ywaardes = list(ywaardes)
+    ywaardes.sort(reverse = True)
+    
+    yschaal = max(ywaardes) / 16
+    ymax = ywaardes[0] * 2
+    for ywaarde in ywaardes:
+        if ymax - ywaarde < yschaal: ywaardes.remove(ywaarde)
+        else: ymax = ywaarde
+    ywaardes[-1] = 0
     ywaardes.sort()
     
     # bereken PP
