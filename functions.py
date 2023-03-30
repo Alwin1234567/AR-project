@@ -1953,6 +1953,58 @@ def regelingBedrag(deelnemer, flexibilisatie):
         bedragPP += flexibilisatie.pensioen.regelingsFactor * jaren / 1.7 * 0.7
         return (round(bedragOP), round(bedragPP), 0)
     else: return (0, 0, 0)
+
+def GegevensNaarFlexibilisatie(deelnemer, pensioennamen, opslag):
+    
+    
+    #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegne aan flexibiliseringsobject van het deelnemersobject
+    for i,p in enumerate(pensioennamen):
+        for flexibilisatie in deelnemer.flexibilisaties:
+            #als het flexibilisatieobject bij het pensioen uit de lijst pensioennamen hoort
+            if flexibilisatie.pensioen.pensioenNaam == p:
+                #met properties flexibilisaties opslaan in objecten flexibilisatie
+                pensioengegevens = opslag[i]
+                #leeftijd aanpassen
+                if pensioengegevens[1] == "Ja":
+                    flexibilisatie.leeftijd_Actief = True
+                elif pensioengegevens[1] == "Nee":
+                    flexibilisatie.leeftijd_Actief = False
+                flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
+                flexibilisatie.leeftijdMaand = int(float(pensioengegevens[3]))
+                
+                #uitruilen
+                if pensioengegevens[4] == "Ja":
+                    flexibilisatie.OP_PP_Actief = True
+                elif pensioengegevens[4] == "Nee":
+                    flexibilisatie.OP_PP_Actief = False
+                    #volgorde
+                flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[5]
+                    #methode
+                flexibilisatie.OP_PP_Methode = pensioengegevens[6]
+                if pensioengegevens[6] == "Verhouding":
+                    flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
+                    flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
+                elif pensioengegevens[6] == "Percentage":
+                    flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
+                
+                
+                #hoog-laag-constructie
+                if pensioengegevens[9] == "Ja":
+                    flexibilisatie.HL_Actief = True
+                elif pensioengegevens[9] == "Nee":
+                    flexibilisatie.HL_Actief = False
+                    #volgorde
+                flexibilisatie.HL_Volgorde = pensioengegevens[10]
+                    #duur
+                flexibilisatie.HL_Jaar = int(float(pensioengegevens[11]))
+                    #methode
+                flexibilisatie.HL_Methode = pensioengegevens[12]
+                if pensioengegevens[12] == "Verhouding":
+                    flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
+                    flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
+                elif pensioengegevens[12] == "Verschil":
+                    flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))       
+
         
 def krijgpad():
     if sys.executable[-10:] == "python.exe": return sys.path[0]

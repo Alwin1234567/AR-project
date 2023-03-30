@@ -427,7 +427,6 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         
         #gegevens invullen of foutmelding geven
         if foutmeldingGegevens == "" and foutmeldingPensioen == "":
-            #geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text()))
             achternaam = self.ui.txtAchternaam.text()[0].upper() + self.ui.txtAchternaam.text()[1:]
             #voorletters met hoofdletters en punten ertussen
             voorletters = ""
