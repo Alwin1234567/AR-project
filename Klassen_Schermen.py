@@ -319,6 +319,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         #lege foutmeldingen aanmaken
         foutmeldingGegevens = ""
         foutmeldingPensioen = ""
+        verhoudingFout = ""
         AantalPensioenen = 0 #teller voor aantal afgeronde pensioenopbouwen
         FouteRegelingen = [] #lijst met pensioenregelingen met foute invoer
         #controleer persoonsgegevens
@@ -334,9 +335,17 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                 
         #controleer of de deelnemer al de pensioenleeftijd heeft behaald
         if self.ui.sbJaar.text() < str(functions.pensioensdatum())[3:7]:
-            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
+            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt. "
         elif self.ui.sbJaar.text() == str(functions.pensioensdatum())[3:7] and int(self.ui.sbMaand.text()) < int(str(functions.pensioensdatum())[0:2]):
-            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt."
+            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt. "
+        
+        #controleer of geboortedatum deelnemer in de toekomst ligt
+        date_format = "%d/%m/%Y"
+        geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text()))
+        huidigeDatum = datetime.now()
+        if geboortedatum > huidigeDatum:
+            foutmeldingGegevens = foutmeldingGegevens + "Uw geboortedatum ligt in de toekomst. "
+        
         
         #controleer pensioengegevens
         #lijst met pensioensgegevens [regeling, ZL, AegonOP65, AegonOP67, NNOP65, NNPP65,NNOP67, NNPP67, PFVLCOP68, PFVLCPP68]
@@ -353,6 +362,13 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                 for x in i[1:-1]:
                     if functions.isfloat(x.text()):   #Er is een getal-waarde ingevuld
                         Pensioensgegevens[tellerPensioenen] = float(x.text().replace(".", "").replace(",", "."))
+                        #controle verhouding OP:PP kleiner dan 100:70
+                        if i[-1] in ["NN65", "NN67", "VLC"] and i[1].text() != "" and i[2].text() != "" and x.text() == i[1].text(): 
+                            #alleen voor regelingen met PP, als beiden ingevuld zijn en het de eerste loop voor dit pensioen is.
+                            verhouding = float(i[2].text().replace(".", "").replace(",", "."))/float(i[1].text().replace(".", "").replace(",", "."))
+                            if verhouding > 0.7:
+                                #als verhouding groter dan 100:70, pensioen toevoegen aan foutmelding
+                                verhoudingFout = verhoudingFout + ", " + i[-1]
                     else:
                         FouteRegelingen.append(i[-1])   #regeling aan foutmelding toevoegen
                     tellerPensioenen += 1
@@ -361,21 +377,6 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                     if functions.isfloat(x.text()) == True:   #wel een getal-waarde ingevuld, maar pensioen niet aangevinkt
                         FouteRegelingen.append(i[-1])
                 tellerPensioenen += len(i)-2        #tellerPensioenen ophogen met aantal pensioenopties OP of OP+PP
-        
-        #controleren of OP:PP verhouding kleiner is dan 100:70
-        verhoudingFout = ""
-        PPRegelingen = ["NN65", "NN67", "VLC"]  #pensioenen met PP
-        for i in range(4,10,2):
-            #kijken of pensioen ingevuld is.
-            if Pensioensgegevens[i] != "":
-                if Pensioensgegevens[i+1] == "": Pensioensgegevens[i+1] = 0
-                try: verhouding = (Pensioensgegevens[i+1])/(Pensioensgegevens[i])
-                except: 
-                    verhouding = 0
-                    verhoudingFout = verhoudingFout + ", " + PPRegelingen[int(i/2 - 2)]
-                if verhouding > 0.7: 
-                    #als verhouding groter dan 100:70, pensioen toevoegen aan foutmelding
-                    verhoudingFout = verhoudingFout + ", " + PPRegelingen[int(i/2 - 2)]
         
         #foutmelding pensioensgegevens genereren
         if AantalPensioenen == 0 and len(FouteRegelingen) == 0: #foutmelding als er geen regeling aangegeven is
@@ -390,7 +391,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         
         #gegevens invullen of foutmelding geven
         if foutmeldingGegevens == "" and foutmeldingPensioen == "":
-            geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text()))
+            #geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text()))
             achternaam = self.ui.txtAchternaam.text()[0].upper() + self.ui.txtAchternaam.text()[1:]
             #voorletters met hoofdletters en punten ertussen
             voorletters = ""
