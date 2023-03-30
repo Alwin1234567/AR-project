@@ -1954,8 +1954,12 @@ def regelingBedrag(deelnemer, flexibilisatie):
         return (round(bedragOP), round(bedragPP), 0)
     else: return (0, 0, 0)
 
-def GegevensNaarFlexibilisatie(deelnemer, pensioennamen, opslag):
+def GegevensNaarFlexibilisatie(deelnemer, opslag):
     
+    #lijst met pensioennamen van de deelnemer 
+    pensioennamen = []  
+    for i in opslag:
+        pensioennamen.append(i[0])
     
     #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegne aan flexibiliseringsobject van het deelnemersobject
     for i,p in enumerate(pensioennamen):

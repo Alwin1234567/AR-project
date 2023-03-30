@@ -403,12 +403,8 @@ def afbeelding_aanpassen():
         deelnemer = functions.getDeelnemersbestand(book, rijNr)
         deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
         
-        #lijst met pensioennamen van de deelnemer 
-        pensioennamen = []  
-        for i in opslag:
-            pensioennamen.append(i[0])
         
-        functions.GegevensNaarFlexibilisatie(deelnemer, pensioennamen, opslag)
+        functions.GegevensNaarFlexibilisatie(deelnemer, opslag)
         
         #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegne aan flexibiliseringsobject van het deelnemersobject
         
