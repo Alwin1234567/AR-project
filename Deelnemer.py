@@ -4,6 +4,7 @@ Hier komen alle libraries die in het programma gebruikt worden
 """
 from Pensioen import Pensioen
 from flex_keuzes import Flexibilisering
+from datetime import datetime
 """
 Body
 Hier komen alle functies
@@ -50,7 +51,9 @@ class Deelnemer():
         pensioenen = list()
         for pensioen in pensioeninformatie:
             if pensioen.soortRegeling == "AOW":
-                pensioenen.append(Pensioen(pensioen, 0, 0))
+                AOWpensioen = Pensioen(pensioen, 0, 0)
+                AOWpensioen.pensioenleeftijd = self.pensioenLeeftijd()
+                pensioenen.append(AOWpensioen)
             else:
                 if informatie[1][pensioen.ouderdomsPensioen] != None: 
                     OP = int(informatie[1][pensioen.ouderdomsPensioen])
@@ -82,6 +85,25 @@ class Deelnemer():
         selectie.sort(reverse = True, key = lambda pensioen: pensioen.pensioenleeftijd)
         pensioen = selectie[0]
         pensioen.extraPensioen(self._ftLoon * self._pt)
+    
+    def pensioenLeeftijd(self):
+        if self._geboortedatum > datetime(1997, 3, 31): return 70
+        if self._geboortedatum > datetime(1993, 6, 30): return 69.75
+        if self._geboortedatum > datetime(1989, 9, 30): return 69.5
+        if self._geboortedatum > datetime(1985, 12, 31): return 69.25
+        if self._geboortedatum > datetime(1982, 3, 31): return 69
+        if self._geboortedatum > datetime(1979, 6, 30): return 68.75
+        if self._geboortedatum > datetime(1976, 9, 30): return 68.5
+        if self._geboortedatum > datetime(1972, 12, 31): return 68.25
+        if self._geboortedatum > datetime(1970, 3, 31): return 68
+        if self._geboortedatum > datetime(1967, 6, 30): return 67.75
+        if self._geboortedatum > datetime(1963, 9, 30): return 67.5
+        if self._geboortedatum > datetime(1961, 9, 30): return 67.25
+        if self._geboortedatum > datetime(1960, 12, 31): return 67.25
+        if self._geboortedatum > datetime(1957, 2, 28): return 67
+        if self._geboortedatum > datetime(1956, 5, 31): return 66 + 10 / 12
+        if self._geboortedatum > datetime(1955, 8, 31): return 66 + 7 / 12
+        else: return 66 + 4 / 12
         
     @property
     def achternaam(self): return self._achternaam

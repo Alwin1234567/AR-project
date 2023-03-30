@@ -72,6 +72,9 @@ class Pensioenfonds():
     @property
     def pensioenleeftijd(self): return self._pensioenleefijd
     
+    @pensioenleeftijd.setter
+    def pensioenleeftijd(self, leeftijd): self._pensioenleefijd = leeftijd
+    
     @property
     def rente(self): return self._rente
     
