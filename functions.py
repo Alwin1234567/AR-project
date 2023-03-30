@@ -1456,10 +1456,10 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
     # maak de afbeeling
     if ax != None:
         ax.clear()
-        for i in range(len(hoogtes) - 1): ax.stairs(hoogtes[i+1], edges = randen, baseline = hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
+        for i in range(len(hoogtes) - 1): ax.stairs(hoogtes[i+1], edges = randen, baseline = hoogtes[i], fill = True, label = naamlijst[i], color = kleuren[i])
         
         ax.set_xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
-        ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation=30, horizontalalignment='right')
+        ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation = 45, horizontalalignment = 'center')
         ax.set_yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
     
         handles, labels = ax.get_legend_handles_labels()
@@ -1468,7 +1468,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
         ax.legend(handles = [handles[idx] for idx in order], labels = [labels[idx] for idx in order]) 
     
         ax.set_xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
-        ax.set_title(titel, fontweight='bold')
+        ax.set_title(titel, fontweight = 'bold')
     
     if sheet != None or pdf:
         if ID == 0:
