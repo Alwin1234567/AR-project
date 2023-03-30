@@ -17,10 +17,14 @@ import sys
 from string import ascii_uppercase
 import matplotlib.pyplot as plt
 from reportlab.lib.units import cm
-from reportlab.lib.utils import ImageReader
+# from reportlab.lib.utils import ImageReader
 from pathlib import Path
 #from cStringIO import StringIO     Gaf error dat niet bestond, google gaf die eronder aan (geen error bij mij meer)
-from io import StringIO 
+from io import BytesIO 
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPDF
+from svglib.svglib import svg2rlg
+
 
 """
 Body
@@ -1472,13 +1476,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
         ax.set_title(titel, fontweight='bold')
     
     if sheet != None or pdf:
-        if ID == 0:
-            locatie = sheet.range((14,2))
-        else:
-            teller = ID-1
-            locatieTop = int(12 + (teller%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
-            locatieLeft = int(17 + ((teller - teller%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
-            locatie = sheet.range((locatieTop,locatieLeft))
+
         afbeelding = plt.figure()
         for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
         
@@ -1495,6 +1493,13 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
         plt.xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
         
         if sheet != None:
+            if ID == 0:
+                locatie = sheet.range((14,2))
+            else:
+                teller = ID-1
+                locatieTop = int(12 + (teller%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
+                locatieLeft = int(17 + ((teller - teller%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
+                locatie = sheet.range((locatieTop,locatieLeft))
             #sheet unprotecten
             sheet.api.Unprotect(Password = wachtwoord())
             #afbeelding opslaan op sheet
@@ -1508,13 +1513,15 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
             #sheet protecten
             ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord(), Contents=False)
         if pdf:
-            # Credits to launchpadmcquack on Stackoverflow
+            # Credits to Philipp on Stackoverflow
             # https://stackoverflow.com/questions/18897511/how-to-drawimage-a-matplotlib-figure-in-a-reportlab-canvas
-            afbeeldingData = StringIO()
-            afbeelding.savefig(afbeeldingData, format='png')
+            afbeelding.set_size_inches(200/72, 154/72)
+            afbeeldingData = BytesIO()
+            
+            afbeelding.savefig(afbeeldingData, format='svg')
             afbeeldingData.seek(0)  # rewind the data
             
-            Image = ImageReader(afbeeldingData)
+            Image = svg2rlg(afbeeldingData)
             return Image
 
         
@@ -1766,6 +1773,8 @@ def leeftijd_notatie(jaar, maand):
     else:
         antwoord = jaar + " jaar en " + maand + " maanden"
     return antwoord  
+
+
     
     
 def geld_per_leeftijd(oud_pensioen, nieuw_pensioen):

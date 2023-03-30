@@ -11,7 +11,7 @@ from logging import getLogger
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import cm
 import mplwidget #zodat deze ook in de Frozen variant geïmporteerd word
-
+from reportlab.graphics import renderPDF
 
 """
 Body
@@ -178,9 +178,6 @@ def AfbeeldingKiezen():
         eenperjaaroud = eenperjaar[0]
         eenperjaarnieuw = eenperjaar[1]
         
-        verhaalstart = 536
-        verhaallijn = verhaalstart
-        
         
         naam_pdf = gekozenAfbeelding + ".pdf"
         
@@ -192,6 +189,18 @@ def AfbeeldingKiezen():
         halfbreedte = cm*10.5
         
        
+        
+        oudpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = "Oudpensioen")
+        
+        
+        renderPDF.draw(oudpensioenimg, pdf_canvas, 40+halfbreedte, 575)
+        
+        pdf_canvas.showPage()
+        functions.nieuwe_pagina(pdf_canvas, halfbreedte)
+        
+        verhaalstart = 536
+        verhaallijn = verhaalstart
+        
         totOPoud = 0
         pdf_canvas.drawString(30+halfbreedte, 550, "Met uw oude pensioen")
         for i in eenperjaaroud:
@@ -238,20 +247,11 @@ def AfbeeldingKiezen():
         AOWverhaal2 = AOW + " aan AOW per jaar"
         pdf_canvas.drawString(40, verhaallijn-42, AOWverhaal1)
         pdf_canvas.drawString(40, verhaallijn-56, AOWverhaal2)
-        
-        
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
+        
         startschrijfhoogte = 720
         schrijfhoogte = startschrijfhoogte
         
-        #oudpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = gekozenAfbeelding)
-        # oudpensioenimg = "pensioenplaatje.png"
-        # nieuwpensioenimg = "pensioenplaatje2.png"
-        
-        # pdf_canvas.drawImage(nieuwpensioenimg, 40, 575, 250, 193)
-        #pdf_canvas.drawImage(oudpensioenimg, 40 + halfbreedte, 575, 250, 193)
-        
-        #staat nog in commentaar, omdat een manier van afbeelding maken/lezen moet worden gevonden
         
         #Samenvattingen
         benodigde_indexen = [0, 1, 2, 15, 17, 4, 5, 7, 9, 10, 11, 13]
