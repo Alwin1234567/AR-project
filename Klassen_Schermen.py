@@ -233,23 +233,37 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         if self.ui.lwKeuzes.currentRow() == -1: 
             self.ui.lblFoutmeldingKiezen.setText("Gelieve een deelnemer te selecteren voordat u gaat flexibiliseren")
             return
-        #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag en vergelijken sheet
-        functions.opslagLegen(self.book, self._logger)
-                
+        
         #nieuwe deelnemer aanmaken
         deelnemer = self.kleinDeelnemerlijst[self.ui.lwKeuzes.currentRow()]
         deelnemer.activeerFlexibilisatie()
-        #scherm sluiten
-        self._want_to_close = True
-        self.close()
-        self._logger.info("Deelnemerselectie scherm gesloten")
-        self._windowflex = Flexmenu(self.book, deelnemer, self._logger)
-        self._windowflex.show()
         
-        #afbeelding huidige pensioen op vergelijken sheet plaatsen
-        try: functions.maak_afbeelding(deelnemer, sheet = self.book.sheets["Vergelijken"], ID = 0, titel = "0 - Originele pensioen")
-        except: 
-            self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
+        geboortedatum = deelnemer.geboortedatum
+        geboortedatum = geboortedatum.strftime("%d-%m-%Y")
+        for i in deelnemer.pensioenen:
+            if i.pensioenSoortRegeling == "AOW":
+                AOW_leeftijd = i.pensioenleeftijd
+        AOWjaar = int(AOW_leeftijd)//1 
+        AOWmaand = (int(AOW_leeftijd)%1) * 12        
+        AOWdatum = functions.pensioensdatum(AOWjaar, AOWmaand)
+        if geboortedatum < AOWdatum:
+            #deelnemer is al met pensioen
+            self.ui.lblFoutmeldingKiezen.setText("Deze deelnemer heeft de pensioenleeftijd al bereikt. Hiervoor kunnen geen flexibilisaties meer uitgevoerd worden.")
+        else:
+            #opgeslagen flexibilisaties van vorige deelnemer verwijderen uit opslag en vergelijken sheet
+            functions.opslagLegen(self.book, self._logger)
+                    
+            #scherm sluiten
+            self._want_to_close = True
+            self.close()
+            self._logger.info("Deelnemerselectie scherm gesloten")
+            self._windowflex = Flexmenu(self.book, deelnemer, self._logger)
+            self._windowflex.show()
+            
+            #afbeelding huidige pensioen op vergelijken sheet plaatsen
+            try: functions.maak_afbeelding(deelnemer, sheet = self.book.sheets["Vergelijken"], ID = 0, titel = "0 - Originele pensioen")
+            except: 
+                self._logger.exception("Fout bij het genereren van de afbeelding op Vergelijkenscherm")
     
     def btnHelpClicked(self):
         #mogelijke help-berichten definiëren
@@ -369,14 +383,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                 else: 
                     foutmeldingGegevens = "Uw werkinformatie is niet (goed) ingevuld. "
                 
-        #controleer of de deelnemer al de pensioenleeftijd heeft behaald
-        if self.ui.sbJaar.text() < str(functions.pensioensdatum())[3:7]:
-            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt. "
-        elif self.ui.sbJaar.text() == str(functions.pensioensdatum())[3:7] and int(self.ui.sbMaand.text()) < int(str(functions.pensioensdatum())[0:2]):
-            foutmeldingGegevens = foutmeldingGegevens + "U hebt de pensioensleeftijd al bereikt. "
-        
         #controleer of geboortedatum deelnemer in de toekomst ligt
-        date_format = "%d/%m/%Y"
         geboortedatum = datetime(int(self.ui.sbJaar.text()), int(self.ui.sbMaand.text()), int(self.ui.sbDag.text()))
         huidigeDatum = datetime.now()
         if geboortedatum > huidigeDatum:

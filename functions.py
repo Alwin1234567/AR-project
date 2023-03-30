@@ -392,7 +392,7 @@ def filterkolom(deelnemerlijst, zoekterm, attribuutnaam):
     return kleinDeelnemerlijst
 
 
-def pensioensdatum():
+def pensioensdatum(pensioenJaar = 67, pensioenMaand = 3):
     """
     Functie die het geboortejaar en maand van mensen op pensioensleeftijd uitrekent en teruggeeft
     input : -
@@ -400,9 +400,6 @@ def pensioensdatum():
     """
     
     huidigeDatum = datetime.today()
-    #huidige pensioensleeftijd 67 jaar en 3 maanden
-    pensioenJaar = 67
-    pensioenMaand = 3
     #huidige datum opsplitsen in jaar en maand
     nieuweJaar = huidigeDatum.year
     nieuweMaand = huidigeDatum.month
@@ -411,9 +408,9 @@ def pensioensdatum():
         nieuweMaand = 12 - (pensioenMaand - nieuweMaand)
     else: 
         nieuweJaar = huidigeDatum.year - pensioenJaar
-        
-    pensioensdatum = datetime(nieuweJaar, nieuweMaand, 1)
-    pensioensdatum = pensioensdatum.strftime("%m-%Y")
+    dag = min(datetime.now().day, 28)
+    pensioensdatum = datetime(nieuweJaar, nieuweMaand, dag, 1)
+    pensioensdatum = pensioensdatum.strftime("%d-%m-%Y")
     
     return pensioensdatum
 
@@ -1961,7 +1958,7 @@ def GegevensNaarFlexibilisatie(deelnemer, opslag):
     for i in opslag:
         pensioennamen.append(i[0])
     
-    #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegne aan flexibiliseringsobject van het deelnemersobject
+    #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegen aan flexibiliseringsobject van het deelnemersobject
     for i,p in enumerate(pensioennamen):
         for flexibilisatie in deelnemer.flexibilisaties:
             #als het flexibilisatieobject bij het pensioen uit de lijst pensioennamen hoort
