@@ -883,13 +883,13 @@ def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[17][1] = flexibilisatie.partnerPensioen
     
     # RGB opslaan
-    flexopslag[18][1] = str(flexibilisatie.pensioen.pensioenKleurHard)
+    flexopslag[18][1] = str(flexibilisatie.pensioen.pensioenKleurZacht)
     
     #sheet unprotecten
     sheet.api.Unprotect(Password = wachtwoord())
     # Waardes in sheet plakken & celkleur instellen
     sheet.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).options(ndims = 2).value = flexopslag
-    sheet.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurHard
+    sheet.range((5+20*countRegeling,4+4*countOpslaan),(23+20*countRegeling,6+4*countOpslaan)).color = flexibilisatie.pensioen.pensioenKleurZacht
     #sheet protecten
     ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord())
     
