@@ -1511,7 +1511,7 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
         if pdf:
             # Credits to Philipp on Stackoverflow
             # https://stackoverflow.com/questions/18897511/how-to-drawimage-a-matplotlib-figure-in-a-reportlab-canvas
-            afbeelding.set_size_inches(200/72, 154/72)
+            afbeelding.set_size_inches(300/72, 231/72)
             afbeeldingData = BytesIO()
             
             afbeelding.savefig(afbeeldingData, format='svg')

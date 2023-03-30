@@ -153,17 +153,21 @@ def AfbeeldingKiezen():
         
         oudpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = "Oudpensioen")
         
+        functions.GegevensNaarFlexibilisatie(deelnemer, nieuwpensioen)
+        nieuwpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = "Nieuw pensioen")
         
-        renderPDF.draw(oudpensioenimg, pdf_canvas, 40+halfbreedte, 575)
+        
+        renderPDF.draw(oudpensioenimg, pdf_canvas, 105, 540)
+        renderPDF.draw(nieuwpensioenimg, pdf_canvas, 105, 200)
         
         pdf_canvas.showPage()
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
         
-        verhaalstart = 536
+        verhaalstart = 706
         verhaallijn = verhaalstart
         
         totOPoud = 0
-        pdf_canvas.drawString(30+halfbreedte, 550, "Met uw oude pensioen")
+        pdf_canvas.drawString(30+halfbreedte, 720, "Met uw oude pensioen")
         for i in eenperjaaroud:
             totOPoud = totOPoud + i[1]
             oudverhaal = "ontving u vanaf  "+ i[0]+ " €" + str(totOPoud)+ " per jaar aan OP"
@@ -179,7 +183,7 @@ def AfbeeldingKiezen():
         
         verhaallijn = verhaalstart
         
-        pdf_canvas.drawString(30, 550, "Met uw nieuwe pensioen")
+        pdf_canvas.drawString(30, 720, "Met uw nieuwe pensioen")
         
         totOPnieuw = 0
         for i in eenperjaarnieuw:
