@@ -129,17 +129,21 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         
     
     def btnBeherenClicked(self):
+        #vergelijken unprotecten
+        self.vergelijken.api.Unprotect(Password = functions.wachtwoord())
+        #beveiliging sheets ongedaan maken
+        for i in self.sheets:
+            self.book.sheets[i].visible = True
+            self.book.sheets[i].api.Unprotect(Password = functions.wachtwoord())
+        
+        #sheets leesbaar maken
+        functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
+        
         #scherm sluiten
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
-        #beveiliging sheets ongedaan maken
-        for i in self.sheets:
-            self.book.sheets[i].api.Unprotect(Password = functions.wachtwoord())
-            self.book.sheets[i].visible = True
-        #vergelijken unprotecten
-        self.vergelijken.api.Unprotect(Password = functions.wachtwoord())
-        #sheets leesbaar maken
-        functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
+        
+        
                 
     def btnAdviserenClicked(self):
         #scherm sluiten
