@@ -17,9 +17,10 @@ import sys
 from string import ascii_uppercase
 import matplotlib.pyplot as plt
 from reportlab.lib.units import cm
-from reportlab.lib.utils import ImageReader
 from pathlib import Path
-from io import StringIO 
+from io import BytesIO 
+from svglib.svglib import svg2rlg
+
 
 
 """
@@ -98,7 +99,8 @@ def getaltotijd(getal):
     jaar = int(getal)
     maand = round((getal - jaar) * 12)
     tijd = "{}j".format(jaar)
-    if maand > 0: tijd = tijd + " {}m".format(maand)
+    if maand > 0: tijd += " {}m".format(maand)
+    else: tijd += "   "
     return tijd
 
 def getaltogeld(getal): return "€{:.2f}".format(float(getal)).replace(".",",")
@@ -1444,22 +1446,30 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
                 bedrag = float(hoogtes[i][j] + aanspraakHoog)
                 hoogtes[i+1].append(bedrag)
                 ywaardes.add(bedrag)
+    # set ywaardes en vermijd overlap in labels
     ywaardes = list(ywaardes)
+    ywaardes.sort(reverse = True)
+    
+    yschaal = max(ywaardes) / 16
+    ymax = ywaardes[0] * 2
+    for ywaarde in ywaardes:
+        if ymax - ywaarde < yschaal: ywaardes.remove(ywaarde)
+        else: ymax = ywaarde
+    ywaardes[-1] = 0
     ywaardes.sort()
     
     # bereken PP
     PPtotaal = 0
     for flexibilisatie in deelnemer.flexibilisaties: PPtotaal += flexibilisatie.partnerPensioen
     
-    # maak titel - titel al meegegeven bij aanroepen functie (Standaard "Een super coole title")
-    #titel = "Een super coole title"
     # maak de afbeeling
     if ax != None:
         ax.clear()
         for i in range(len(hoogtes) - 1): ax.stairs(hoogtes[i+1], edges = randen, baseline = hoogtes[i], fill = True, label = naamlijst[i], color = kleuren[i])
         
         ax.set_xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
-        ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation = 45, horizontalalignment = 'center')
+        ax.set_xticklabels([getaltotijd(rand) for rand in randen[:-1]], rotation = 90, horizontalalignment = 'center')
+
         ax.set_yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
     
         handles, labels = ax.get_legend_handles_labels()
@@ -1471,18 +1481,12 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
         ax.set_title(titel, fontweight = 'bold')
     
     if sheet != None or pdf:
-        if ID == 0:
-            locatie = sheet.range((14,2))
-        else:
-            teller = ID-1
-            locatieTop = int(12 + (teller%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
-            locatieLeft = int(17 + ((teller - teller%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
-            locatie = sheet.range((locatieTop,locatieLeft))
+
         afbeelding = plt.figure()
         for i in range(len(hoogtes) - 1): plt.stairs(hoogtes[i+1],edges = randen,  baseline=hoogtes[i], fill=True, label = naamlijst[i], color = kleuren[i])
         
         plt.xticks(randen[:-1], [getaltotijd(rand) for rand in randen[:-1]])
-        plt.setp(plt.gca().get_xticklabels(), rotation=30, horizontalalignment='right')
+        plt.setp(plt.gca().get_xticklabels(), rotation=90, horizontalalignment='center')
         plt.yticks(ywaardes, [getaltogeld(ywaarde) for ywaarde in ywaardes])
 
         handles, labels = plt.gca().get_legend_handles_labels()
@@ -1494,6 +1498,13 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
         plt.xlabel("Totale partnerpensioen: €{:.2f}".format(PPtotaal).replace(".",","))
         
         if sheet != None:
+            if ID == 0:
+                locatie = sheet.range((14,2))
+            else:
+                teller = ID-1
+                locatieTop = int(12 + (teller%4)*22) #12 + 22*int(ID)    #afbeeldingsformaat in cellen = 22 hoog, 8 breed
+                locatieLeft = int(17 + ((teller - teller%4)/4)*8) #maximaal 4 afbeeldingen onder elkaar, daarna ernaast verder
+                locatie = sheet.range((locatieTop,locatieLeft))
             #sheet unprotecten
             sheet.api.Unprotect(Password = wachtwoord())
             #afbeelding opslaan op sheet
@@ -1507,13 +1518,15 @@ def maak_afbeelding(deelnemer, sheet = None, ax = None, ID = 0, pdf = False, tit
             #sheet protecten
             ProtectBeheer(sheet) #.api.Protect(Password = wachtwoord(), Contents=False)
         if pdf:
-            # Credits to launchpadmcquack on Stackoverflow
+            # Credits to Philipp on Stackoverflow
             # https://stackoverflow.com/questions/18897511/how-to-drawimage-a-matplotlib-figure-in-a-reportlab-canvas
-            afbeeldingData = StringIO()
-            afbeelding.savefig(afbeeldingData, format='png')
+            afbeelding.set_size_inches(300/72, 231/72)
+            afbeeldingData = BytesIO()
+            
+            afbeelding.savefig(afbeeldingData, format='svg')
             afbeeldingData.seek(0)  # rewind the data
             
-            Image = ImageReader(afbeeldingData)
+            Image = svg2rlg(afbeeldingData)
             return Image
 
         
@@ -1765,6 +1778,8 @@ def leeftijd_notatie(jaar, maand):
     else:
         antwoord = jaar + " jaar en " + maand + " maanden"
     return antwoord  
+
+
     
     
 def geld_per_leeftijd(oud_pensioen, nieuw_pensioen):
@@ -1947,6 +1962,62 @@ def regelingBedrag(deelnemer, flexibilisatie):
         bedragPP += flexibilisatie.pensioen.regelingsFactor * jaren / 1.7 * 0.7
         return (round(bedragOP), round(bedragPP), 0)
     else: return (0, 0, 0)
+
+def GegevensNaarFlexibilisatie(deelnemer, opslag):
+    
+    #lijst met pensioennamen van de deelnemer 
+    pensioennamen = []  
+    for i in opslag:
+        pensioennamen.append(i[0])
+    
+    #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegne aan flexibiliseringsobject van het deelnemersobject
+    for i,p in enumerate(pensioennamen):
+        for flexibilisatie in deelnemer.flexibilisaties:
+            #als het flexibilisatieobject bij het pensioen uit de lijst pensioennamen hoort
+            if flexibilisatie.pensioen.pensioenNaam == p:
+                #met properties flexibilisaties opslaan in objecten flexibilisatie
+                pensioengegevens = opslag[i]
+                #leeftijd aanpassen
+                if pensioengegevens[1] == "Ja":
+                    flexibilisatie.leeftijd_Actief = True
+                elif pensioengegevens[1] == "Nee":
+                    flexibilisatie.leeftijd_Actief = False
+                flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
+                flexibilisatie.leeftijdMaand = int(float(pensioengegevens[3]))
+                
+                #uitruilen
+                if pensioengegevens[4] == "Ja":
+                    flexibilisatie.OP_PP_Actief = True
+                elif pensioengegevens[4] == "Nee":
+                    flexibilisatie.OP_PP_Actief = False
+                    #volgorde
+                flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[5]
+                    #methode
+                flexibilisatie.OP_PP_Methode = pensioengegevens[6]
+                if pensioengegevens[6] == "Verhouding":
+                    flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
+                    flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
+                elif pensioengegevens[6] == "Percentage":
+                    flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
+                
+                
+                #hoog-laag-constructie
+                if pensioengegevens[9] == "Ja":
+                    flexibilisatie.HL_Actief = True
+                elif pensioengegevens[9] == "Nee":
+                    flexibilisatie.HL_Actief = False
+                    #volgorde
+                flexibilisatie.HL_Volgorde = pensioengegevens[10]
+                    #duur
+                flexibilisatie.HL_Jaar = int(float(pensioengegevens[11]))
+                    #methode
+                flexibilisatie.HL_Methode = pensioengegevens[12]
+                if pensioengegevens[12] == "Verhouding":
+                    flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
+                    flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
+                elif pensioengegevens[12] == "Verschil":
+                    flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))       
+
         
 def krijgpad():
     if sys.executable[-10:] == "python.exe": return sys.path[0]

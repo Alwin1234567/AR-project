@@ -11,51 +11,12 @@ from logging import getLogger
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import cm
 import mplwidget #zodat deze ook in de Frozen variant geïmporteerd word
-
+from reportlab.graphics import renderPDF
 
 """
 Body
 Hier komen alle functies
 """
-
-#hulp-berichten die verwerkt bij knoppen in sommige schermen moeten komen
-def BeheerderHelp():
-    
-    #mogelijke help-berichten definiëren
-    GegevensWijzigen = "'Gegevens wijzigen' opent het deelnemerselectiescherm. Hierin selecteerd u de deelnemer waarvan u de gegevens wilt wijzigen. Daarna opent een scherm waarin alle deelnemergegevens ingevuld staan en kunt u hierin wijzigingen aanbrengen.\n"
-    Beheren = "'Beheren' sluit dit scherm en maakt alle sheets zichtbaar en bewerkbaar. Hierdoor kunt u gegevens inzien en wijzigen.\n"
-    Adviseren = "'Adviseren' opent het deelnemerselectiescherm waarin u een nieuwe deelnemer kunt selecteren om een flexibilisatie voor uit te voeren. Om door te gaan met de vorige deelnemer kunt u dit scherm sluiten met het kruisje rechtbovenin.\n"
-    Uitloggen = "'Uitloggen' logt u als beheerder uit. U kunt nog steeds flexibilisaties uitvoeren en de huidige flexibilisaties blijven bewaard, maar u kunt niet alle gegevens meer inzien of wijzigen.\n"
-    
-    bericht = f"Dit is een uitleg van de beheerderkeuzes: \n\n{GegevensWijzigen}\n{Beheren}\n{Adviseren}\n{Uitloggen}\n"
-    
-    #messagebox met help-bericht maken
-    functions.Mbox("Help bij vergelijken", bericht, 0)
-    
-def SelectieHelp():
-    
-    #mogelijke help-berichten definiëren
-    NieuweDeelnemer = "'Nieuwe deelnemer toevoegen' opent een scherm waarin u de gegevens van de nieuwe deelnemer kunt invullen. Door op 'Toevoegen' te klikken wordt de deelnemer toegevoegd en is deze terug te vinden in de deelnemerselectie.\n"
-    Selecteren = ""
-    
-    
-    bericht = f"Dit is een uitleg voor het selecteren van een deelnmer: \n\n{NieuweDeelnemer}\n{Selecteren}\n"
-    #messagebox met help-bericht maken
-    functions.Mbox("Help bij vergelijken", bericht, 0)
-    
-    
-def ToevoegenHelp():
-    
-    #mogelijke help-berichten definiëren
-    Persoonsgegevens = ""
-    Pensioengegevens = ""
-    
-    bericht = f"Dit is een uitleg voor het toevoegen van een deelnemer: \n\n{Persoonsgegevens}\n{Pensioengegevens}\n"
-    
-    #messagebox met help-bericht maken
-    functions.Mbox("Help bij vergelijken", bericht, 0)
-    
-    
 
 
 @xw.sub
@@ -178,9 +139,6 @@ def AfbeeldingKiezen():
         eenperjaaroud = eenperjaar[0]
         eenperjaarnieuw = eenperjaar[1]
         
-        verhaalstart = 536
-        verhaallijn = verhaalstart
-        
         
         naam_pdf = gekozenAfbeelding + ".pdf"
         
@@ -192,8 +150,24 @@ def AfbeeldingKiezen():
         halfbreedte = cm*10.5
         
        
+        
+        oudpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = "Oudpensioen")
+        
+        functions.GegevensNaarFlexibilisatie(deelnemer, nieuwpensioen)
+        nieuwpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = "Nieuw pensioen")
+        
+        
+        renderPDF.draw(oudpensioenimg, pdf_canvas, 105, 540)
+        renderPDF.draw(nieuwpensioenimg, pdf_canvas, 105, 200)
+        
+        pdf_canvas.showPage()
+        functions.nieuwe_pagina(pdf_canvas, halfbreedte)
+        
+        verhaalstart = 706
+        verhaallijn = verhaalstart
+        
         totOPoud = 0
-        pdf_canvas.drawString(30+halfbreedte, 550, "Met uw oude pensioen")
+        pdf_canvas.drawString(30+halfbreedte, 720, "Met uw oude pensioen")
         for i in eenperjaaroud:
             totOPoud = totOPoud + i[1]
             oudverhaal = "ontving u vanaf  "+ i[0]+ " €" + str(totOPoud)+ " per jaar aan OP"
@@ -209,7 +183,7 @@ def AfbeeldingKiezen():
         
         verhaallijn = verhaalstart
         
-        pdf_canvas.drawString(30, 550, "Met uw nieuwe pensioen")
+        pdf_canvas.drawString(30, 720, "Met uw nieuwe pensioen")
         
         totOPnieuw = 0
         for i in eenperjaarnieuw:
@@ -238,20 +212,11 @@ def AfbeeldingKiezen():
         AOWverhaal2 = AOW + " aan AOW per jaar"
         pdf_canvas.drawString(40, verhaallijn-42, AOWverhaal1)
         pdf_canvas.drawString(40, verhaallijn-56, AOWverhaal2)
-        
-        
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
+        
         startschrijfhoogte = 720
         schrijfhoogte = startschrijfhoogte
         
-        #oudpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = gekozenAfbeelding)
-        # oudpensioenimg = "pensioenplaatje.png"
-        # nieuwpensioenimg = "pensioenplaatje2.png"
-        
-        # pdf_canvas.drawImage(nieuwpensioenimg, 40, 575, 250, 193)
-        #pdf_canvas.drawImage(oudpensioenimg, 40 + halfbreedte, 575, 250, 193)
-        
-        #staat nog in commentaar, omdat een manier van afbeelding maken/lezen moet worden gevonden
         
         #Samenvattingen
         benodigde_indexen = [0, 1, 2, 15, 17, 4, 5, 7, 9, 10, 11, 13]
@@ -442,58 +407,58 @@ def afbeelding_aanpassen():
         deelnemer = functions.getDeelnemersbestand(book, rijNr)
         deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
         
-        #lijst met pensioennamen van de deelnemer 
-        pensioennamen = []  
-        for i in opslag:
-            pensioennamen.append(i[0])
+        
+        functions.GegevensNaarFlexibilisatie(deelnemer, opslag)
         
         #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegne aan flexibiliseringsobject van het deelnemersobject
-        for i,p in enumerate(pensioennamen):
-            for flexibilisatie in deelnemer.flexibilisaties:
-                #als het flexibilisatieobject bij het pensioen uit de lijst pensioennamen hoort
-                if flexibilisatie.pensioen.pensioenNaam == p:
-                    #met properties flexibilisaties opslaan in objecten flexibilisatie
-                    pensioengegevens = opslag[i]
-                    #leeftijd aanpassen
-                    if pensioengegevens[1] == "Ja":
-                        flexibilisatie.leeftijd_Actief = True
-                    elif pensioengegevens[1] == "Nee":
-                        flexibilisatie.leeftijd_Actief = False
-                    flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
-                    flexibilisatie.leeftijdMaand = int(float(pensioengegevens[3]))
+        
+        
+        # for i,p in enumerate(pensioennamen):
+            # for flexibilisatie in deelnemer.flexibilisaties:
+            #     #als het flexibilisatieobject bij het pensioen uit de lijst pensioennamen hoort
+            #     if flexibilisatie.pensioen.pensioenNaam == p:
+            #         #met properties flexibilisaties opslaan in objecten flexibilisatie
+            #         pensioengegevens = opslag[i]
+            #         #leeftijd aanpassen
+            #         if pensioengegevens[1] == "Ja":
+            #             flexibilisatie.leeftijd_Actief = True
+            #         elif pensioengegevens[1] == "Nee":
+            #             flexibilisatie.leeftijd_Actief = False
+            #         flexibilisatie.leeftijdJaar = int(float(pensioengegevens[2]))
+            #         flexibilisatie.leeftijdMaand = int(float(pensioengegevens[3]))
                     
-                    #uitruilen
-                    if pensioengegevens[4] == "Ja":
-                        flexibilisatie.OP_PP_Actief = True
-                    elif pensioengegevens[4] == "Nee":
-                        flexibilisatie.OP_PP_Actief = False
-                        #volgorde
-                    flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[5]
-                        #methode
-                    flexibilisatie.OP_PP_Methode = pensioengegevens[6]
-                    if pensioengegevens[6] == "Verhouding":
-                        flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
-                        flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
-                    elif pensioengegevens[6] == "Percentage":
-                        flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
+            #         #uitruilen
+            #         if pensioengegevens[4] == "Ja":
+            #             flexibilisatie.OP_PP_Actief = True
+            #         elif pensioengegevens[4] == "Nee":
+            #             flexibilisatie.OP_PP_Actief = False
+            #             #volgorde
+            #         flexibilisatie.OP_PP_UitruilenVan = pensioengegevens[5]
+            #             #methode
+            #         flexibilisatie.OP_PP_Methode = pensioengegevens[6]
+            #         if pensioengegevens[6] == "Verhouding":
+            #             flexibilisatie.OP_PP_Verhouding_OP = int(float(pensioengegevens[7]))
+            #             flexibilisatie.OP_PP_Verhouding_PP = int(float(pensioengegevens[8]))
+            #         elif pensioengegevens[6] == "Percentage":
+            #             flexibilisatie.OP_PP_Percentage = int(float(pensioengegevens[7]))
                     
                     
-                    #hoog-laag-constructie
-                    if pensioengegevens[9] == "Ja":
-                        flexibilisatie.HL_Actief = True
-                    elif pensioengegevens[9] == "Nee":
-                        flexibilisatie.HL_Actief = False
-                        #volgorde
-                    flexibilisatie.HL_Volgorde = pensioengegevens[10]
-                        #duur
-                    flexibilisatie.HL_Jaar = int(float(pensioengegevens[11]))
-                        #methode
-                    flexibilisatie.HL_Methode = pensioengegevens[12]
-                    if pensioengegevens[12] == "Verhouding":
-                        flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
-                        flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
-                    elif pensioengegevens[12] == "Verschil":
-                        flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))       
+            #         #hoog-laag-constructie
+            #         if pensioengegevens[9] == "Ja":
+            #             flexibilisatie.HL_Actief = True
+            #         elif pensioengegevens[9] == "Nee":
+            #             flexibilisatie.HL_Actief = False
+            #             #volgorde
+            #         flexibilisatie.HL_Volgorde = pensioengegevens[10]
+            #             #duur
+            #         flexibilisatie.HL_Jaar = int(float(pensioengegevens[11]))
+            #             #methode
+            #         flexibilisatie.HL_Methode = pensioengegevens[12]
+            #         if pensioengegevens[12] == "Verhouding":
+            #             flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
+            #             flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
+            #         elif pensioengegevens[12] == "Verschil":
+            #             flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))       
         if len(gekozenAfbeelding)>4:
             titelAfbeelding = gekozenAfbeelding[4:]
         else:

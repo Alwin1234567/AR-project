@@ -250,7 +250,7 @@
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="btnHelp">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -280,7 +280,7 @@
      <x>0</x>
      <y>0</y>
      <width>981</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
