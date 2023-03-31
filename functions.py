@@ -1240,7 +1240,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         rij.append('=IF({0}3<118, TRUNC({0}3) + 1,"")'.format(inttoletter(rekenblokstart + 9)))
         if flexibilisatie.pensioen.sterftetafel == "AG_2020": rij.append('=IF({0}4 <> "", ((1-@INDEX(INDIRECT("{1}"), {0}3+1, {2}3 - 2018)) *  (1 - {0}3 + TRUNC({0}3)) + (1-@INDEX(INDIRECT("{1}"), {0}3+2, {2}3 - 2018)) * ({0}3 - TRUNC({0}3))) * {3}3,"")'.format(inttoletter(rekenblokstart + 9),  flexibilisatie.pensioen.sterftetafel, inttoletter(rekenblokstart + 1), inttoletter(rekenblokstart + 10)))
         else: rij.append('=IF({0}4<>"", (INDEX(INDIRECT("{1}"),TRUNC({0}4)+1,1) * (1 - {0}4 + TRUNC({0}4)) + INDEX(INDIRECT("{1}"),TRUNC({0}4)+2,1) * ({0}4 - TRUNC({0}4))) / (INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+1,1) * (1 - ${0}$3 + TRUNC(${0}$3)) + INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+2,1) * (${0}$3 - TRUNC(${0}$3))),"")'.format(inttoletter(rekenblokstart + 9), flexibilisatie.pensioen.sterftetafel))
-        rij.append('=IF({0}4<>"", (1+{1})^-{2}4, "")'.format(inttoletter(rekenblokstart + 9), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart)))
+        rij.append('=IF({0}4<>"", (1+{1})^-{2}4, "")'.format(inttoletter(rekenblokstart + 9), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart + 8)))
         
         blokruimte = sheet.range((4, instellingen["afstandtotrekenkolom"] + i * (instellingen["rekenblokbreedte"] + instellingen["afstandtussenrekenblokken"] )),\
                                  (max(4, instellingen["rekenblokgrootte"]), instellingen["afstandtotrekenkolom"] + i * (instellingen["rekenblokbreedte"] + instellingen["afstandtussenrekenblokken"]) + instellingen["rekenblokbreedte"] - 1))
