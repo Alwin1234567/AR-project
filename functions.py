@@ -1235,7 +1235,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         else: rij.append('=IF({0}4<>"", (INDEX(INDIRECT("{1}"),TRUNC({0}4)+1,1) * (1 - {0}4 + TRUNC({0}4)) + INDEX(INDIRECT("{1}"),TRUNC({0}4)+2,1) * ({0}4 - TRUNC({0}4))) / (INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+1,1) * (1 - ${0}$3 + TRUNC(${0}$3)) + INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+2,1) * (${0}$3 - TRUNC(${0}$3))),"")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), flexibilisatie.pensioen.sterftetafel))
         rij.append('=IF({0}4<>"", (1+{1})^-{2}4, "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart + instellingen["t"])))
         rij.append('=if({0}5<>"", (((12 - MOD( 7 - {2} - ({0}4 - TRUNC({1}4)) * 12,12)) * {1}4) + MOD( 7 - {2} - ({0}4 - TRUNC({0}4)) * 12, 12) * {1}5) / 12, "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), inttoletter(rekenblokstart + instellingen["tpx"]), deelnemer.geboortedatum.month))
-        rij.append('=if({0}3<>"", 1-{0}3, "")'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"])))
+        rij.append('=if({0}4<>"", 1-{0}4, "")'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"])))
         rij.append('=IF({0}5<>"", (1+{1})^-({2}4 + (7 - {3}) / 12), "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart + instellingen["t"]), deelnemer.geboortedatum.month))
         
         rij.append('=IF({0}4 <> "", {0}4 -{0}$3, "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd'"])))
