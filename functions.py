@@ -1158,28 +1158,29 @@ def berekeningen_init(sheet, deelnemer, logger):
                      '=ROUND(C{0} * B{1} / B{2}, 0)'.format(blokhoogte + 7, blokhoogte + 13, blokhoogte + 14), "formuletekst"])
         blok.append(["OP en PP na uitruilen", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - MIN(B{2}, D{2})), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
                      '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * MIN(B{2}, D{2}) * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8), "formuletekst"])
-        blok.append(["Op met hoog laag", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{2} + IF(C{0} = "Hoog-laag", MIN(C{1}, D{1}) * B{4}, MIN(C{1}, D{1}) * B{5}) / B{3}, 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16),\
+        blok.append(["Op met hoog laag", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{2} + IF(C{0} = "Hoog-laag", MIN(C{1}, D{1}) * B{5}, MIN(C{1}, D{1}) * B{4}) / B{3}, 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16),\
                      '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding", ROUND(C{1} * (B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{6} - MIN(C{1}, D{1}), 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16, blokhoogte + 10), "formuletekst"])
         
-        blok.append(["Sommatie OP origineel", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 10), inttoletter(rekenblokstart + 11), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
-                     '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3), ":{0}{4}, {1}", MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3), ":{1}{4})")'.format(inttoletter(rekenblokstart + 10), inttoletter(rekenblokstart + 11), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
-        blok.append(["Sommatie OP uitstellen", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
-                     '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3), ":{0}{4}, {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3), ":{1}{4})")'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
-        blok.append(["Sommatie PP origineel", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + 10), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
-                     '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{0}{5}, {1}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{1}{5}, {2}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + 10), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
-        blok.append(["Sommatie PP uitstellen", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
-                     '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{0}{5}, {1}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{1}{5}, {2}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 5), inttoletter(rekenblokstart + 7), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
-        blok.append(["Sommatie HL eerste", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):INDIRECT("{0}"&MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4}), INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):INDIRECT("{1}"&MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4})), 3))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4), "",\
-                     '=IF(B{5} = "", "",CONCAT("=SUMPRODUCT({0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3), ":{0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4}, ", {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3),":{1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4},")"))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4)])
-        blok.append(["Sommatie HL tweede", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}):{1}{4}), 3))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"], blokhoogte + 4, blokhoogte + 5), "",\
-                     '=IF(B{5} = "", "", CONCAT("=SUMPRODUCT({0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}, ":{0}{4}, {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}, ":{1}{4})"))'.format(inttoletter(rekenblokstart + 3), inttoletter(rekenblokstart + 6), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"], blokhoogte + 4, blokhoogte + 5)])
+        blok.append(["Sommatie OP origineel", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + instellingen["tpx'"]), inttoletter(rekenblokstart + instellingen["dt'"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
+                     '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3), ":{0}{4}, {1}", MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3), ":{1}{4})")'.format(inttoletter(rekenblokstart + instellingen["tpx'"]), inttoletter(rekenblokstart + instellingen["dt'"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
+        blok.append(["Sommatie OP uitstellen", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + instellingen["tpx"]), inttoletter(rekenblokstart + instellingen["dt"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
+                     '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3), ":{0}{4}, {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3), ":{1}{4})")'.format(inttoletter(rekenblokstart + instellingen["tpx"]), inttoletter(rekenblokstart + instellingen["dt"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
+        blok.append(["Sommatie PP origineel", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"]), inttoletter(rekenblokstart + instellingen["tqx op 1 juli"]), inttoletter(rekenblokstart + instellingen["dt op 1 juli"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
+                     '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{0}{5}, {1}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{1}{5}, {2}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"]), inttoletter(rekenblokstart + instellingen["tqx op 1 juli"]), inttoletter(rekenblokstart + instellingen["dt op 1 juli"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
+        blok.append(["Sommatie PP uitstellen", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"]), inttoletter(rekenblokstart + instellingen["tqx op 1 juli"]), inttoletter(rekenblokstart + instellingen["dt op 1 juli"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
+                     '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{0}{5}, {1}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{1}{5}, {2}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"]), inttoletter(rekenblokstart + instellingen["tqx op 1 juli"]), inttoletter(rekenblokstart + instellingen["dt op 1 juli"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
+        blok.append(["Sommatie HL eerste", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):INDIRECT("{0}"&MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4}), INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):INDIRECT("{1}"&MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4})), 3))'.format(inttoletter(rekenblokstart + instellingen["tpx"]), inttoletter(rekenblokstart + instellingen["dt"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4), "",\
+                     '=IF(B{5} = "", "",CONCAT("=SUMPRODUCT({0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3), ":{0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4}, ", {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3),":{1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4},")"))'.format(inttoletter(rekenblokstart + instellingen["tpx"]), inttoletter(rekenblokstart + instellingen["dt"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4)])
+        blok.append(["Sommatie HL tweede", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}):{1}{4}), 3))'.format(inttoletter(rekenblokstart + instellingen["tpx"]), inttoletter(rekenblokstart + instellingen["dt"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"], blokhoogte + 4, blokhoogte + 5), "",\
+                     '=IF(B{5} = "", "", CONCAT("=SUMPRODUCT({0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}, ":{0}{4}, {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3) + B{6}, ":{1}{4})"))'.format(inttoletter(rekenblokstart + instellingen["tpx"]), inttoletter(rekenblokstart + instellingen["dt"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"], blokhoogte + 4, blokhoogte + 5)])
         
         if sum([len(rij) for rij in blok]) == len(blok) * 4:
             blokruimte = sheet.range((blokhoogte, instellingen["pensioenblokkolom"]),\
                                      (blokhoogte + instellingen["blokgrootte"] - 1, instellingen["pensioenblokkolom"] + len(blok[0]) - 1)).options(ndims = 2)
             # geldblok = sheet.range((blokhoogte + 7, instellingen["pensioenblokkolom"] + 1),\
-            #                          (blokhoogte + 10, instellingen["pensioenblokkolom"] + 2))
+            #                           (blokhoogte + 10, instellingen["pensioenblokkolom"] + 2))
             # geldblok.api.NumberFormat = "Currency"
+            # sheet.conditional_format("{0}{1}:{2}{3}".format(inttoletter(blokhoogte), instellingen["pensioenblokkolom"], inttoletter(blokhoogte + instellingen["blokgrootte"]), instellingen["pensioenblokkolom"] + len(blok[0]) - 1))
             blokruimte.formula = blok
             blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
         else:
@@ -1192,20 +1193,21 @@ def berekeningen_init(sheet, deelnemer, logger):
         rekenblokstart = instellingen["afstandtotrekenkolom"] + i * (instellingen["rekenblokbreedte"] + instellingen["afstandtussenrekenblokken"])
         blok = list()
         blok.append([flexibilisatie.pensioen.pensioenVolNaam] + [""] * (instellingen["rekenblokbreedte"] - 1))
-        blok.append(["t", "jaar", "Leeftijd", "tpx", "tqx", "tqx op 1 juli", "dt", "dt op 1 juli", "t'", "leeftijd'", "tpx'", "dt'"])
+        blok.append(["t", "jaar", "Leeftijd", "tpx", "dt", "tpx op 1 juli", "tqx op 1 juli", "dt op 1 juli", "t'", "leeftijd'", "tpx'", "dt'"])
         rij = list()
         rij.append("0")
-        rij.append("={} + ROUNDDOWN({} + {}3, 0)".format(deelnemer.geboortedatum.year, deelnemer.geboortedatum.month / 12,inttoletter(rekenblokstart + 2)))
+        rij.append("={} + ROUNDDOWN({} + {}3, 0)".format(deelnemer.geboortedatum.year, deelnemer.geboortedatum.month / 12,inttoletter(rekenblokstart + instellingen["leeftijd"])))
         rij.append("=min(E{},B{})".format(instellingen["pensioeninfohoogte"] + i, blokhoogte + 1))
         rij.append("1")
-        rij.append('=if({0}3<>"", 1-{0}3, "")'.format(inttoletter(rekenblokstart + 3)))
-        rij.append('=if({0}4<>"", (((12 - MOD( 7 - {2} - ({0}3 - TRUNC({1}3)) * 12,12)) * {1}3) + MOD( 7 - {2} - ({0}3 - TRUNC({0}3)) * 12, 12) * {1}4) / 12, "")'.format(inttoletter(rekenblokstart + 2), inttoletter(rekenblokstart + 4), deelnemer.geboortedatum.month))
-        rij.append('=if({0}3<>"", (1+{1})^-{2}3, "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart)))
-        rij.append('=if({0}4<>"", (1+{1})^-({2}3 + (7 - {3}) / 12), "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart), deelnemer.geboortedatum.month))
+        rij.append('=if({0}3<>"", (1+{1})^-{2}3, "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart + instellingen["t"])))
+        rij.append('=if({0}4<>"", (((12 - MOD( 7 - {2} - ({0}3 - TRUNC({1}3)) * 12,12)) * {1}3) + MOD( 7 - {2} - ({0}3 - TRUNC({0}3)) * 12, 12) * {1}4) / 12, "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), inttoletter(rekenblokstart + instellingen["tpx"]), deelnemer.geboortedatum.month))
+        rij.append('=if({0}3<>"", 1-{0}3, "")'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"])))        
+        rij.append('=if({0}4<>"", (1+{1})^-({2}3 + (7 - {3}) / 12), "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart + instellingen["t"]), deelnemer.geboortedatum.month))
+        
         rij.append("0")
-        rij.append("={}3".format(inttoletter(rekenblokstart + 2)))
+        rij.append("={}3".format(inttoletter(rekenblokstart + instellingen["leeftijd"])))
         rij.append("1")
-        rij.append('=if({0}3<>"", (1+{1})^-{2}3, "")'.format(inttoletter(rekenblokstart + 9), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart + 8)))
+        rij.append('=if({0}3<>"", (1+{1})^-{0}3, "")'.format(inttoletter(rekenblokstart + instellingen["t'"]), flexibilisatie.pensioen.rente))
         blok.append(rij)
         
         if sum([len(rij) for rij in blok]) == len(blok) * instellingen["rekenblokbreedte"]:
@@ -1226,21 +1228,21 @@ def berekeningen_init(sheet, deelnemer, logger):
         blokhoogte = instellingen["pensioeninfohoogte"] + instellingen["afstandtotblokken"] + aantalpensioenen + i * (instellingen["blokgrootte"] + instellingen["afstandtussenblokken"])
         rekenblokstart = instellingen["afstandtotrekenkolom"] + i * (len(blok[0]) + instellingen["afstandtussenrekenblokken"])
         rij = list()
-        rij.append('=IF({0}4 <> "", {0}4 -{0}$3, "")'.format(inttoletter(rekenblokstart + 2)))
-        rij.append("={}3 + 1".format(inttoletter(rekenblokstart + 1)))
-        rij.append('=IF({0}3<118, IF(AND(B${1} - TRUNC(B${1}) <> 0, {2}4 - {2}$3 = 1,  {0}3 - TRUNC({0}3) = 0), {0}3 + B${1} - TRUNC(B${1}), {0}3 + 1), "")'.format(inttoletter(rekenblokstart + 2), blokhoogte + 1, inttoletter(rekenblokstart + 1)))
-        if flexibilisatie.pensioen.sterftetafel == "AG_2020": rij.append('=IF({0}4 <> "", ((1-@INDEX(INDIRECT("{1}"), {0}3+1, {2}3 - 2018)) *  (1 - {0}3 + TRUNC({0}3)) + (1-@INDEX(INDIRECT("{1}"), {0}3+2, {2}3 - 2018)) * ({0}3 - TRUNC({0}3))) * {3}3,"")'.format(inttoletter(rekenblokstart + 2),  flexibilisatie.pensioen.sterftetafel, inttoletter(rekenblokstart + 1), inttoletter(rekenblokstart + 3)))
-        else: rij.append('=IF({0}4<>"", (INDEX(INDIRECT("{1}"),TRUNC({0}4)+1,1) * (1 - {0}4 + TRUNC({0}4)) + INDEX(INDIRECT("{1}"),TRUNC({0}4)+2,1) * ({0}4 - TRUNC({0}4))) / (INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+1,1) * (1 - ${0}$3 + TRUNC(${0}$3)) + INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+2,1) * (${0}$3 - TRUNC(${0}$3))),"")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.sterftetafel))
-        rij.append('=IF({0}4<>"", 1-{0}4, "")'.format(inttoletter(rekenblokstart + 3)))
-        rij.append('=if({0}5<>"", (((12 - MOD( 7 - {2} - ({0}4 - TRUNC({1}4)) * 12,12)) * {1}4) + MOD( 7 - {2} - ({0}4 - TRUNC({0}4)) * 12, 12) * {1}5) / 12, "")'.format(inttoletter(rekenblokstart + 2), inttoletter(rekenblokstart + 4), deelnemer.geboortedatum.month))
-        rij.append('=IF({0}4<>"", (1+{1})^-{2}4, "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart)))
-        rij.append('=IF({0}5<>"", (1+{1})^-({2}4 + (7 - {3}) / 12), "")'.format(inttoletter(rekenblokstart + 2), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart), deelnemer.geboortedatum.month))
+        rij.append('=IF({0}4 <> "", {0}4 -{0}$3, "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"])))
+        rij.append("={}3 + 1".format(inttoletter(rekenblokstart + instellingen["jaar"])))
+        rij.append('=IF({0}3<118, IF(AND(B${1} - TRUNC(B${1}) <> 0, {2}4 - {2}$3 = 1,  {0}3 - TRUNC({0}3) = 0), {0}3 + B${1} - TRUNC(B${1}), {0}3 + 1), "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), blokhoogte + 1, inttoletter(rekenblokstart + instellingen["jaar"])))
+        if flexibilisatie.pensioen.sterftetafel == "AG_2020": rij.append('=IF({0}4 <> "", ((1-@INDEX(INDIRECT("{1}"), {0}3+1, {2}3 - 2018)) *  (1 - {0}3 + TRUNC({0}3)) + (1-@INDEX(INDIRECT("{1}"), {0}3+2, {2}3 - 2018)) * ({0}3 - TRUNC({0}3))) * {3}3,"")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]),  flexibilisatie.pensioen.sterftetafel, inttoletter(rekenblokstart + instellingen["jaar"]), inttoletter(rekenblokstart + instellingen["tpx"])))
+        else: rij.append('=IF({0}4<>"", (INDEX(INDIRECT("{1}"),TRUNC({0}4)+1,1) * (1 - {0}4 + TRUNC({0}4)) + INDEX(INDIRECT("{1}"),TRUNC({0}4)+2,1) * ({0}4 - TRUNC({0}4))) / (INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+1,1) * (1 - ${0}$3 + TRUNC(${0}$3)) + INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+2,1) * (${0}$3 - TRUNC(${0}$3))),"")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), flexibilisatie.pensioen.sterftetafel))
+        rij.append('=IF({0}4<>"", (1+{1})^-{2}4, "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart + instellingen["t"])))
+        rij.append('=if({0}5<>"", (((12 - MOD( 7 - {2} - ({0}4 - TRUNC({1}4)) * 12,12)) * {1}4) + MOD( 7 - {2} - ({0}4 - TRUNC({0}4)) * 12, 12) * {1}5) / 12, "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), inttoletter(rekenblokstart + instellingen["tpx"]), deelnemer.geboortedatum.month))
+        rij.append('=if({0}3<>"", 1-{0}3, "")'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"])))
+        rij.append('=IF({0}5<>"", (1+{1})^-({2}4 + (7 - {3}) / 12), "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd"]), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart + instellingen["t"]), deelnemer.geboortedatum.month))
         
-        rij.append('=IF({0}4 <> "", {0}4 -{0}$3, "")'.format(inttoletter(rekenblokstart + 9)))
-        rij.append('=IF({0}3<118, TRUNC({0}3) + 1,"")'.format(inttoletter(rekenblokstart + 9)))
-        if flexibilisatie.pensioen.sterftetafel == "AG_2020": rij.append('=IF({0}4 <> "", ((1-@INDEX(INDIRECT("{1}"), {0}3+1, {2}3 - 2018)) *  (1 - {0}3 + TRUNC({0}3)) + (1-@INDEX(INDIRECT("{1}"), {0}3+2, {2}3 - 2018)) * ({0}3 - TRUNC({0}3))) * {3}3,"")'.format(inttoletter(rekenblokstart + 9),  flexibilisatie.pensioen.sterftetafel, inttoletter(rekenblokstart + 1), inttoletter(rekenblokstart + 10)))
-        else: rij.append('=IF({0}4<>"", (INDEX(INDIRECT("{1}"),TRUNC({0}4)+1,1) * (1 - {0}4 + TRUNC({0}4)) + INDEX(INDIRECT("{1}"),TRUNC({0}4)+2,1) * ({0}4 - TRUNC({0}4))) / (INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+1,1) * (1 - ${0}$3 + TRUNC(${0}$3)) + INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+2,1) * (${0}$3 - TRUNC(${0}$3))),"")'.format(inttoletter(rekenblokstart + 9), flexibilisatie.pensioen.sterftetafel))
-        rij.append('=IF({0}4<>"", (1+{1})^-{2}4, "")'.format(inttoletter(rekenblokstart + 9), flexibilisatie.pensioen.rente, inttoletter(rekenblokstart + 8)))
+        rij.append('=IF({0}4 <> "", {0}4 -{0}$3, "")'.format(inttoletter(rekenblokstart + instellingen["leeftijd'"])))
+        rij.append('=IF({0}3<118, TRUNC({0}3) + 1,"")'.format(inttoletter(rekenblokstart + instellingen["leeftijd'"])))
+        if flexibilisatie.pensioen.sterftetafel == "AG_2020": rij.append('=IF({0}4 <> "", ((1-@INDEX(INDIRECT("{1}"), {0}3+1, {2}3 - 2018)) *  (1 - {0}3 + TRUNC({0}3)) + (1-@INDEX(INDIRECT("{1}"), {0}3+2, {2}3 - 2018)) * ({0}3 - TRUNC({0}3))) * {3}3,"")'.format(inttoletter(rekenblokstart + instellingen["leeftijd'"]),  flexibilisatie.pensioen.sterftetafel, inttoletter(rekenblokstart + instellingen["jaar"]), inttoletter(rekenblokstart + instellingen["tpx'"])))
+        else: rij.append('=IF({0}4<>"", (INDEX(INDIRECT("{1}"),TRUNC({0}4)+1,1) * (1 - {0}4 + TRUNC({0}4)) + INDEX(INDIRECT("{1}"),TRUNC({0}4)+2,1) * ({0}4 - TRUNC({0}4))) / (INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+1,1) * (1 - ${0}$3 + TRUNC(${0}$3)) + INDEX(INDIRECT("{1}"),TRUNC(${0}$3)+2,1) * (${0}$3 - TRUNC(${0}$3))),"")'.format(inttoletter(rekenblokstart + instellingen["leeftijd'"]), flexibilisatie.pensioen.sterftetafel))
+        rij.append('=IF({0}4<>"", (1+{1})^-{0}4, "")'.format(inttoletter(rekenblokstart + instellingen["t'"]), flexibilisatie.pensioen.rente))
         
         blokruimte = sheet.range((4, instellingen["afstandtotrekenkolom"] + i * (instellingen["rekenblokbreedte"] + instellingen["afstandtussenrekenblokken"] )),\
                                  (max(4, instellingen["rekenblokgrootte"]), instellingen["afstandtotrekenkolom"] + i * (instellingen["rekenblokbreedte"] + instellingen["afstandtussenrekenblokken"]) + instellingen["rekenblokbreedte"] - 1))
@@ -1304,7 +1306,21 @@ def berekeningen_instellingen():
     instellingen["rekenblokgrootte"] = 63
     instellingen["rekenblokbreedte"] = 12
     
+    instellingen["t"] = 0
+    instellingen["jaar"] = 1
+    instellingen["leeftijd"] = 2
+    instellingen["tpx"] = 3
+    instellingen["dt"] = 4
+    instellingen["tpx op 1 juli"] = 5
+    instellingen["tqx op 1 juli"] = 6
+    instellingen["dt op 1 juli"] = 7
+    instellingen["t'"] = 8
+    instellingen["leeftijd'"] = 9
+    instellingen["tpx'"] = 10
+    instellingen["dt'"] = 11
+    
     return instellingen
+
 
 def leesOPPP(sheet, flexibilisaties):
     """
