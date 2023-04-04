@@ -1115,7 +1115,7 @@ def berekeningen_init(sheet, deelnemer, logger):
     aantalpensioenen = len(deelnemer.flexibilisaties)
     instellingen = berekeningen_instellingen()
     
-    # clear sheet
+    # maak de sheet leeg
     sheet.clear()
     
     # pensioen info
@@ -1133,6 +1133,9 @@ def berekeningen_init(sheet, deelnemer, logger):
         inforange = sheet.range((instellingen["pensioeninfohoogte"] + i, instellingen["pensioeninfokolom"]),\
                             (instellingen["pensioeninfohoogte"] + i, instellingen["pensioeninfokolom"] + len(pensioeninfo) - 1))
         inforange.formula = pensioeninfo
+        geldblok = sheet.range((instellingen["pensioeninfohoogte"] + i, instellingen["pensioeninfokolom"] + 1),\
+                            (instellingen["pensioeninfohoogte"] + i, instellingen["pensioeninfokolom"] + len(pensioeninfo) - 2))
+        geldblok.number_format = "€ #.##0,00"
         inforange.color = flexibilisatie.pensioen.pensioenKleurZacht
     
     # pensioen blok
@@ -1156,10 +1159,10 @@ def berekeningen_init(sheet, deelnemer, logger):
         else: blok.append(["OP en PP Origineel", regelingBedrag(deelnemer, flexibilisatie)[0], regelingBedrag(deelnemer, flexibilisatie)[1], "=B{0} * B{1} + C{0} * B{2}".format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 13)])
         blok.append(["OP en PP na Uitstellen", '=ROUND(B{0} * B{1} / B{2}, 0)'.format(blokhoogte + 7, blokhoogte + 11, blokhoogte + 12),\
                      '=C{0}'.format(blokhoogte + 7), "formuletekst"])
-        blok.append(["OP en PP na uitruilen", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - MIN(B{2}, D{2})), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8),\
-                     '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * MIN(B{2}, D{2}) * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 14, blokhoogte + 8), "formuletekst"])
-        blok.append(["Op met hoog laag", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{2} + IF(C{0} = "Hoog-laag", MIN(C{1}, D{1}) * B{5}, MIN(C{1}, D{1}) * B{4}) / B{3}, 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16),\
-                     '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding", ROUND(C{1} * (B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{6} - MIN(C{1}, D{1}), 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16, blokhoogte + 10), "formuletekst"])
+        blok.append(["OP en PP na uitruilen", '=IF(B{0} =  "", B{5}, IF(B{0} = "Verhouding", ROUND(D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(B{5} * (1 - MIN(B{2}, D{2})), 0), ROUND(B{5} + C{5} * B{2} * B{4} / B{3}, 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 13, blokhoogte + 8),\
+                     '=IF(B{0} =  "", C{5}, IF(B{0} = "Verhouding", ROUND(C{2} * D{1} /  (B{2} * B{3} + C{2} *  B{4}), 0), IF(B{0} = "OP naar PP Percentage", ROUND(C{5} + B{5} * MIN(B{2}, D{2}) * B{3} / B{4}, 0), ROUND(C{5} * (1 - B{2}), 0))))'.format(blokhoogte + 2, blokhoogte + 7, blokhoogte + 3, blokhoogte + 12, blokhoogte + 13, blokhoogte + 8), "formuletekst"])
+        blok.append(["Op met hoog laag", '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding",  ROUND((B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{2} + IF(C{0} = "Hoog-laag", MIN(C{1}, D{1}) * B{5}, MIN(C{1}, D{1}) * B{4}) / B{3}, 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 14, blokhoogte + 15),\
+                     '=IF(B{0} =  "", B{2}, IF(B{0} = "Verhouding", ROUND(C{1} * (B{2} * B{3}) / IF(C{0} = "Hoog-laag", B{4} + C{1} * B{5}, C{1} * B{4} + B{5}), 0), ROUND(B{6} - MIN(C{1}, D{1}), 0)))'.format(blokhoogte + 4, blokhoogte + 5, blokhoogte + 9, blokhoogte + 12, blokhoogte + 14, blokhoogte + 15, blokhoogte + 10), "formuletekst"])
         
         blok.append(["Sommatie OP origineel", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3)):{0}{4}, INDIRECT("{1}"& MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3)):{1}{4}), 3)'.format(inttoletter(rekenblokstart + instellingen["tpx'"]), inttoletter(rekenblokstart + instellingen["dt'"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
                      '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3), ":{0}{4}, {1}", MAX(ROUNDUP(E{2} - B{3}, 0) + 3, 3), ":{1}{4})")'.format(inttoletter(rekenblokstart + instellingen["tpx'"]), inttoletter(rekenblokstart + instellingen["dt'"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
@@ -1167,7 +1170,6 @@ def berekeningen_init(sheet, deelnemer, logger):
                      '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3), ":{0}{4}, {1}", MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3), ":{1}{4})")'.format(inttoletter(rekenblokstart + instellingen["tpx"]), inttoletter(rekenblokstart + instellingen["dt"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
         # blok.append(["Sommatie PP origineel", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"]), inttoletter(rekenblokstart + instellingen["tqx op 1 juli"]), inttoletter(rekenblokstart + instellingen["dt op 1 juli"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
         #              '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{0}{5}, {1}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{1}{5}, {2}", MAX(ROUNDUP(E{3} - B{4}, 0) + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"]), inttoletter(rekenblokstart + instellingen["tqx op 1 juli"]), inttoletter(rekenblokstart + instellingen["dt op 1 juli"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
-        blok.append(["", "", "", ""])
         blok.append(["Sommatie PP uitstellen", '=ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{0}{5}, INDIRECT("{1}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{1}{5}, INDIRECT("{2}"& MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3)):{2}{5}), 3)'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"]), inttoletter(rekenblokstart + instellingen["tqx op 1 juli"]), inttoletter(rekenblokstart + instellingen["dt op 1 juli"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"]), "",\
                      '=CONCAT("=SUMPRODUCT( {0}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{0}{5}, {1}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{1}{5}, {2}", MAX(ROUNDUP(B{4} - E{3}, 0) + 3, 3), ":{2}{5})")'.format(inttoletter(rekenblokstart + instellingen["tpx op 1 juli"]), inttoletter(rekenblokstart + instellingen["tqx op 1 juli"]), inttoletter(rekenblokstart + instellingen["dt op 1 juli"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, instellingen["rekenblokgrootte"])])
         blok.append(["Sommatie HL eerste", '=IF(B{5} = "", "", ROUND(SUMPRODUCT(INDIRECT("{0}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):INDIRECT("{0}"&MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4}), INDIRECT("{1}"& MAX(ROUNDUP(B{3} - E{2}, 0) + 3, 3)):INDIRECT("{1}"&MAX(ROUNDUP(B{3} - E{2}, 0) + 2, 2) + B{4})), 3))'.format(inttoletter(rekenblokstart + instellingen["tpx"]), inttoletter(rekenblokstart + instellingen["dt"]), instellingen["pensioeninfohoogte"] + i, blokhoogte + 1, blokhoogte + 5, blokhoogte + 4), "",\
@@ -1178,10 +1180,9 @@ def berekeningen_init(sheet, deelnemer, logger):
         if sum([len(rij) for rij in blok]) == len(blok) * 4:
             blokruimte = sheet.range((blokhoogte, instellingen["pensioenblokkolom"]),\
                                      (blokhoogte + instellingen["blokgrootte"] - 1, instellingen["pensioenblokkolom"] + len(blok[0]) - 1)).options(ndims = 2)
-            # geldblok = sheet.range((blokhoogte + 7, instellingen["pensioenblokkolom"] + 1),\
-            #                           (blokhoogte + 10, instellingen["pensioenblokkolom"] + 2))
-            # geldblok.api.NumberFormat = "Currency"
-            # sheet.conditional_format("{0}{1}:{2}{3}".format(inttoletter(blokhoogte), instellingen["pensioenblokkolom"], inttoletter(blokhoogte + instellingen["blokgrootte"]), instellingen["pensioenblokkolom"] + len(blok[0]) - 1))
+            geldblok = sheet.range((blokhoogte + 7, instellingen["pensioenblokkolom"] + 1),\
+                                      (blokhoogte + 10, instellingen["pensioenblokkolom"] + 2))
+            geldblok.number_format = "€ #.##0,00"
             blokruimte.formula = blok
             blokruimte.color = flexibilisatie.pensioen.pensioenKleurZacht
         else:
@@ -1300,7 +1301,7 @@ def berekeningen_instellingen():
 
     instellingen["afstandtotblokken"] = 6
     instellingen["afstandtussenblokken"] = 2
-    instellingen["blokgrootte"] = 17
+    instellingen["blokgrootte"] = 16
     
     instellingen["afstandtotrekenkolom"] = 8
     instellingen["afstandtussenrekenblokken"] = 1
@@ -1348,6 +1349,14 @@ def leesOPPP(sheet, flexibilisaties):
         PP = bereik[0][1]
         OPH = bereik[1][0]
         OPL = bereik[1][1]
+        try: OPU = int(OPU) 
+        except: pass
+        try: PP = int(PP)
+        except: pass
+        try: OPH = int(OPH)
+        except: pass
+        try: OPL = int(OPL)
+        except: pass
         flexibilisatie.ouderdomsPensioenUitruilen = OPU
         flexibilisatie.partnerPensioen = PP
         flexibilisatie.ouderdomsPensioenHoog = OPH
