@@ -411,7 +411,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                         if i[-1] in ["NN65", "NN67", "VLC"] and i[1].text() != "" and i[2].text() != "" and x.text() == i[1].text(): 
                             #alleen voor regelingen met PP, als beiden ingevuld zijn en het de eerste loop voor dit pensioen is.
                             verhouding = float(i[2].text().replace(".", "").replace(",", "."))/float(i[1].text().replace(".", "").replace(",", "."))
-                            if verhouding > 0.7:
+                            if verhouding > 0.71:
                                 #als verhouding groter dan 100:70, pensioen toevoegen aan foutmelding
                                 verhoudingFout = verhoudingFout + ", " + i[-1]
                     else:
@@ -1587,7 +1587,7 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
                         if i[-1] in ["NN65", "NN67", "VLC"] and i[1].text() != "" and i[2].text() != "" and x.text() == i[1].text(): 
                             #alleen voor regelingen met PP, als beiden ingevuld zijn en het de eerste loop voor dit pensioen is.
                             verhouding = float(i[2].text().replace(".", "").replace(",", "."))/float(i[1].text().replace(".", "").replace(",", "."))
-                            if verhouding > 0.7:
+                            if verhouding > 0.71:
                                 #als verhouding groter dan 100:70, pensioen toevoegen aan foutmelding
                                 verhoudingFout = verhoudingFout + ", " + i[-1]
                     else:
