@@ -711,3 +711,4 @@ if __name__ == '__main__':
     elif sys.argv[1] == "BeheerderskeuzesOpenen": BeheerderskeuzesOpenen()
     elif sys.argv[1] == "InEnUitloggen": InEnUitloggen()
     elif sys.argv[1] == "flexibilisaties_testen": flexibilisaties_testen()
+    elif sys.argv[1] == "Help": VergelijkenHelp()
