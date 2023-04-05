@@ -1148,7 +1148,7 @@ def berekeningen_init(sheet, deelnemer, logger):
         else: blok.append(["Start Pensioenjaar", flexibilisatie.pensioen.pensioenleeftijd, "", ""])
         
         blok.append(["Uitruilen soort", "", "", ""])
-        blok.append(["Uitruilen waarde", "", "", '=IF(B{0} = "OP naar PP Percentage", (0.7 * B{1}  - C{1})  / ((0.7 + B{2} / B{3}) * B{1}), "")'.format(blokhoogte + 2, blokhoogte + 8, blokhoogte + 12, blokhoogte + 14)])
+        blok.append(["Uitruilen waarde", "", "", '=IF(B{0} = "OP naar PP Percentage", (0.7 * B{1}  - C{1})  / ((0.7 + B{2} / B{3}) * B{1}), "")'.format(blokhoogte + 2, blokhoogte + 8, blokhoogte + 12, blokhoogte + 13)])
         
         blok.append(["Hoog Laag", "", "", ""])
         blok.append(["Hoog Laag waarde", "", "", '=IF(B{0} = "Verschil", IF(C{0} = "Hoog-laag", (B{1} * B{2}) / (4 * B{2} - B{3}), (B{1} * B{2}) / (4 * B{2} - B{4})), "")'.format(blokhoogte + 4, blokhoogte + 9, blokhoogte + 12, blokhoogte + 15, blokhoogte + 16)])    
