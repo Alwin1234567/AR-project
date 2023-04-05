@@ -1180,13 +1180,13 @@ class Flexmenu(QtWidgets.QMainWindow):
             if num == 1 and flexibilisatie.pensioen.actieveRegeling:
                 bedragen = functions.regelingBedrag(self.deelnemerObject, flexibilisatie)
                 if flexibilisatie.pensioen.pensioenSoortRegeling == "DC":
-                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 4)). value = bedragen[2]
+                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 7, 4)). value = bedragen[2]
                     except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
                 elif flexibilisatie.pensioen.pensioenSoortRegeling == "DB":
-                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 2)). value = bedragen[0]
+                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 7, 2)). value = bedragen[0]
                     except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
                 elif flexibilisatie.pensioen.pensioenSoortRegeling == "DB met PP":
-                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 6, 2), (blokhoogte + 6, 3)). value = [bedragen[0], bedragen[1]]
+                    try: self.book.sheets["Berekeningen"].range((blokhoogte + 7, 2), (blokhoogte + 7, 3)). value = [bedragen[0], bedragen[1]]
                     except Exception as e: self._logger.exception("error bij het updaten van de Verekeningsheet")
                 else: self._logger.warning("onbekende actieve regeling")
             
