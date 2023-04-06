@@ -18,7 +18,22 @@ import os
 Body
 Hier komen alle functies
 """
-
+@xw.sub
+def SchermenOpenen():
+    book = xw.Book.caller()
+    
+    #scherm flexmenu openen
+    logger = functions.setup_logger("Main") if not getLogger("Main").hasHandlers() else getLogger("Main")
+    app = 0
+    app = QtWidgets.QApplication(sys.argv)
+    
+    if functions.isBeheerder(book):
+        window = Klassen_Schermen.Beheerderkeuzes(book, logger)
+    else:
+        window = Klassen_Schermen.Functiekeus(book, logger)
+    
+    window.show()
+    app.exec_()
 
 @xw.sub
 def VergelijkenHelp():
