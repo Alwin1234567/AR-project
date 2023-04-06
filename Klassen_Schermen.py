@@ -423,6 +423,18 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
                         FouteRegelingen.append(i[-1])
                 tellerPensioenen += len(i)-2        #tellerPensioenen ophogen met aantal pensioenopties OP of OP+PP
         
+        #als de huidige regeling niet aangevinkt en/of ingevuld is wordt hiervoor een nul-waarde opgeslagen
+        if self.ui.cbHuidigeRegeling.currentText() == "ZL" and Pensioensgegevens[1] == "":
+            Pensioensgegevens[1] = 0
+        if self.ui.cbHuidigeRegeling.currentText() == "Aegon" and Pensioensgegevens[3] == "":
+            Pensioensgegevens[3] = 0
+        if self.ui.cbHuidigeRegeling.currentText() == "NN" and Pensioensgegevens[6] == "" and Pensioensgegevens[7] == "":
+            Pensioensgegevens[6] = 0
+            Pensioensgegevens[7] = 0
+        if self.ui.cbHuidigeRegeling.currentText() == "VLC" and Pensioensgegevens[8] == "" and Pensioensgegevens[9] == "":
+            Pensioensgegevens[8] = 0
+            Pensioensgegevens[9] = 0
+        
         #foutmelding pensioensgegevens genereren
         if AantalPensioenen == 0 and len(FouteRegelingen) == 0: #foutmelding als er geen regeling aangegeven is
             foutmeldingPensioen = "U heeft nog geen opgebouwd pensioen aangegeven"
@@ -1496,7 +1508,7 @@ class DeelnemerWijzigen(QtWidgets.QMainWindow):
         self.ui.cbGeslacht.setCurrentText(deelnemer.geslacht)               
         self.ui.cbBurgerlijkeStaat.setCurrentText(deelnemer.burgelijkeStaat)
         self.ui.cbHuidigeRegeling.setCurrentText(deelnemer.regeling)
-        if str(deelnemer.regeling) != "Inactief": 
+        if str(deelnemer.regeling) != "Inactief":
             self.ui.txtFulltimeLoon.setText(str(deelnemer.ftLoon).replace(".", ","))
             self.ui.txtParttimePercentage.setText(str(deelnemer.pt*100).replace(".", ","))
         else:

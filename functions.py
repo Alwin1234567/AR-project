@@ -588,7 +588,7 @@ def gegevenscontrole(gegevenslijst):
     for p2 in range(12,17,2):
         if gegevenslijst[p2] != "":
             regeling = ["NN 65: ", "NN 67: ", "PF VLC 68: "][teller]
-            invoer.append(regeling + "OP = €" + round(gegevenslijst[p2]) + " en PP = €" + round(gegevenslijst[p2+1]))
+            invoer.append(regeling + "OP = €" + str(round(float(gegevenslijst[p2]))) + " en PP = €" + str(round(float(gegevenslijst[p2+1]))))
         teller += 1
     
     #alle gegevens met uitleg op een nieuwe regel in een string
