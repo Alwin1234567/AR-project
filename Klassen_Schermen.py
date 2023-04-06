@@ -586,12 +586,14 @@ class Flexmenu(QtWidgets.QMainWindow):
         
         # Laatste UI update
         self.ui.sbMaand.setValue(0)
-        self.samenvattingUpdate()
         self.wijzigVelden()
         
         # Berekening sheet klaarmaken
         functions.berekeningen_init(book.sheets["Berekeningen"], self.deelnemerObject, self._logger)
         functions.leesOPPP(book.sheets["Berekeningen"], self.deelnemerObject.flexibilisaties)
+        
+        # samenvatting updaten
+        self.samenvattingUpdate()
         
         # Afbeelding genereren
         try:
