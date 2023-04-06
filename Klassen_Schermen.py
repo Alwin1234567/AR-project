@@ -551,7 +551,8 @@ class Flexmenu(QtWidgets.QMainWindow):
         # Setup van UI
         self.ui = Flexmenu_UI()
         self.ui.setupUi(self)
-        self.setWindowTitle("Flexibilisatie menu") #Het moet na de setup, daarom staat het nu even hier
+        self._windowtitel = "Flexibilisatie menu voor deelnemer " + deelnemer.achternaam
+        self.setWindowTitle(self._windowtitel) #Het moet na de setup, daarom staat het nu even hier
         
         #vul meegegeven titel in
         self.ui.txtTitel.setText(titel)
