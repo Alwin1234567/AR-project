@@ -1671,7 +1671,7 @@ def opslagLegen(book, logger):
     else:
         logger.info("Flexopslag legen niet nodig, was al leeg")
 
-def dictAssign(lbl,lbl_OP,lbl_PP,lbl_pLeeftijd,lbl_OP_PP,lbl_hlConstructie):
+def dictAssign(lbl, lbl_OP, lbl_PP, lbl_pLeeftijd, lbl_OP_PP, lbl_hlConstructie):
     """
     Parameters
     ----------
@@ -1694,7 +1694,7 @@ def dictAssign(lbl,lbl_OP,lbl_PP,lbl_pLeeftijd,lbl_OP_PP,lbl_hlConstructie):
     
     return rDict
 
-def samenvattingDict(regeling,UI):
+def samenvattingDict(regeling, UI):
     """
     Parameters
     ----------
