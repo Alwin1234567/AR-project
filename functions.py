@@ -2012,6 +2012,8 @@ def GegevensNaarFlexibilisatie(deelnemer, opslag):
     for i in opslag:
         pensioennamen.append(i[0])
     
+    
+    
     #lijst met pensioennamen langsgaan en opgeslagen flexibilisatiegegevens per pensioen toevoegen aan flexibiliseringsobject van het deelnemersobject
     for i,p in enumerate(pensioennamen):
         for flexibilisatie in deelnemer.flexibilisaties:
@@ -2058,7 +2060,11 @@ def GegevensNaarFlexibilisatie(deelnemer, opslag):
                     flexibilisatie.HL_Verhouding_Hoog = int(float(pensioengegevens[13]))
                     flexibilisatie.HL_Verhouding_Laag = int(float(pensioengegevens[14]))
                 elif pensioengegevens[12] == "Verschil":
-                    flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))       
+                    flexibilisatie.HL_Verschil = int(float(pensioengegevens[13]))   
+                
+                flexibilisatie.ouderdomsPensioenHoog = int(float(pensioengegevens[15]))
+                flexibilisatie.ouderdomsPensioenLaag = int(float(pensioengegevens[16]))
+                flexibilisatie.partnerPensioen = int(float(pensioengegevens[17]))
 
         
 def krijgpad():
