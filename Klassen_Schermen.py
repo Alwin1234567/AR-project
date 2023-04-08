@@ -216,7 +216,7 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         #voor deelnemerstool de terug-knop weghalen
         if self.book.sheets["Vergelijken"].cells(1,12).value == "Deelnemer":
             self.ui.btnTerug.hide()
-        
+       
     def btnDeelnemerToevoegenClicked(self):
         #scherm sluiten
         self.close()
