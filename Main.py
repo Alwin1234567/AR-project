@@ -266,7 +266,7 @@ def AfbeeldingKiezen():
                     if pensioen[4] == "Ja":
                         if l == 7:
                             if pensioen[l-1] == "Verhouding":
-                                antwoord = pensioen[l] + ":" + pensioen[l+1]
+                                antwoord = str(int(float(pensioen[l]))) + ":" + str(int(float(pensioen[l+1])))
                             else: #pencentage
                                 if pensioen[l+1] == "None": #geen maxpercentage gebruikt
                                     antwoord = str(int(float(pensioen[l]))) + "%"
@@ -283,7 +283,7 @@ def AfbeeldingKiezen():
                             antwoord = functions.leeftijd_notatie(pensioen[l], "0")
                         elif l == 13:
                             if pensioen[l-1] == "Verhouding":
-                                antwoord = pensioen[l] + ":" + pensioen[l+1]
+                                antwoord = str(int(float(pensioen[l]))) + ":" + str(int(float(pensioen[l+1])))
                             elif pensioen[l-1] == "Verschil":
                                 if pensioen[l+1] == "None": #geen maxbedrag gebruikt
                                     antwoord = "€" + str(int(float(pensioen[l])))
