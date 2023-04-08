@@ -20,7 +20,7 @@ from reportlab.lib.units import cm
 from pathlib import Path
 from io import BytesIO 
 from svglib.svglib import svg2rlg
-
+from matplotlib.backends import backend_svg # zodat deze ook in de Frozen variant geïmporteerd word
 
 
 """

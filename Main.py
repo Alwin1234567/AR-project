@@ -10,7 +10,7 @@ import Klassen_Schermen
 from logging import getLogger
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import cm
-import mplwidget #zodat deze ook in de Frozen variant geïmporteerd word
+import mplwidget # zodat deze ook in de Frozen variant geïmporteerd word
 from reportlab.graphics import renderPDF
 import os
 
@@ -727,3 +727,4 @@ if __name__ == '__main__':
     elif sys.argv[1] == "InEnUitloggen": InEnUitloggen()
     elif sys.argv[1] == "flexibilisaties_testen": flexibilisaties_testen()
     elif sys.argv[1] == "Help": VergelijkenHelp()
+    elif sys.argv[1] == "SchermenOpenen": SchermenOpenen()
