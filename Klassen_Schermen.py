@@ -212,18 +212,13 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         self.ui.txtAchternaam.textChanged.connect(lambda: self.onChange(False))
         self.ui.cbGeslacht.currentTextChanged.connect(lambda: self.onChange(False))
         self.ui.lwKeuzes.currentItemChanged.connect(self.clearError)
-        #voorkom dat scherm gesloten kan worden met kruisje
-        self._want_to_close = False
         
-    def closeEvent(self, event):
-        #functie die voorkomt dat het scherm gesloten kan worden met het kruisje
-        if self._want_to_close == False:
-            event.ignore()
-            functions.Mbox("Sluiten niet mogelijk", "U kunt dit scherm niet sluiten met het kruisje.\nU kunt naar de sheet 'Vergelijken' komen door terug te gaan naar het keuzemenu en deze te sluiten of door een deelnemer te selecteren en hiervoor een flexibilisatie te starten.", 0)
-            
+        #voor deelnemerstool de terug-knop weghalen
+        if self.book.sheets["Vergelijken"].cells(1,12).value == "Deelnemer":
+            self.ui.btnTerug.hide()
+        
     def btnDeelnemerToevoegenClicked(self):
         #scherm sluiten
-        self._want_to_close = True
         self.close()
         self._logger.info("Deelnemerselectie scherm gesloten")
         self._windowtoevoeg = Deelnemertoevoegen(self.book, self._logger)
@@ -256,7 +251,6 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
             functions.opslagLegen(self.book, self._logger)
                     
             #scherm sluiten
-            self._want_to_close = True
             self.close()
             self._logger.info("Deelnemerselectie scherm gesloten")
             self._windowflex = Flexmenu(self.book, deelnemer, self._logger)
@@ -271,16 +265,20 @@ class Deelnemerselectie(QtWidgets.QMainWindow):
         #mogelijke help-berichten definiëren
         NieuweDeelnemer = "'Nieuwe deelnemer toevoegen' opent een scherm waarin u de gegevens van de nieuwe deelnemer kunt invullen. Door op 'Toevoegen' te klikken wordt de deelnemer toegevoegd en is deze terug te vinden in de deelnemerselectie.\n"
         Selecteren = "In het linkerdeel kunt u de gegevens van de deelnemer die u zoekt, invullen. In het rechtervak worden deelnemers getoont die voldoen aan uw zoektermen. Hoe meer deelnemersgegevens u invult, hoe specifieker de zoekresultaten worden.\n"
+        flexibiliseren = "Door een van deze deelnemers te selecteren en dan op de knop 'Start flexibiliseren' te klikken, start u met het flexibiliseren voor deze deelnemer.\n" 
         Terug = "'Terug' sluit het huidige scherm en opent het vorige scherm.\n"
         
         
-        bericht = f"Dit is een uitleg voor het selecteren van een deelnemer: \n\n{NieuweDeelnemer}\n{Selecteren}\n{Terug}\n"
+        bericht = f"Dit is een uitleg voor het selecteren van een deelnemer: \n\n{NieuweDeelnemer}\n{Selecteren}{flexibiliseren}\n"
+        #voor niet-deelnemerstool de terug-knop uitleg toevoegen
+        if self.book.sheets["Vergelijken"].cells(1,12).value != "Deelnemer":
+            bericht = bericht + f"{Terug}\n"
+        
         #messagebox met help-bericht maken
         functions.Mbox("Help bij selecteren", bericht, 0)
         
     def btnTerugClicked(self):
         #scherm sluiten
-        self._want_to_close = True
         self.close()
         self._logger.info("Deelnemerselectie scherm gesloten")
         #controleren of beheerder is ingelogd
@@ -345,7 +343,7 @@ class Deelnemertoevoegen(QtWidgets.QMainWindow):
         #functie die voorkomt dat het scherm gesloten kan worden met het kruisje
         if self._want_to_close == False:
             event.ignore()
-            functions.Mbox("Sluiten niet mogelijk", "U kunt dit scherm niet sluiten met het kruisje.\nU kunt naar de sheet 'Vergelijken' komen door terug te gaan naar het keuzemenu en deze te sluiten.", 0)
+            functions.Mbox("Sluiten niet mogelijk", "U kunt dit scherm niet sluiten met het kruisje.\nU kunt naar de sheet 'Vergelijken' komen door terug te gaan naar de deelnemerselectie en deze te sluiten.", 0)
             
     def btnTerugClicked(self):
         #scherm sluiten

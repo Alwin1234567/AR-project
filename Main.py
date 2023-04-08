@@ -27,9 +27,11 @@ def SchermenOpenen():
     app = 0
     app = QtWidgets.QApplication(sys.argv)
     
-    if functions.isBeheerder(book):
+    if functions.isBeheerder(book):                                     #beheerder is ingelogd
         window = Klassen_Schermen.Beheerderkeuzes(book, logger)
-    else:
+    elif book.sheets["Vergelijken"].cells(1,12).value == "Deelnemer":   #deelnemerstool is in gebruik
+        window = Klassen_Schermen.Deelnemerselectie(book, logger)
+    else:                                                               #beheerder is niet ingelogd
         window = Klassen_Schermen.Functiekeus(book, logger)
     
     window.show()
@@ -52,8 +54,13 @@ def VergelijkenHelp():
     
     bericht = f"Dit is een uitleg van wat u kunt op de vergelijken sheet: \n\n{Kiezen}\n{Verwijderen}\n{Aanpassen}\n{NieuweFlex}\n{AndereDeelnemer}\n"
     if functions.isBeheerder(book):
+        #bericht als beheerder is ingelogd
         bericht = bericht + f"{Uitloggen}\n{Beheerderkeuzes}\n{Vergelijken}\n"
+    elif book.sheets["Vergelijken"].cells(1,12).value == "Deelnemer":
+        #bericht voor de deelnemerstool
+        bericht = bericht + f"{Vergelijken}\n"
     else:
+        #bericht voor adviseurs of uitgelogde beheerders
         bericht = bericht + f"{Inloggen}\n{Vergelijken}\n"
     
     #messagebox met help-bericht maken
