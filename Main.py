@@ -149,6 +149,7 @@ def AfbeeldingKiezen():
                     
         # functions.GegevensNaarFlexibilisatie(deelnemer, Flexopslag_oud)        
         
+        #Het oude pensioen wordt opgehaald, zodat deze neergezet kan worden in de pdf 
         oudpensioen = []
         for i in deelnemer.pensioenen:
             pensioen = []
@@ -159,7 +160,8 @@ def AfbeeldingKiezen():
             pensioen.append(i.partnerPensioen)          #4
             oudpensioen.append(pensioen)            
             
-            
+        #Het pensioenfonds wordt aangeroepen zodat het AOW niet als harde data hoeft worden neergezet
+        #En uitgelezen kan worden, waardoor de beheerder het makkelijker kan aanpassen
         Fonds = functions.getPensioeninformatie(book)
         puntleeftijd = oudpensioen[0][1]
         AOWjaar = float(puntleeftijd)//1 
@@ -180,9 +182,11 @@ def AfbeeldingKiezen():
         
         naam_pdf = gekozenAfbeelding + ".pdf"
         
+        #wordt een pad meegegeven waardoor de pdf op de juiste plek wordt opgeslagen
         save_pad = os.path.join(functions.krijgpad(), naam_pdf)
         pdf_canvas = Canvas(save_pad)
         pdf_canvas.setFont("Helvetica", 11)
+        #Op hoeveel pixels de helft van de pagina zit
         halfbreedte = cm*10.5
         
        
@@ -192,17 +196,19 @@ def AfbeeldingKiezen():
         functions.GegevensNaarFlexibilisatie(deelnemer, nieuwpensioen)
         nieuwpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = "Nieuw pensioen")
         
-        
+        #De afbeeldingen worden op de pdf geplaatst 
         renderPDF.draw(oudpensioenimg, pdf_canvas, 105, 540)
         renderPDF.draw(nieuwpensioenimg, pdf_canvas, 105, 200)
         
         pdf_canvas.showPage()
         functions.nieuwe_pagina(pdf_canvas, halfbreedte)
         
+        #Er wordt een startwaarde megegeven zodat deze later kan worden teruggehaalt
         verhaalstart = 706
         verhaallijn = verhaalstart
         
         totOPoud = 0
+        #Zet in een verhaal hoe het OP veranderde in het oude pensioen
         pdf_canvas.drawString(30+halfbreedte, 720, "Met uw oude pensioen")
         for i in eenperjaaroud:
             totOPoud = totOPoud + i[1]
@@ -210,6 +216,7 @@ def AfbeeldingKiezen():
             pdf_canvas.drawString(30+halfbreedte, verhaallijn, oudverhaal)
             verhaallijn -= 14
             
+        #telt het PP van de oude pensioenen bij elkaar op
         totPPoud = 0
         for i in oudpensioen:
             totPPoud = totPPoud + int(i[4])
@@ -222,6 +229,7 @@ def AfbeeldingKiezen():
         pdf_canvas.drawString(30, 720, "Met uw nieuwe pensioen")
         
         totOPnieuw = 0
+        #Zet in een verhaal hoe het OP verandert in het nieuwe pensioen
         for i in eenperjaarnieuw:
             totOPnieuw = totOPnieuw + i[1]
             if "maand" in i[0]:
@@ -235,7 +243,7 @@ def AfbeeldingKiezen():
                 pdf_canvas.drawString(30, verhaallijn, nieuwverhaal)
             verhaallijn -= 14
         
-        
+        #telt het PP van de nieuwe pensioenen bij elkaar op
         totPPnieuw = 0
         for i in nieuwpensioen:
             totPPnieuw = totPPnieuw + int(float(i[17]))
@@ -243,7 +251,7 @@ def AfbeeldingKiezen():
         PPnieuwverhaal = "Uw nieuwe partner pensioen is €" + str(totPPnieuw) + " per jaar"
         pdf_canvas.drawString(40, verhaallijn-14, PPnieuwverhaal)
         
-        
+        #Zet op de pdf wat en wanneer de deelnemer aan AOW krijgt
         AOWverhaal1 = "Vanaf " + AOWleeftijd + " krijgt u"
         AOWverhaal2 = AOW + " aan AOW per jaar"
         pdf_canvas.drawString(40, verhaallijn-42, AOWverhaal1)
@@ -256,23 +264,23 @@ def AfbeeldingKiezen():
         
         #Samenvattingen
         benodigde_indexen = [0, 1, 2, 15, 17, 4, 5, 7, 9, 10, 11, 13]
-        #4 start 5, 7(8)
-        #9 start 10,11,13(14) past 15(16) aan
-        
+               
         
         p = 1 # hoeveelste pensioen neergezet wordt
         for pensioen in nieuwpensioen:
+            #De labels die aangeven wat de waarde betekend. In een lijst gezet zodat je er makkelijk langs kan gaan
             labels = ["Pensioenfonds", "Vervroegen/Uitstellen?", "Pensioenleeftijd", "Nieuw OP", "Nieuw PP", "Uitruilen?", "Volgorde", pensioen[6],"Hoog/Laag?", "volgorde",  "Duur", pensioen[12]]
             benodigdeantwoorden = []
             for l in benodigde_indexen:
-                if l == 2:
-                    if pensioen[1] == "Ja":
+                if l == 2: 
+                    if pensioen[1] == "Ja": #Of de leeftijd is gewijzigd
                         antwoord = functions.leeftijd_notatie(pensioen[2], pensioen[3])
                     else:
+                        #Als de leeftijd niet gewijzigd is moet de leeftijd van het oude pensioen worden gebruikt
                         antwoord =  functions.leeftijd_notatie(oudpensioen[p-1][1], "0")
                         
-                elif l == 15:
-                    if pensioen[9] == "Ja":
+                elif l == 15: 
+                    if pensioen[9] == "Ja": #Of er voor een hoog-laag structuur is gekozen
                         hoog = "€" + str(int(float(pensioen[l]))) + " hoog"
                         laag = "€" + str(int(float(pensioen[l+1]))) + " laag"
                         if pensioen[10] == "Hoog-laag":
@@ -285,7 +293,7 @@ def AfbeeldingKiezen():
                     antwoord = "€" + str(int(float(pensioen[l])))
                         
                 elif l == 5 or l == 7: #opties die alleen bij uitruilen horen
-                    if pensioen[4] == "Ja":
+                    if pensioen[4] == "Ja": #Of uitruilen is gekozen
                         if l == 7:
                             if pensioen[l-1] == "Verhouding":
                                 antwoord = str(int(float(pensioen[l]))) + ":" + str(int(float(pensioen[l+1])))
@@ -298,9 +306,11 @@ def AfbeeldingKiezen():
                         else:
                             antwoord = pensioen[l]
                     else:
+                        #Er wordt een lege string meegegeven omdat die waarde niet belangrijk is voor
+                        #De deelnemer omdat uitruilen niet gekozen is
                         antwoord = ""
                 elif l == 10 or l == 11 or l == 13: #opties die alleen bij hoog-laag horen
-                    if pensioen[9] == "Ja":
+                    if pensioen[9] == "Ja": #Of er voor een hoog-laag structuur is gekozen
                         if l == 11:
                             antwoord = functions.leeftijd_notatie(pensioen[l], "0")
                         elif l == 13:
@@ -317,6 +327,8 @@ def AfbeeldingKiezen():
                         else:
                             antwoord = pensioen[l]
                     else:
+                        #Er wordt een lege string meegegeven omdat die waarde niet belangrijk is voor
+                        #De deelnemer omdat hoog-laag niet gekozen is
                         antwoord = ""
                 
                 else:
