@@ -132,6 +132,23 @@ def AfbeeldingKiezen():
         deelnemer = functions.getDeelnemersbestand(book, rijNr)
         deelnemer.activeerFlexibilisatie()      #maak pensioenobjecten aan
         
+        nieuwpensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
+        
+        #geprobeerd om een flexibilisatie te starten zodat ZL niet met 0 OP wordt meegegeven
+        #Het is nog niet gelukt en ik kan zo snel niks anders bedenken
+        # Flexopslag_oud = []
+        # for pensioen in nieuwpensioen:
+        #     pensioenfonds = []
+        #     for waarde in pensioen:
+        #         if waarde == "Ja" or waarde == "Nee":
+        #             antwoord = "Nee"
+        #         else:
+        #             antwoord = waarde
+        #         pensioenfonds.append(antwoord)
+        #     Flexopslag_oud.append(pensioenfonds)
+                    
+        # functions.GegevensNaarFlexibilisatie(deelnemer, Flexopslag_oud)        
+        
         oudpensioen = []
         for i in deelnemer.pensioenen:
             pensioen = []
@@ -154,8 +171,6 @@ def AfbeeldingKiezen():
         else:
             AOW = "€" + str(int(float(Fonds[0].alleenstaandAOW)))
             
-
-        nieuwpensioen = functions.UitlezenFlexopslag(book, gekozenAfbeelding)
         
         eenperjaar = functions.geld_per_leeftijd(oudpensioen, nieuwpensioen)
         
