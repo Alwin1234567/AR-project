@@ -140,6 +140,9 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         #sheets leesbaar maken
         functions.tekstkleurSheets(self.book, self.sheets, zicht = 1)
         
+        #beveiliging sheet met beheerder-inloggegevens ongedaan maken
+        self.book.sheets["Beheerder"].api.Unprotect(Password = functions.wachtwoord())
+        
         #scherm sluiten
         self.close()
         self._logger.info("Beheerderkeuzes scherm gesloten")
@@ -166,8 +169,10 @@ class Beheerderkeuzes(QtWidgets.QMainWindow):
         for i in self.sheets:
             self.book.sheets[i].api.Protect(Password = functions.wachtwoord())
             self.book.sheets[i].visible = False
-        #vergelijken sheet protecten
+        #vergelijken sheet beveiligen
         self.vergelijken.api.Protect(Password = functions.wachtwoord(), Contents=False)
+        #sheet met beheerder-inloggegevens beveiligen
+        self.book.sheets["Beheerder"].api.Protect(Password = functions.wachtwoord())
         
         self._logger.info("Beheerderkeuzes scherm gesloten")
         self._windowkeus = Functiekeus(self.book, self._logger)
