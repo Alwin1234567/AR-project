@@ -654,6 +654,33 @@ def isNotFloat(veldInput):
         return True
         
 def checkVeldInvoer(soort,methode,veld1,veld2,veld3):
+    """
+    Parameters
+    ----------
+    soort : string
+        "OP-PP" of "hoog-laag"
+    methode: string
+        "Percentage", "Verschil", "Verhouding" of "Opvullen AOW"
+    veld1 : float
+        Bij OP-PP is het de waarde van het percentage
+        Bij hoog-laag is het de waarde van het verschil
+    veld2 : float
+        Bij OP-PP is het de waarde van de OP aanspraak
+        Bij hoog-laag is het de waarde van de hoog aanpsraak
+    veld3 : float
+        Bij OP-PP is het de waarde van de PP aanspraak
+        Bij hoog-laag is het de waarde van de laag aanspraak
+    
+    Returns
+    -------
+    [message, OK] : list
+        Lijst met een foutmelding en een check
+    message : string
+        Eventuele foutmelding, als er niks fout is dan is de string leeg
+    OK : bool
+        Als True dan is alles goed, als False dan is er iets fout
+        
+    """
     intProblem = False
     emptyProblem = False
     message = ""
@@ -698,6 +725,9 @@ def checkVeldInvoer(soort,methode,veld1,veld2,veld3):
                 if float(veld2) < 0 or float(veld3) < 0: # Getallen mogen niet negatief zijn
                     message = "Getallen mogen niet negatief zijn."
                     OK = False
+                elif float(veld2) == 0:
+                    message = "OP waarde moet groter dan nul zijn."
+                    OK = False
                 elif float(veld3)/float(veld2) > 0.70: # Verhouding moet voldoen aan PP max. 70% van OP regel
                     message = "Verhouding ongeldig (PP maximaal 70% van OP)"
                     OK = False
@@ -710,8 +740,8 @@ def checkVeldInvoer(soort,methode,veld1,veld2,veld3):
                     OK = False
         elif soort == "hoog-laag":
             if str(methode) == "Verhouding":
-                if float(veld2) < 0 and int(veld3) < 0: # Getallen mogen niet negatief zijn
-                    message = "Getallen mogen niet negatief zijn."
+                if float(veld2) <= 0 or int(veld3) <= 0: # Getallen mogen niet negatief zijn
+                    message = "Getallen moeten groter dan nul zijn."
                     OK = False
                 elif float(veld3)/float(veld2) < 0.75 or float(veld3)/float(veld2) > 1: # Verhouding moet voldoen aan hoog-laag 4:3 regel
                     message = "Verhouding ongeldig (3:4 regel)"
