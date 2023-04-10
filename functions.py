@@ -829,7 +829,7 @@ def flexOpslag(sheet,flexibilisatie,countOpslaan,countRegeling):
     flexopslag[5][0] = "Uitruilen"
     flexopslag[6][0] = "Volgorde"
     flexopslag[7][0] = "Methode"
-    flexopslag[8][0] = "Verschil/verhouding"
+    flexopslag[8][0] = "Percentage/verhouding"
     
     flexopslag[10][0] = "Hoog/Laag"
     flexopslag[11][0] = "Volgorde"
