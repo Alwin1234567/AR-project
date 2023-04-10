@@ -6,6 +6,7 @@ from PyQt5 import QtWidgets, uic
 import functions
 from datetime import datetime
 from decimal import getcontext, Decimal
+import re
 
 """
 Body
@@ -959,8 +960,9 @@ class Flexmenu(QtWidgets.QMainWindow):
                 
                 self.samenvattingUpdate() # Update de samenvatting
         else:
-            self._titel = str(self.ui.txtTitel.text())
-            #print(self._titel)
+            self._titel = re.sub("[/:*?',|<>]","",str(self.ui.txtTitel.text()))
+            self.ui.txtTitel.setText(self._titel)
+            #print(self._titel)     ^A-Za-z0-9-_.
                 
         try: # probeer een nieuwe afbeelding te maken
             functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax, titel = self._titel)
