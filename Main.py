@@ -191,7 +191,7 @@ def AfbeeldingKiezen():
         
        
         
-        oudpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = "Oudpensioen")
+        oudpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = "Oud pensioen")
         
         functions.GegevensNaarFlexibilisatie(deelnemer, nieuwpensioen)
         nieuwpensioenimg = functions.maak_afbeelding(deelnemer, pdf = True, titel = "Nieuw pensioen")
