@@ -158,6 +158,7 @@ def AfbeeldingKiezen():
             pensioen.append("0") #De maand              #2
             pensioen.append(i.ouderdomsPensioen)        #3
             pensioen.append(i.partnerPensioen)          #4
+            pensioen.append(i.koopsom)                  #5
             oudpensioen.append(pensioen)            
             
         #Het pensioenfonds wordt aangeroepen zodat het AOW niet als harde data hoeft worden neergezet
@@ -350,8 +351,12 @@ def AfbeeldingKiezen():
                     oud_leeftijd = functions.leeftijd_notatie(oudpensioen[p-1][1], "0")
                     pdf_canvas.drawString(170 + halfbreedte, schrijfhoogte, oud_leeftijd)
                 elif k == 3: #OP
-                    pdf_canvas.drawString(30 + halfbreedte, schrijfhoogte, "Oud OP")
-                    pdf_canvas.drawString(170 + halfbreedte, schrijfhoogte, "€" + str(oudpensioen[p-1][3]))
+                    if oudpensioen[p-1][0] == "ZL":
+                        pdf_canvas.drawString(30 + halfbreedte, schrijfhoogte, "Oude koopsom")
+                        pdf_canvas.drawString(170 + halfbreedte, schrijfhoogte, "€" + str(oudpensioen[p-1][5]))
+                    else:
+                        pdf_canvas.drawString(30 + halfbreedte, schrijfhoogte, "Oud OP")
+                        pdf_canvas.drawString(170 + halfbreedte, schrijfhoogte, "€" + str(oudpensioen[p-1][3]))
                 elif k == 4: #PP
                     pdf_canvas.drawString(30 + halfbreedte, schrijfhoogte, "Oud PP")
                     pdf_canvas.drawString(170 + halfbreedte, schrijfhoogte, "€" + str(oudpensioen[p-1][4]))
