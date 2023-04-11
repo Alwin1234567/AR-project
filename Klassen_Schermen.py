@@ -960,9 +960,8 @@ class Flexmenu(QtWidgets.QMainWindow):
                 
                 self.samenvattingUpdate() # Update de samenvatting
         else:
-            self._titel = re.sub("[/:*?',|<>]","",str(self.ui.txtTitel.text()))
+            self._titel = re.sub("[^A-Za-z0-9-_.%€+=() $&!@#^;{}[]~`]","",str(self.ui.txtTitel.text()))
             self.ui.txtTitel.setText(self._titel)
-            #print(self._titel)     ^A-Za-z0-9-_.
                 
         try: # probeer een nieuwe afbeelding te maken
             functions.maak_afbeelding(self.deelnemerObject, ax = self.ui.wdt_pltAfbeelding.canvas.ax, titel = self._titel)
